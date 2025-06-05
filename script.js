@@ -1,12 +1,11 @@
 window.addEventListener('DOMContentLoaded', () => {
     const rotaryDialContainerElement = document.getElementById('rotaryDialContainer')
     const rotaryDialTrackElement = document.getElementById('rotaryDialTrack')
-    // const rotaryKnobElement = document.getElementById('rotaryKnob') // Hiện tại knob nằm trên track và xoay cùng track
     const startStopButtonElement = document.getElementById('startStopButton')
-    const bpmValueElement = document.getElementById('bpmValueElement')
+    // const bpmValueElement = document.getElementById('bpmValueElement') // BIẾN NÀY KHÔNG CÒN NỮA
 
     let audioContextInstance
-    let currentBpm = 120
+    let currentBpm = 120 // Giá trị BPM ban đầu vẫn được giữ lại và điều chỉnh
     const minBpm = 20
     const maxBpm = 300
     let isMetronomeRunning = false
@@ -18,7 +17,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     let isDraggingDial = false
     let previousAngle = 0
-    let currentDialRotation = 0 // Tổng độ xoay của dial visual
+    let currentDialRotation = 0
 
     function initializeAudioContext() {
         if (!audioContextInstance) {
@@ -31,9 +30,9 @@ window.addEventListener('DOMContentLoaded', () => {
         return true
     }
 
-    function updateBpmDisplay() {
-        bpmValueElement.textContent = currentBpm
-    }
+    // function updateBpmDisplay() { // HÀM NÀY KHÔNG CÒN NỮA
+    //     bpmValueElement.textContent = currentBpm
+    // }
 
     function updateDialVisual() {
         rotaryDialTrackElement.style.transform = `rotate(${currentDialRotation}deg)`
@@ -48,17 +47,18 @@ window.addEventListener('DOMContentLoaded', () => {
         oscillatorNode.connect(gainControlNode)
         gainControlNode.connect(audioContextInstance.destination)
 
-        oscillatorNode.type = 'sine' // Âm thanh click cơ bản
-        oscillatorNode.frequency.setValueAtTime(660, time) // Tần số click
-        gainControlNode.gain.setValueAtTime(0.6, time) // Âm lượng
+        oscillatorNode.type = 'sine'
+        oscillatorNode.frequency.setValueAtTime(660, time)
+        gainControlNode.gain.setValueAtTime(0.6, time)
 
         oscillatorNode.start(time)
-        oscillatorNode.stop(time + 0.03) // Độ dài tiếng click rất ngắn
+        oscillatorNode.stop(time + 0.03)
     }
 
     function audioScheduler() {
         while (nextNoteTimestamp < audioContextInstance.currentTime + audioScheduleLookaheadSeconds && isMetronomeRunning) {
             playClickSound(nextNoteTimestamp)
+            // Logic tính toán secondsPerBeat vẫn sử dụng currentBpm
             const secondsPerBeat = 60.0 / currentBpm
             nextNoteTimestamp += secondsPerBeat
         }
@@ -94,8 +94,6 @@ window.addEventListener('DOMContentLoaded', () => {
         const rect = rotaryDialContainerElement.getBoundingClientRect()
         const centerX = rect.left + rect.width / 2
         const centerY = rect.top + rect.height / 2
-        // Math.atan2 trả về giá trị trong khoảng -PI đến PI.
-        // Chúng ta muốn 0-360 độ, với 0 ở trên cùng.
         const angleRad = Math.atan2(clientY - centerY, clientX - centerX) + Math.PI / 2
         let angleDeg = angleRad * 180 / Math.PI
         if (angleDeg < 0) {
@@ -105,13 +103,12 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleDialInteractionStart(event) {
-        event.preventDefault() // Ngăn hành vi mặc định như cuộn trang
+        event.preventDefault()
         isDraggingDial = true
         rotaryDialContainerElement.style.cursor = 'grabbing'
         const clientX = event.touches ? event.touches[0].clientX : event.clientX
         const clientY = event.touches ? event.touches[0].clientY : event.clientY
         previousAngle = getAngle(clientX, clientY)
-        // Không cần lưu initialBpm nữa, thay đổi sẽ là tương đối
     }
 
     function handleDialInteractionMove(event) {
@@ -124,27 +121,23 @@ window.addEventListener('DOMContentLoaded', () => {
 
         let deltaAngle = currentAngle - previousAngle
 
-        // Xử lý việc xoay qua mốc 0/360 độ
-        if (Math.abs(deltaAngle) > 180) { // Nếu thay đổi góc quá lớn, có thể là do xoay qua mốc
+        if (Math.abs(deltaAngle) > 180) {
             deltaAngle = deltaAngle > 0 ? deltaAngle - 360 : deltaAngle + 360
         }
 
-        // Điều chỉnh độ nhạy: mỗi độ xoay thay đổi bao nhiêu BPM
-        // Ví dụ: 3 độ xoay = 1 BPM
         const sensitivityFactor = 3
         const bpmChange = Math.round(deltaAngle / sensitivityFactor)
 
         if (bpmChange !== 0) {
             let newBpm = currentBpm + bpmChange
-            newBpm = Math.max(minBpm, Math.min(maxBpm, newBpm)) // Giới hạn BPM
+            newBpm = Math.max(minBpm, Math.min(maxBpm, newBpm))
 
             if (newBpm !== currentBpm) {
                 currentBpm = newBpm
-                updateBpmDisplay()
+                // updateBpmDisplay() // Lệnh gọi hàm này đã bị xóa
             }
 
-            // Cập nhật vị trí xoay của dial visual
-            currentDialRotation += deltaAngle // Xoay dial visual một cách tương đối
+            currentDialRotation += deltaAngle
             updateDialVisual()
         }
         previousAngle = currentAngle
@@ -157,9 +150,9 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Khởi tạo & Gắn sự kiện ---
-    updateBpmDisplay()
-    updateDialVisual() // Đặt dial ở vị trí ban đầu
-    startStopButtonElement.classList.add('off') // Trạng thái ban đầu là tắt
+    // updateBpmDisplay() // Lệnh gọi hàm này đã bị xóa
+    updateDialVisual()
+    startStopButtonElement.classList.add('off')
 
     startStopButtonElement.addEventListener('click', () => {
         if (!audioContextInstance) {
@@ -172,14 +165,12 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     })
 
-    // Sự kiện cho vòng xoay BPM
     rotaryDialContainerElement.addEventListener('mousedown', handleDialInteractionStart)
-    document.addEventListener('mousemove', handleDialInteractionMove) // Lắng nghe trên document để kéo mượt hơn
+    document.addEventListener('mousemove', handleDialInteractionMove)
     document.addEventListener('mouseup', handleDialInteractionEnd)
 
     rotaryDialContainerElement.addEventListener('touchstart', handleDialInteractionStart, { passive: false })
-    document.addEventListener('touchmove', handleDialInteractionMove, { passive: false }) // passive: false để preventDefault hoạt động
+    document.addEventListener('touchmove', handleDialInteractionMove, { passive: false })
     document.addEventListener('touchend', handleDialInteractionEnd)
     document.addEventListener('touchcancel', handleDialInteractionEnd)
-
 })
