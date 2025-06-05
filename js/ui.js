@@ -32,16 +32,26 @@ export function createTickMarks() {
 
     marks.forEach(markInfo => {
         const tickElement = document.createElement('div')
-        tickElement.classList.add('tick')
+        tickElement.classList.add('tick') // Class chung cho position: absolute, left: 50%
 
-        let translateXValue = `-${config.TICK_SMALL_WIDTH / 2}px`
+        let translateXValue
+
         if (markInfo.type === 'large') {
-            tickElement.classList.add('large-tick')
+            tickElement.classList.add('large-tick') // Dùng class này chủ yếu cho background-color
+            tickElement.style.width = `${config.TICK_LARGE_WIDTH}px`
+            tickElement.style.height = `${config.TICK_LARGE_HEIGHT}px`
             translateXValue = `-${config.TICK_LARGE_WIDTH / 2}px`
         } else {
-            tickElement.classList.add('small-tick')
+            tickElement.classList.add('small-tick') // Dùng class này chủ yếu cho background-color
+            tickElement.style.width = `${config.TICK_SMALL_WIDTH}px`
+            tickElement.style.height = `${config.TICK_SMALL_HEIGHT}px`
+            translateXValue = `-${config.TICK_SMALL_WIDTH / 2}px`
         }
 
+        // Đặt vị trí top từ config
+        tickElement.style.top = `${config.TICK_INITIAL_TOP_OFFSET}px`
+
+        // Đặt transform-origin và transform
         tickElement.style.transformOrigin = `50% ${rotationOriginY}px`
         tickElement.style.transform = `translateX(${translateXValue}) rotate(${markInfo.angle}deg)`
 
