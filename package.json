@@ -1,15 +1,15 @@
 {
   "name": "stupidsimpletempo",
   "version": "1.0.0",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "parcel index.html --dist-dir dev_dist",
+    "build": "parcel build index.html --dist-dir public"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Nguyen Binh Son",
   "license": "ISC",
-  "description": "",
+  "description": "Stupid Simple Tempo",
   "devDependencies": {
-    "live-server": "^1.2.2"
+    "live-server": "^1.2.2",
+    "parcel": "^2.15.2"
   }
 }
