@@ -65,7 +65,9 @@ function updateBpmFromDialAngle() {
 }
 
 function handleDialInteractionStart(event) {
-    event.preventDefault()
+    if (!dom.startStopButtonElement.contains(event.target)) {
+        event.preventDefault()
+    }
     isDraggingDial = true
     dom.rotaryDialContainerElement.style.cursor = 'grabbing'
     const clientX = event.touches ? event.touches[0].clientX : event.clientX
