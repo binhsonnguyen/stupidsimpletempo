@@ -31,19 +31,14 @@ body {
 .tick {
     position: absolute;
     left: 50%; /* Căn giữa theo chiều ngang ban đầu */
-    background-color: #6c757d; /* Màu mặc định cho vạch nhỏ */
 }
 
 .large-tick {
-    top: 5px;     /* Khoảng cách từ mép trong cùng của track (tính cả border) */
     background-color: #adb5bd; /* Màu cho vạch lớn */
-    transform-origin: 50% 115px; /* Tâm xoay cho vạch lớn */
 }
 
 .small-tick {
-    top: 5px;     /* Căn thẳng hàng với mép ngoài của vạch lớn */
     background-color: #6c757d; /* Màu cho vạch nhỏ */
-    transform-origin: 50% 115px; /* Tâm xoay cho vạch nhỏ */
 }
 
 .rotary-knob {
