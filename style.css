@@ -1,29 +1,83 @@
+html, body {
+    overscroll-behavior: none; /* Ngăn cuộn trang khi tương tác với dial */
+    touch-action: none; /* Tối ưu cho tương tác chạm */
+}
+
 body {
-    /* Không cần style body nhiều vì Bootstrap đã xử lý font và bg-light được thêm vào body class */
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-/* Giữ lại style cho visual-beat vì nó có hiệu ứng đặc thù */
-.visual-beat {
-    width: 50px;
-    height: 50px;
-    background-color: #6c757d; /* Màu xám mặc định của Bootstrap (secondary) */
-    border-radius: 50%; /* Bootstrap có class rounded-circle nhưng để đây cho dễ quản lý transition */
-    /* margin: 20px auto; đã dùng mx-auto của Bootstrap */
-    transition: background-color 0.05s ease-out, transform 0.05s ease-out;
-    transform: scale(1);
+.rotary-dial-container {
+    position: relative;
+    width: 250px; /* Kích thước của vùng xoay */
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
+    border-radius: 50%; /* Giúp bắt sự kiện chạm/kéo tốt hơn trên toàn vùng tròn */
+    /* Có thể thêm viền mờ để người dùng biết đây là vùng tương tác */
+    /* box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); */
 }
 
-.visual-beat.active {
-    background-color: #dc3545; /* Màu đỏ của Bootstrap (danger) */
-    transform: scale(1.1);
+.rotary-dial-track {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 5px solid #495057; /* Màu của vòng xoay */
+    border-radius: 50%;
+    box-sizing: border-box; /* Border không làm tăng kích thước */
+    /* transition: transform 0.05s linear; /* Làm mượt khi JS cập nhật transform */
 }
 
-.visual-beat.accent {
-    background-color: #198754; /* Màu xanh lá của Bootstrap (success) */
-    transform: scale(1.15);
+.rotary-knob {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: #007bff; /* Màu của núm xoay */
+    border-radius: 50%;
+    top: -7.5px; /* Căn giữa núm xoay trên viền của track ( (15px/2) - (border-width/2) - approximately) */
+    left: 50%;
+    transform: translateX(-50%); /* Đặt núm ở đỉnh của vòng track */
 }
 
-/* Có thể thêm một chút style tùy chỉnh nếu cần */
-#bpm {
+.start-stop-button {
+    position: relative; /* Để z-index có hiệu lực và nằm trên track */
+    z-index: 10;
+    width: 120px; /* Kích thước nút bấm */
+    height: 120px;
+    border-radius: 50%;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.start-stop-button.off {
+    background-color: #28a745; /* Xanh lá khi tắt */
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.7);
+}
+
+.start-stop-button.on {
+    background-color: #dc3545; /* Đỏ khi chạy */
+    box-shadow: 0 0 15px rgba(220, 53, 69, 0.7);
+}
+
+.bpm-display {
+    text-align: center;
+}
+
+.bpm-value {
+    font-size: 3.5rem; /* Kích thước BPM lớn hơn */
     font-weight: bold;
+    color: #f8f9fa;
+}
+
+.bpm-unit {
+    font-size: 1.2rem;
+    color: #adb5bd;
+    margin-left: 5px;
 }
