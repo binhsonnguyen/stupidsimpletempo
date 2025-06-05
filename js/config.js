@@ -9,7 +9,7 @@ export const TICK_LARGE_HEIGHT = 10
 export const TICK_SMALL_WIDTH = 1
 export const TICK_SMALL_HEIGHT = 6
 
-export const MIN_SCALE_BPM = 10 // BPM nhỏ nhất trên thang đo chính của dial
+export const MIN_SCALE_BPM = 40 // BPM nhỏ nhất trên thang đo chính của dial
 export const MAX_SCALE_BPM = 200 // BPM lớn nhất trên thang đo chính của dial
 
 export const ANGLE_FOR_0_BPM_MARK = 0     // Vạch "0" tượng trưng luôn ở 12 giờ (0 độ)
