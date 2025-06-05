@@ -19,12 +19,40 @@ body {
 }
 
 .rotary-dial-track {
-    position: absolute;
+    position: absolute; /* Đã có từ trước, đảm bảo cho việc định vị con */
     width: 100%;
     height: 100%;
     border: 5px solid #495057;
     border-radius: 50%;
     box-sizing: border-box;
+}
+
+/* Style cho các vạch chia */
+.tick {
+    position: absolute;
+    left: 50%; /* Căn giữa theo chiều ngang ban đầu */
+    background-color: #6c757d; /* Màu mặc định cho vạch nhỏ */
+    /* transform-origin xác định tâm xoay của vạch.
+       Giá trị Y (115px) là khoảng cách từ đỉnh của vạch đến tâm của vòng xoay.
+       Bán kính nội dung của rotaryDialTrack là (250px/2) - 5px (border) = 120px.
+       Nếu vạch bắt đầu cách mép trong 5px (top: 5px), thì tâm xoay Y là 120px - 5px = 115px.
+    */
+}
+
+.large-tick {
+    width: 3px;  /* Độ dày vạch lớn */
+    height: 15px; /* Chiều dài vạch lớn */
+    top: 5px;     /* Khoảng cách từ mép trong cùng của track (tính cả border) */
+    background-color: #adb5bd; /* Màu cho vạch lớn */
+    transform-origin: 50% 115px; /* Tâm xoay cho vạch lớn */
+}
+
+.small-tick {
+    width: 2px;  /* Độ dày vạch nhỏ */
+    height: 8px;  /* Chiều dài vạch nhỏ */
+    top: 5px;     /* Căn thẳng hàng với mép ngoài của vạch lớn */
+    background-color: #6c757d; /* Màu cho vạch nhỏ */
+    transform-origin: 50% 115px; /* Tâm xoay cho vạch nhỏ */
 }
 
 .rotary-knob {
