@@ -1,0 +1,9 @@
+export const SCHEDULER_RUN_INTERVAL_MS = 25.0
+export const AUDIO_SCHEDULE_LOOKAHEAD_SECONDS = 0.1
+export const DEGREES_PER_BPM_VISUAL = 1.2
+export const SENSITIVITY_FACTOR = 3 // Độ nhạy của vòng xoay BPM
+export const TICK_INITIAL_TOP_OFFSET = 5 // px
+export const TICK_LARGE_WIDTH = 3 // px
+export const TICK_LARGE_HEIGHT = 15 // px
+export const TICK_SMALL_WIDTH = 2 // px
+export const TICK_SMALL_HEIGHT = 8 // px
