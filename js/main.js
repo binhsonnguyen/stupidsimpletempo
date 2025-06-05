@@ -1,5 +1,5 @@
 // js/main.js
-
+import { APP_VERSION } from './.version.js';
 import * as state from './state.js'
 import * as dom from './domElements.js'
 import * as audio from './audio.js'
@@ -19,6 +19,16 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     if (initializeDialControls) {
         initializeDialControls()
+    }
+
+    const appVersionElement = document.getElementById('appVersion');
+    if (appVersionElement) {
+        if (typeof APP_VERSION !== 'undefined') {
+            appVersionElement.textContent = APP_VERSION; // Sử dụng biến đã import
+        } else {
+            appVersionElement.textContent = 'N/A';
+            console.warn('APP_VERSION is undefined. Check generate-version.js script and import in main.js.');
+        }
     }
 
     // Hàm xử lý chính khi người dùng tương tác với nút Start/Stop
