@@ -1,84 +1,29 @@
 body {
-    font-family: sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f0f0f0;
-    margin: 0;
-    color: #333;
+    /* Không cần style body nhiều vì Bootstrap đã xử lý font và bg-light được thêm vào body class */
 }
 
-.metronome {
-    background-color: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-h1 {
-    color: #2c3e50;
-    margin-bottom: 20px;
-}
-
-.controls, .settings {
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-}
-
-label {
-    font-size: 1.1em;
-}
-
-input[type="number"], select {
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    width: 70px;
-    font-size: 1em;
-    text-align: center;
-}
-
-#bpm-display {
-    font-size: 1.1em;
-    font-weight: bold;
-    min-width: 30px;
-    display: inline-block;
-}
-
-button {
-    padding: 12px 25px;
-    font-size: 1.2em;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-bottom: 20px;
-}
-
-button:hover {
-    background-color: #2980b9;
-}
-
+/* Giữ lại style cho visual-beat vì nó có hiệu ứng đặc thù */
 .visual-beat {
     width: 50px;
     height: 50px;
-    background-color: #bdc3c7;
-    border-radius: 50%;
-    margin: 20px auto;
-    transition: background-color 0.05s ease-out;
+    background-color: #6c757d; /* Màu xám mặc định của Bootstrap (secondary) */
+    border-radius: 50%; /* Bootstrap có class rounded-circle nhưng để đây cho dễ quản lý transition */
+    /* margin: 20px auto; đã dùng mx-auto của Bootstrap */
+    transition: background-color 0.05s ease-out, transform 0.05s ease-out;
+    transform: scale(1);
 }
 
 .visual-beat.active {
-    background-color: #e74c3c; /* Màu khi nhịp đập */
+    background-color: #dc3545; /* Màu đỏ của Bootstrap (danger) */
+    transform: scale(1.1);
 }
 
 .visual-beat.accent {
-    background-color: #2ecc71; /* Màu cho phách mạnh */
+    background-color: #198754; /* Màu xanh lá của Bootstrap (success) */
+    transform: scale(1.15);
+}
+
+/* Có thể thêm một chút style tùy chỉnh nếu cần */
+#bpm {
+    font-weight: bold;
 }
