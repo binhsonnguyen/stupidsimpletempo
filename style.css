@@ -29,13 +29,21 @@ body {
 
 .rotary-knob {
     position: absolute;
-    width: 15px;
-    height: 15px;
-    background-color: #007bff;
-    border-radius: 50%;
-    top: -7.5px;
+    width: 0;
+    height: 0;
+
+    /* Đáy của tam giác đều sẽ là 15px (7.5px + 7.5px) */
+    border-left: 7.5px solid transparent;
+    border-right: 7.5px solid transparent;
+
+    /* Chiều cao của tam giác đều với đáy 15px là khoảng 13px. Đổi màu thành đỏ. */
+    /* border-top: 15px solid #007bff; /* Dòng cũ */
+    border-top: 13px solid #FF0000;    /* Cập nhật chiều cao và màu đỏ */
+
+    /* Giữ nguyên giá trị top để độ "lồi ra" tương tự như bạn đã ưng ý */
+    top: -7px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%); /* Căn giữa theo chiều ngang */
 }
 
 .start-stop-button {
