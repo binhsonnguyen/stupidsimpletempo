@@ -2,3 +2,5 @@
 *.iml
 node_modules
 firebase-debug.log
+public
+.parcel-cache
