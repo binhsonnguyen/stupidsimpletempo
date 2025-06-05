@@ -1,6 +1,8 @@
-export let currentBpm = 120
-export const minBpm = 20
-export const maxBpm = 300
+import { MIN_SCALE_BPM, MAX_SCALE_BPM } from './config.js' // Import các hằng số cần thiết
+
+export let currentBpm = MIN_SCALE_BPM
+export const minBpm = MIN_SCALE_BPM
+export const maxBpm = MAX_SCALE_BPM
 export let isMetronomeRunning = false
 
 export let currentDialRotation = 0 // Góc xoay vật lý của dial
