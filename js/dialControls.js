@@ -1,10 +1,12 @@
+// js/dialControls.js
+
 import * as dom from './domElements.js'
 import * as state from './state.js'
 import * as ui from './ui.js'
 import * as config from './config.js'
 
 let isDraggingDial = false
-let previousPointerAngle = 0 // Đã đổi tên từ previousAngle để rõ nghĩa hơn
+let previousPointerAngle = 0
 
 function getAngleFromEvent(clientX, clientY) {
     const rect = dom.rotaryDialContainerElement.getBoundingClientRect()
@@ -12,50 +14,50 @@ function getAngleFromEvent(clientX, clientY) {
     const centerY = rect.top + rect.height / 2
 
     const dx = clientX - centerX
-    const dyInverted = centerY - clientY // Trục Y dương hướng lên từ tâm
+    const dyInverted = centerY - clientY
 
     let angleDeg = Math.atan2(dx, dyInverted) * 180 / Math.PI
-
     if (angleDeg < 0) {
-        angleDeg += 360 // Chuẩn hóa về 0-359 độ
+        angleDeg += 360
     }
     return angleDeg
 }
 
 function updateBpmFromDialAngle() {
-    const angleOnDial = state.effectiveKnobAngleOnDialScale // Sử dụng giá trị từ state
-
+    const angleOnDial = state.effectiveKnobAngleOnDialScale
     let newBpmCandidate
     const roundedAngle = Math.round(angleOnDial)
 
     const angle0Mark = config.ANGLE_FOR_0_BPM_MARK
-    const angle40Mark = config.ANGLE_FOR_40_BPM_MARK
-    const angle200Mark = config.ANGLE_FOR_200_BPM_MARK
+    const angleMinBpmMark = config.ANGLE_FOR_MIN_SCALE_BPM_MARK
+    const angleMaxBpmMark = config.ANGLE_FOR_MAX_SCALE_BPM_MARK
 
-    const bpmAt40 = config.BPM_VALUE_AT_40_DEG_MARK
-    const bpmAt200 = config.BPM_VALUE_AT_200_DEG_MARK
+    const bpmAtMinScale = config.MIN_SCALE_BPM
+    const bpmAtMaxScale = config.MAX_SCALE_BPM
 
     if (roundedAngle === angle0Mark || (roundedAngle === 360 && angle0Mark === 0)) {
-        return
-    } else if (angleOnDial > angle0Mark && angleOnDial < angle40Mark) {
-        newBpmCandidate = bpmAt40
-    } else if (angleOnDial > angle200Mark && angleOnDial < 360) {
-        newBpmCandidate = bpmAt200
-    } else {
-        const bpmScaleStartValue = bpmAt40
-        const bpmScaleEndValue = bpmAt200
-        const angleScaleStartValue = angle40Mark
-        const angleScaleEndValue = angle200Mark
+        return // Không thay đổi BPM tại mốc "0"
+    } else if (
+        (angleOnDial > angle0Mark && angleOnDial < angleMinBpmMark)
+    ) {
+        newBpmCandidate = bpmAtMinScale
+    } else if (angleOnDial >= angleMinBpmMark && angleOnDial <= angleMaxBpmMark) {
+        const bpmScaleRangeValue = bpmAtMaxScale - bpmAtMinScale
+        const angleScaleRangeValue = angleMaxBpmMark - angleMinBpmMark
 
-        if (angleScaleEndValue === angleScaleStartValue) {
-            newBpmCandidate = bpmScaleStartValue
+        if (angleScaleRangeValue === 0) {
+            newBpmCandidate = bpmAtMinScale
+        } else if (bpmScaleRangeValue === 0) {
+            newBpmCandidate = bpmAtMinScale
         } else {
-            const percentageInAngleRange = (angleOnDial - angleScaleStartValue) / (angleScaleEndValue - angleScaleStartValue)
-            let calculatedBpm = bpmScaleStartValue + percentageInAngleRange * (bpmScaleEndValue - bpmScaleStartValue)
+            const percentageInAngleRange = (angleOnDial - angleMinBpmMark) / angleScaleRangeValue
+            let calculatedBpm = bpmAtMinScale + percentageInAngleRange * bpmScaleRangeValue
             newBpmCandidate = Math.round(calculatedBpm)
         }
 
-        newBpmCandidate = Math.max(bpmScaleStartValue, Math.min(bpmScaleEndValue, newBpmCandidate))
+        newBpmCandidate = Math.max(bpmAtMinScale, Math.min(bpmAtMaxScale, newBpmCandidate))
+    } else {
+        newBpmCandidate = bpmAtMaxScale
     }
 
     console.log('newBpmCandidate:', newBpmCandidate, 'for effectiveKnobAngleOnDialScale:', angleOnDial.toFixed(2))

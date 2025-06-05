@@ -1,5 +1,3 @@
-// js/ui.js
-
 import {
     rotaryDialContainerElement,
     labelLayerElement,
@@ -40,77 +38,95 @@ export function createTickMarks() {
     const layerCenterX = layerWidth / 2
     const layerCenterY = layerHeight / 2
 
-    const trackBorderWidth = 5 // Giả sử border của dialTrackBorderLayer là 5px
-    const radiusContentEquivalent = (layerWidth / 2) - trackBorderWidth // Bán kính tương đương vùng nội dung
+    const trackBorderWidth = 5
+    const radiusContentEquivalent = (layerWidth / 2) - trackBorderWidth
 
     const rotationOriginYForTicks = radiusContentEquivalent - config.TICK_INITIAL_TOP_OFFSET
     const radiusForLabels = radiusContentEquivalent - config.TICK_INITIAL_TOP_OFFSET - config.TICK_LARGE_HEIGHT - 10
 
     const marks = []
 
+    // 1. Thêm vạch và nhãn "0 BPM" (tượng trưng)
     marks.push({
-        bpm: config.BPM_VALUE_AT_0_DEG_MARK,
+        bpm: config.BPM_VALUE_FOR_0_DEG_MARK,
         angle: config.ANGLE_FOR_0_BPM_MARK,
         type: 'large',
         needsLabel: true
     })
+
+    // 2. Thêm vạch và nhãn cho MIN_SCALE_BPM
     marks.push({
-        bpm: config.BPM_VALUE_AT_40_DEG_MARK,
-        angle: config.ANGLE_FOR_40_BPM_MARK,
+        bpm: config.MIN_SCALE_BPM,
+        angle: config.ANGLE_FOR_MIN_SCALE_BPM_MARK,
         type: 'large',
         needsLabel: true
     })
 
-    const bpmScaleStart = config.BPM_VALUE_AT_40_DEG_MARK
-    const bpmScaleEnd = config.BPM_VALUE_AT_200_DEG_MARK
-    const angleScaleStart = config.ANGLE_FOR_40_BPM_MARK
-    const angleScaleEnd = config.ANGLE_FOR_200_BPM_MARK
-
-    const bpmRange = bpmScaleEnd - bpmScaleStart
-    const angleRange = angleScaleEnd - angleScaleStart
+    // 3. Tính toán và thêm các vạch/nhãn trung gian giữa MIN_SCALE_BPM và MAX_SCALE_BPM
+    const bpmScaleRange = config.MAX_SCALE_BPM - config.MIN_SCALE_BPM
+    const angleScaleRange = config.ANGLE_FOR_MAX_SCALE_BPM_MARK - config.ANGLE_FOR_MIN_SCALE_BPM_MARK
     let effectiveDegreesPerBpmOnScale = 0
-    if (bpmRange !== 0) {
-        effectiveDegreesPerBpmOnScale = angleRange / bpmRange
-    }
 
-    for (let bpmValue = bpmScaleStart + 5; bpmValue < bpmScaleEnd; bpmValue += 5) {
-        const angle = angleScaleStart + (bpmValue - bpmScaleStart) * effectiveDegreesPerBpmOnScale
-        const isLargeTick = (bpmValue % 10 === 0)
-        const type = isLargeTick ? 'large' : 'small'
-        const needsLabelForRange = isLargeTick && bpmValue >= 60 && (bpmValue % 20 === 0)
-        marks.push({ bpm: bpmValue, angle: angle, type: type, needsLabel: needsLabelForRange })
-    }
-
-    marks.push({
-        bpm: config.BPM_VALUE_AT_200_DEG_MARK,
-        angle: config.ANGLE_FOR_200_BPM_MARK,
-        type: 'large',
-        needsLabel: true
-    })
-
-    // --- PHẦN DEBUG (Nếu bạn vẫn muốn giữ lại) ---
-    console.log('Kích thước Container (W, H):', layerWidth, layerHeight)
-    console.log('Tọa độ tâm Container (X, Y):', layerCenterX, layerCenterY)
-    const centerDot = document.createElement('div')
-    centerDot.id = 'debugCenterDot'
-    centerDot.style.position = 'absolute'
-    centerDot.style.width = '1px'
-    centerDot.style.height = '1px'
-    centerDot.style.backgroundColor = 'lime'
-    if (isNaN(layerCenterX) || isNaN(layerCenterY) || layerWidth === 0) {
-        console.error('Lỗi tính toán tâm Container!')
-        centerDot.style.left = '10px'
-        centerDot.style.top = '10px'
+    if (bpmScaleRange > 0 && angleScaleRange !== 0) { // Đảm bảo khoảng hợp lệ để nội suy
+        effectiveDegreesPerBpmOnScale = angleScaleRange / bpmScaleRange
+    } else if (bpmScaleRange === 0 && angleScaleRange === 0) {
+        // MIN và MAX là cùng một điểm, không cần vạch trung gian
     } else {
-        centerDot.style.left = `${layerCenterX}px`
-        centerDot.style.top = `${layerCenterY}px`
+        console.warn("Kiểm tra lại cấu hình thang đo BPM trong config.js (khoảng BPM hoặc khoảng góc có vấn đề).")
     }
-    centerDot.style.zIndex = '9999'
-    if (rotaryDialContainerElement) {
-        rotaryDialContainerElement.appendChild(centerDot)
+
+    if (bpmScaleRange > 0 && effectiveDegreesPerBpmOnScale !== 0) { // Chỉ vẽ vạch trung gian nếu có khoảng và có tỷ lệ hợp lệ
+        // Vòng lặp từ điểm 5 BPM đầu tiên SAU MIN_SCALE_BPM, cho đến điểm 5 BPM cuối cùng TRƯỚC MAX_SCALE_BPM
+        for (let bpmValue = config.MIN_SCALE_BPM + 5; bpmValue < config.MAX_SCALE_BPM; bpmValue += 5) {
+            const angle = config.ANGLE_FOR_MIN_SCALE_BPM_MARK +
+                (bpmValue - config.MIN_SCALE_BPM) * effectiveDegreesPerBpmOnScale
+
+            const isLargeTick = (bpmValue % 10 === 0)
+            const type = isLargeTick ? 'large' : 'small'
+
+            // Các nhãn cho 60, 80, ... nhưng không trùng với MIN hoặc MAX đã được gán nhãn
+            const needsLabelForIntermediate = isLargeTick &&
+                bpmValue >= 60 &&
+                (bpmValue % 20 === 0)
+            // Không cần kiểm tra !== MIN/MAX vì vòng lặp đã loại trừ chúng
+
+            marks.push({ bpm: bpmValue, angle: angle, type: type, needsLabel: needsLabelForIntermediate })
+        }
     }
-    console.log('Đã thêm debugCenterDot (1px) vào DOM (con của container).')
-    // --- KẾT THÚC PHẦN DEBUG ---
+
+    // 4. Thêm vạch và nhãn cho MAX_SCALE_BPM (chỉ khi nó khác MIN_SCALE_BPM)
+    if (config.MAX_SCALE_BPM !== config.MIN_SCALE_BPM || config.ANGLE_FOR_MAX_SCALE_BPM_MARK !== config.ANGLE_FOR_MIN_SCALE_BPM_MARK) {
+        marks.push({
+            bpm: config.MAX_SCALE_BPM,
+            angle: config.ANGLE_FOR_MAX_SCALE_BPM_MARK,
+            type: 'large',
+            needsLabel: true
+        })
+    }
+
+    // --- PHẦN DEBUG DOT (Giữ lại nếu bạn vẫn cần) ---
+    // console.log('Kích thước Container (W, H):', layerWidth, layerHeight)
+    // console.log('Tọa độ tâm Container (X, Y):', layerCenterX, layerCenterY)
+    // const centerDot = document.createElement('div')
+    // centerDot.id = 'debugCenterDot'
+    // centerDot.style.position = 'absolute'
+    // centerDot.style.width = '1px'
+    // centerDot.style.height = '1px'
+    // centerDot.style.backgroundColor = 'lime'
+    // if (isNaN(layerCenterX) || isNaN(layerCenterY) || layerWidth === 0) {
+    //     console.error('Lỗi tính toán tâm Container!')
+    //     centerDot.style.left = '10px'
+    //     centerDot.style.top = '10px'
+    // } else {
+    //     centerDot.style.left = `${layerCenterX}px`
+    //     centerDot.style.top = `${layerCenterY}px`
+    // }
+    // centerDot.style.zIndex = '9999'
+    // if (rotaryDialContainerElement) {
+    //     rotaryDialContainerElement.appendChild(centerDot)
+    // }
+    // console.log('Đã thêm debugCenterDot (1px) vào DOM (con của container).')
+    // --- KẾT THÚC PHẦN DEBUG DOT ---
 
     marks.forEach(markInfo => {
         const tickElement = document.createElement('div')
