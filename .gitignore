@@ -2,5 +2,7 @@
 *.iml
 node_modules
 firebase-debug.log
+dev_dist
 public
 .parcel-cache
+.firebase
