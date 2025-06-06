@@ -1,6 +1,5 @@
 let isDraggingDial = false
 let previousPointerAngle = 0
-
 let dependencies = {}
 
 function getAngleFromEvent(clientX, clientY) {
