@@ -1,3 +1,5 @@
+import { logger } from '../infrastructure/logger.js'
+
 let view
 let metronome
 let state
@@ -9,10 +11,12 @@ export function initializePresenter(dependencies) {
 }
 
 export function renderApp() {
-    if (!view) return
+    if (!view || !metronome || !state) return
 
     view.setButtonState(metronome.isRunning)
     view.updateDialVisual(state.currentDialRotation)
+
+    logger.log(`BPM: ${metronome.bpm} | Running: ${metronome.isRunning} | Dial Angle: ${state.currentDialRotation.toFixed(1)}`)
 }
 
 export function renderInitialUi(appVersion) {
