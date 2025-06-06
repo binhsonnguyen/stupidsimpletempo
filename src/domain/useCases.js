@@ -2,7 +2,9 @@ export function toggleMetronome(metronome, audioService, wakeLockService) {
     metronome.toggle()
 
     if (metronome.isRunning) {
-        audioService.start(metronome.bpm)
+        const getBpm = () => metronome.bpm
+        const isRunning = () => metronome.isRunning
+        audioService.start(getBpm, isRunning)
         wakeLockService.request()
     } else {
         audioService.stop()
