@@ -1,6 +1,6 @@
 {
   "name": "Stupid Simple Tempo",
-  "short_name": "The Tempo",
+  "short_name": "Tempo",
   "description": "A minimalism web-based metronome.",
   "start_url": "/",
   "display": "standalone",
