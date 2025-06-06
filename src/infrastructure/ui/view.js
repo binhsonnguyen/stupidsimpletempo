@@ -1,5 +1,3 @@
-// src/infrastructure/ui/view.js
-
 import {
     rotaryDialContainerElement,
     labelLayerElement,

@@ -1,5 +1,3 @@
-// src/infrastructure/audio/audioService.js
-
 import * as config from '../config.js'
 
 let audioContextInstance
