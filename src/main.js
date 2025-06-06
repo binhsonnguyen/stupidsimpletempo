@@ -1,13 +1,13 @@
+import { APP_VERSION } from './version.js'
+import * as state from './application/state.js'
+import * as dom from './infrastructure/ui/domElements.js'
+import * as audioService from './infrastructure/audio/audioService.js'
+import * as view from './infrastructure/ui/view.js'
+import * as presenter from './application/presenter.js'
+import { initializeController } from './application/controller.js'
 import { Metronome } from './domain/metronome.js'
 import * as useCases from './domain/useCases.js'
-import * as state from './application/state.js'
-import { initializeController } from './application/controller.js'
-import * as presenter from './application/presenter.js'
 import * as config from './infrastructure/config.js'
-import * as dom from './infrastructure/ui/domElements.js'
-import * as view from './infrastructure/ui/view.js'
-import * as audioService from './infrastructure/audio/audioService.js'
-import { APP_VERSION } from './version.js'
 
 const metronome = new Metronome({
     initialBpm: config.MIN_SCALE_BPM,
@@ -50,11 +50,49 @@ const dependencies = {
 }
 
 presenter.initializePresenter(dependencies)
-initializeController(dependencies)
 
 window.addEventListener('DOMContentLoaded', () => {
-    audioService.initializeAudioContext()
-    presenter.renderInitialUi(APP_VERSION, state.currentDialRotation)
+    view.createTickMarks()
+    view.displayAppVersion(APP_VERSION)
+    view.updateDialVisual(state.currentDialRotation)
+    view.setButtonState('loading')
+
+    const audioReadyPromise = new Promise((resolve, reject) => {
+        if (!audioService.initializeAudioContext()) {
+            return reject(new Error("AudioContext không được hỗ trợ."))
+        }
+
+        const audioCtx = audioService.getAudioContext() // Sửa lại tên hàm chính xác
+
+        if (audioCtx.state === 'running') {
+            return resolve()
+        }
+
+        const unlockHandler = () => {
+            audioCtx.resume()
+                .then(() => resolve())
+                .catch(err => reject(err))
+                .finally(() => {
+                    document.body.removeEventListener('touchstart', unlockHandler, true)
+                    document.body.removeEventListener('click', unlockHandler, true)
+                })
+        }
+
+        document.body.addEventListener('touchstart', unlockHandler, { once: true, capture: true })
+        document.body.addEventListener('click', unlockHandler, { once: true, capture: true })
+    })
+
+    audioReadyPromise.then(() => {
+        initializeController(dependencies)
+        view.setButtonState(state.isMetronomeRunning)
+    }).catch(err => {
+        console.error("Không thể làm cho audio sẵn sàng:", err)
+        if(dom.startStopButtonElement) {
+            dom.startStopButtonElement.classList.remove('loading')
+            dom.startStopButtonElement.classList.add('error')
+            dom.startStopButtonElement.style.cursor = 'not-allowed'
+        }
+    })
 
     document.addEventListener('visibilitychange', () => {
         if (metronome.isRunning && document.visibilityState === 'visible') {

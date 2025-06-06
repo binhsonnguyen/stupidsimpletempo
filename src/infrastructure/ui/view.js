@@ -4,7 +4,8 @@ import {
     tickMarkLayerElement,
     dialTrackBorderLayerElement,
     startStopButtonElement,
-    appVersionElement
+    appVersionElement,
+    arcLayerElement
 } from './domElements.js'
 import * as config from '../config.js'
 
@@ -19,16 +20,21 @@ export function updateDialVisual(rotationAngle) {
     if (dialTrackBorderLayerElement) {
         dialTrackBorderLayerElement.style.transform = transformValue
     }
+    if (arcLayerElement) {
+        arcLayerElement.style.transform = transformValue
+    }
 }
 
-export function setButtonState(isRunning) {
+export function setButtonState(state) {
     if (!startStopButtonElement) return
 
-    if (isRunning) {
-        startStopButtonElement.classList.remove('off')
+    startStopButtonElement.classList.remove('on', 'off', 'loading')
+
+    if (state === 'loading') {
+        startStopButtonElement.classList.add('loading')
+    } else if (state === true) {
         startStopButtonElement.classList.add('on')
     } else {
-        startStopButtonElement.classList.remove('on')
         startStopButtonElement.classList.add('off')
     }
 }
