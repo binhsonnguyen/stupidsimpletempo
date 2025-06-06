@@ -1,5 +1,4 @@
-// js/main.js
-import { APP_VERSION } from './.version.js';
+import { APP_VERSION } from './version.js';
 import * as state from './state.js'
 import * as dom from './domElements.js'
 import * as audio from './audio.js'
