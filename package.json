@@ -1,6 +1,6 @@
 {
   "name": "stupidsimpletempo",
-  "version": "1.0.20",
+  "version": "1.0.26",
   "scripts": {
     "generate-version": "node generate-version.js",
     "dev": "npm run generate-version && parcel src/index.html --dist-dir dev_dist",
@@ -11,6 +11,8 @@
   "license": "ISC",
   "description": "Stupid Simple Tempo",
   "devDependencies": {
+    "@parcel/packager-raw-url": "^2.15.2",
+    "@parcel/transformer-webmanifest": "^2.15.2",
     "live-server": "^1.2.2",
     "parcel": "^2.15.2",
     "process": "^0.11.10"
