@@ -6,4 +6,4 @@ dev_dist
 public
 .parcel-cache
 .firebase
-js/version.js
+src/version.js
