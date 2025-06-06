@@ -7,31 +7,32 @@ import * as ui from './ui.js'
 import { initializeDialControls } from './dialControls.js'
 
 window.addEventListener('DOMContentLoaded', () => {
-    // Khởi tạo giao diện ban đầu
-    if (ui.updateDialVisual) { // Kiểm tra hàm tồn tại trước khi gọi
+    // --- Giai đoạn 1: Thiết lập trạng thái "Đang tải" ngay lập tức ---
+    if (dom.startStopButtonElement) {
+        dom.startStopButtonElement.classList.add('loading')
+    }
+
+    // --- Giai đoạn 2: Chạy các tác vụ khởi tạo (có thể mất thời gian) ---
+    // Các hàm này đồng bộ, sẽ chạy lần lượt
+    if (ui.updateDialVisual) {
         ui.updateDialVisual(state.currentDialRotation)
     }
-    if (ui.setButtonState) {
-        ui.setButtonState(state.isMetronomeRunning)
-    }
     if (ui.createTickMarks) {
-        ui.createTickMarks()
+        ui.createTickMarks() // Đây là phần có thể gây trễ
     }
     if (initializeDialControls) {
         initializeDialControls()
     }
 
-    const appVersionElement = document.getElementById('appVersion');
-    if (appVersionElement) {
-        if (typeof APP_VERSION !== 'undefined') {
-            appVersionElement.textContent = APP_VERSION; // Sử dụng biến đã import
-        } else {
-            appVersionElement.textContent = 'N/A';
-            console.warn('APP_VERSION is undefined. Check generate-version.js script and import in main.js.');
-        }
+    // --- Giai đoạn 3: Ứng dụng đã sẵn sàng, thiết lập trạng thái cuối cùng ---
+    if (dom.startStopButtonElement) {
+        dom.startStopButtonElement.classList.remove('loading') // Bỏ trạng thái loading
+    }
+    if (ui.setButtonState) {
+        ui.setButtonState(state.isMetronomeRunning) // Đặt trạng thái ban đầu (sẽ là .off - màu xanh lá)
     }
 
-    // Hàm xử lý chính khi người dùng tương tác với nút Start/Stop
+    // --- Giai đoạn 4: Gắn các trình xử lý sự kiện khi ứng dụng đã sẵn sàng ---
     function handleStartStopInteraction() {
         console.log('Sự kiện Start/Stop được kích hoạt')
         if (!audio.initializeAudioContext()) {
@@ -56,20 +57,17 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Hàm thay đổi trạng thái bật/tắt của metronome
     function toggleMetronomeState() {
         if (state.isMetronomeRunning) {
             audio.stopAudio()
         } else {
             audio.startAudio()
         }
-        // Cập nhật trạng thái nút bấm DỰA TRÊN trạng thái thực tế sau hành động
         if (ui.setButtonState) {
             ui.setButtonState(state.isMetronomeRunning)
         }
     }
 
-    // Gắn sự kiện cho nút Start/Stop
     if (dom.startStopButtonElement) {
         dom.startStopButtonElement.addEventListener('click', handleStartStopInteraction)
 

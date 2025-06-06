@@ -93,12 +93,19 @@ body {
 
 }
 
+.start-stop-button.loading {
+    box-shadow: 0 0 15px rgba(108, 117, 125, 0.5); /* Quầng sáng màu xám */
+    cursor: wait; /* Con trỏ chuột hình đồng hồ cát, báo hiệu đang bận */
+}
+
 .start-stop-button.off {
     box-shadow: 0 0 15px rgba(40, 167, 69, 0.7);
+    cursor: pointer; /* Đảm bảo con trỏ đúng khi đã sẵn sàng */
 }
 
 .start-stop-button.on {
     box-shadow: 0 0 15px rgba(220, 53, 69, 0.7);
+    cursor: pointer; /* Đảm bảo con trỏ đúng khi đang chạy */
 }
 
 .tick {
