@@ -116,7 +116,7 @@ function playClickSound(timeToPlay) {
         const gainParam = gain.gain
 
         // --- Các tham số cho đường bao âm lượng ---
-        const initialVolume = config.INITIAL_AUDIO_GAIN // Âm lượng ban đầu (60%)
+        const initialVolume = INITIAL_AUDIO_GAIN // Âm lượng ban đầu (60%)
         const soundDuration = 0.05 // Tổng thời gian của tiếng beat (giây)
         const sustainDuration = soundDuration / 3 // Thời gian của giai đoạn Sustain (1/3 đầu)
         const decayEndTime = timeToPlay + soundDuration // Thời điểm kết thúc hoàn toàn
@@ -142,7 +142,7 @@ function playClickSound(timeToPlay) {
         gainParam.exponentialRampToValueAtTime(endVolume, decayEndTime)
 
         // --- Cấu hình và kết nối các node ---
-        osc.type = config.BEAT_OSCILLATOR_TYPE
+        osc.type = BEAT_OSCILLATOR_TYPE
         const frequency = noteToFreq(config.BEAT_NOTE)
         osc.frequency.setValueAtTime(frequency, timeToPlay)
 
