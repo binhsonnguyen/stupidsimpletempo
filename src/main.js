@@ -11,8 +11,8 @@ import { APP_VERSION } from './version.js'
 
 const metronome = new Metronome({
     initialBpm: config.MIN_SCALE_BPM,
-    minBpm: state.minBpm,
-    maxBpm: state.maxBpm
+    minBpm: config.MIN_SCALE_BPM,
+    maxBpm: config.MAX_SCALE_BPM
 })
 
 const wakeLockService = {

@@ -69,7 +69,7 @@ function handleStartStopInteraction(event) {
         event.stopPropagation()
     }
 
-    const audioCtx = dependencies.audioService.getContext()
+    const audioCtx = dependencies.audioService.getAudioContext()
 
     const performToggle = () => {
         dependencies.useCases.toggleMetronome(
