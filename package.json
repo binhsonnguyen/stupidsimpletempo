@@ -1,6 +1,6 @@
 {
   "name": "stupidsimpletempo",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "scripts": {
     "generate-version": "node generate-version.js",
     "dev": "npm run generate-version && parcel index.html --dist-dir dev_dist",
