@@ -35,7 +35,7 @@ window.addEventListener('DOMContentLoaded', () => {
         if (ui.updateDialVisual) ui.updateDialVisual(state.currentDialRotation)
         if (ui.createTickMarks) ui.createTickMarks()
         if (initializeDialControls) initializeDialControls()
-        console.log('Đã hoàn thành khởi tạo giao diện (vạch, nhãn).')
+        if (ui.displayAppVersion) ui.displayAppVersion(APP_VERSION)
     }, 0)
 
 

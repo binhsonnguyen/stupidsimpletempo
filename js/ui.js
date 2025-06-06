@@ -3,7 +3,8 @@ import {
     labelLayerElement,
     tickMarkLayerElement,
     dialTrackBorderLayerElement,
-    startStopButtonElement
+    startStopButtonElement,
+    appVersionElement
 } from './domElements.js'
 import * as config from './config.js'
 
@@ -171,4 +172,17 @@ export function createTickMarks() {
             }
         }
     })
+}
+
+export function displayAppVersion(version) {
+    if (appVersionElement) {
+        if (typeof version !== 'undefined' && version) {
+            appVersionElement.textContent = version
+        } else {
+            appVersionElement.textContent = 'N/A'
+            console.warn('displayAppVersion nhận được phiên bản không xác định hoặc rỗng.')
+        }
+    } else {
+        console.error('Không tìm thấy phần tử appVersionElement trong DOM.')
+    }
 }

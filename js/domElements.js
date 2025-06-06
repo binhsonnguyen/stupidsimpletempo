@@ -14,3 +14,5 @@ export const dialTrackBorderLayerElement = document.getElementById('dialTrackBor
 // Nếu bạn vẫn dùng ID "rotaryDialTrack" cho một trong các layer mới này (ví dụ dialTrackBorderLayer),
 // thì hãy đảm bảo tên biến tương ứng.
 // Dựa trên HTML mới, chúng ta dùng các ID mới cho các layer.
+
+export const appVersionElement = document.getElementById('appVersion')
