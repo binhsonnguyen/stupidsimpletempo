@@ -17,13 +17,53 @@ window.addEventListener('DOMContentLoaded', () => {
     function toggleMetronomeState() {
         if (state.isMetronomeRunning) {
             audio.stopAudio()
+            releaseWakeLock().then(r => {}) // Giải phóng wake lock khi dừng
         } else {
             audio.startAudio()
+            requestWakeLock().then(r => {}) // Yêu cầu wake lock khi bắt đầu
         }
         if (ui.setButtonState) {
             ui.setButtonState(state.isMetronomeRunning)
         }
     }
+
+    async function requestWakeLock() {
+        if ('wakeLock' in navigator) {
+            try {
+                const sentinel = await navigator.wakeLock.request('screen')
+                state.setWakeLockSentinel(sentinel) // Lưu lại sentinel
+                console.log('Screen Wake Lock đã được kích hoạt.')
+
+                // Lắng nghe khi wake lock bị giải phóng (ví dụ khi tab không hoạt động)
+                sentinel.addEventListener('release', () => {
+                    console.log('Screen Wake Lock đã bị giải phóng.')
+                    // Reset sentinel trong state khi nó bị hệ thống tự giải phóng
+                    if (state.wakeLockSentinel === sentinel) {
+                        state.setWakeLockSentinel(null)
+                    }
+                })
+
+            } catch (err) {
+                console.error(`${err.name}, ${err.message}`)
+            }
+        } else {
+            console.warn('Screen Wake Lock API không được hỗ trợ trên trình duyệt này.')
+        }
+    }
+
+    async function releaseWakeLock() {
+        if (state.wakeLockSentinel) { // Chỉ giải phóng nếu đang có wake lock
+            await state.wakeLockSentinel.release()
+            state.setWakeLockSentinel(null)
+        }
+    }
+
+    document.addEventListener('visibilitychange', async () => {
+        if (state.wakeLockSentinel === null && state.isMetronomeRunning && document.visibilityState === 'visible') {
+            console.log('Lấy lại Screen Wake Lock do quay lại tab.')
+            await requestWakeLock()
+        }
+    })
 
     // --- Giai đoạn 1: Thiết lập trạng thái "Đang tải" và giao diện ban đầu ---
     if (dom.startStopButtonElement) {
