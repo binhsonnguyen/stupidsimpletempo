@@ -7,15 +7,15 @@ export const TICK_LARGE_HEIGHT = 10
 export const TICK_SMALL_WIDTH = 1
 export const TICK_SMALL_HEIGHT = 6
 
-export const MIN_SCALE_BPM = 40 // BPM nhỏ nhất trên thang đo chính của dial
-export const MAX_SCALE_BPM = 200 // BPM lớn nhất trên thang đo chính của dial
+export const MIN_SCALE_BPM = 40
+export const MAX_SCALE_BPM = 200
 
-export const ANGLE_FOR_0_BPM_MARK = 0     // Vạch "0" tượng trưng luôn ở 12 giờ (0 độ)
-export const BPM_VALUE_FOR_0_DEG_MARK = 0  // Giá trị BPM tượng trưng cho nhãn "0"
-export const ANGLE_FOR_MIN_SCALE_BPM_MARK = 12   // Ví dụ: 48 độ từ vạch "0"
-export const ANGLE_FOR_MAX_SCALE_BPM_MARK = 320 // Ví dụ: 240 độ từ vạch "0"
+export const ANGLE_FOR_0_BPM_MARK = 0
+export const BPM_VALUE_FOR_0_DEG_MARK = 0
+export const ANGLE_FOR_MIN_SCALE_BPM_MARK = 12
+export const ANGLE_FOR_MAX_SCALE_BPM_MARK = 320
 
-export const INITIAL_AUDIO_GAIN = 1 // Âm lượng ban đầu (từ 0.0 đến 1.0)
+export const INITIAL_AUDIO_GAIN = 1
 export const BEAT_NOTE = "A6"
 
 // 'sine': flute like
