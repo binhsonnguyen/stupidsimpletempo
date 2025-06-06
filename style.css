@@ -1,5 +1,6 @@
-
 html, body {
+    height: 100%;
+    margin: 0;
     overscroll-behavior: none;
     touch-action: none;
 }
@@ -7,25 +8,42 @@ html, body {
 body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    background-color: #343a40;
+    flex-direction: column; /* Sắp xếp các hàng theo chiều dọc */
+    min-height: 100vh;      /* Đảm bảo body luôn chiếm ít nhất toàn bộ chiều cao màn hình */
+}
+
+.app-header {
+    flex-shrink: 0; /* Ngăn header bị co lại */
+    padding: 15px 0; /* Tạo khoảng trống cho logo, đây là chiều cao "cố định" của hàng */
+    text-align: center; /* Thêm để đảm bảo logo được căn giữa nếu có vấn đề về margin */
+}
+
+.app-logo {
+    display: inline-block;
+    margin: 0 auto;  /* Chỉ cần căn giữa ngang */
+    max-height: 40px; /* Giới hạn chiều cao của logo để kiểm soát chiều cao của header */
+    width: auto;
+    filter: invert(1);
+    mix-blend-mode: screen;
+}
+
+.app-main {
+    flex-grow: 1; /* Đây là chìa khóa: làm cho hàng giữa tự động lấp đầy không gian còn lại */
+    display: flex;
+    justify-content: center; /* Căn giữa dial theo chiều ngang */
+    align-items: center;     /* Căn giữa dial theo chiều dọc */
+    overflow: hidden; /* Ngăn các hiệu ứng lớn tràn ra ngoài nếu có */
 }
 
 .app-credit {
-    position: fixed;
-    bottom: 0;
-    left: 0;
+    flex-shrink: 0; /* Ngăn footer bị co lại */
     width: 100%;
     padding: 10px 0;
     text-align: center;
     font-size: 0.75em;
     color: #6c757d;
-    background-color: rgba(0, 0, 0, 0.1);
-    z-index: 100;
-    pointer-events: none;
+    background-color: rgba(0, 0, 0, 0.1); /* Tùy chọn */
+    /* Không cần position: fixed nữa */
 }
 
 .rotary-dial-container {
