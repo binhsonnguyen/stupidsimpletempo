@@ -1,10 +1,11 @@
+import { GESTURE_DRAG_THRESHOLD_PX } from '../config.js'
+
 let targetElement = null
 let panelElement = null
 
 let isDragging = false
 let dragStartY = 0
 let dragCurrentY = 0
-const DRAG_THRESHOLD = 50 // Ngưỡng vuốt (px)
 
 function getClientY (event) {
     // Hàm tiện ích để lấy tọa độ Y từ cả sự kiện touch và mouse
@@ -47,12 +48,12 @@ function onDragEnd () {
     const dragDeltaY = dragCurrentY - dragStartY
 
     // Vuốt/kéo xuống
-    if (dragDeltaY > DRAG_THRESHOLD) {
+    if (dragDeltaY > GESTURE_DRAG_THRESHOLD_PX) {
         panelElement.classList.add('visible')
     }
 
     // Vuốt/kéo lên
-    if (dragDeltaY < -DRAG_THRESHOLD) {
+    if (dragDeltaY < -GESTURE_DRAG_THRESHOLD_PX) {
         panelElement.classList.remove('visible')
     }
 }

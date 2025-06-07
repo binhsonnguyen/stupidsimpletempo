@@ -8,6 +8,7 @@ export const TICK_LARGE_HEIGHT = 10
 export const TICK_SMALL_WIDTH = 1
 export const TICK_SMALL_HEIGHT = 6
 export const LABEL_OFFSET_FROM_TICK = 4
+export const GESTURE_DRAG_THRESHOLD_PX = 50
 
 export const MIN_SCALE_BPM = 40
 export const MAX_SCALE_BPM = 200

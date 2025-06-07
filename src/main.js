@@ -32,11 +32,15 @@ const dependencies = {
 
 presenter.initializePresenter(dependencies)
 
-// --- Hàm khởi tạo cho phiên bản V1 (đơn giản) ---
-function initializeAppV1() {
+// --- Các hàm khởi tạo dùng chung ---
+
+function initializeSharedUI() {
     view.createTickMarks()
     view.displayAppVersion(APP_VERSION)
     view.updateDialVisual(state.currentDialRotation)
+}
+
+function setupCoreAppLogic() {
     view.setButtonState('loading')
 
     const audioReadyPromise = new Promise((resolve, reject) => {
@@ -92,14 +96,20 @@ function initializeAppV1() {
     })
 }
 
-// --- Hàm khởi tạo cho phiên bản V2 (nâng cao) ---
+// --- Hàm khởi tạo cho từng phiên bản ---
+
+function initializeAppV1() {
+    console.log('Khởi tạo phiên bản đơn giản (V1)...')
+    initializeSharedUI()
+    setupCoreAppLogic()
+}
+
 function initializeAppV2() {
     console.log('Khởi tạo phiên bản nâng cao (V2)...')
+    initializeSharedUI()
+    setupCoreAppLogic() // V2 vẫn cần logic cốt lõi của máy đếm nhịp
 
-    // Khởi tạo các thành phần cơ bản từ V1
-    initializeAppV1()
-
-    // Khởi tạo panel và cử chỉ vuốt
+    // Logic riêng của V2: khởi tạo panel và cử chỉ vuốt
     if (dom.mainAppElement && dom.advancedPanelElement) {
         initializeSwipePanel({
             targetElement: dom.mainAppElement,
@@ -113,7 +123,6 @@ function initializeAppV2() {
 window.addEventListener('DOMContentLoaded', () => {
     const path = window.location.pathname
 
-    // Dùng startsWith để linh hoạt hơn (chấp nhận /v2 và /v2/)
     if (path.startsWith('/v2')) {
         initializeAppV2()
     } else {
