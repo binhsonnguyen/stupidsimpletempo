@@ -4,43 +4,57 @@ let panelElement = null
 let isDragging = false
 let dragStartY = 0
 let dragCurrentY = 0
-const DRAG_THRESHOLD = 50 // Ngưỡng vuốt (px), phải vuốt dài hơn giá trị này
+const DRAG_THRESHOLD = 50 // Ngưỡng vuốt (px)
 
-function onTouchStart (event) {
-    // Chỉ theo dõi khi có 1 ngón tay chạm
-    if (event.touches.length !== 1) {
-        isDragging = false
-        return
-    }
+function getClientY (event) {
+    // Hàm tiện ích để lấy tọa độ Y từ cả sự kiện touch và mouse
+    return event.touches ? event.touches[0].clientY : event.clientY
+}
+
+function onDragStart (event) {
+    // Chỉ xử lý khi nhấn chuột trái
+    if (event.type === 'mousedown' && event.button !== 0) return
+
+    // Ngăn các hành vi mặc định của trình duyệt như chọn văn bản khi kéo chuột
+    event.preventDefault()
+
     isDragging = true
-    dragStartY = event.touches[0].clientY
+    dragStartY = getClientY(event)
     dragCurrentY = dragStartY
+
+    // Thêm các listener vào document để có thể theo dõi cử chỉ ngay cả khi con trỏ ra ngoài
+    document.addEventListener('mousemove', onDragMove)
+    document.addEventListener('touchmove', onDragMove, { passive: true })
+    document.addEventListener('mouseup', onDragEnd)
+    document.addEventListener('touchend', onDragEnd)
 }
 
-function onTouchMove (event) {
-    if (!isDragging || event.touches.length !== 1) return
-    dragCurrentY = event.touches[0].clientY
-}
-
-function onTouchEnd (event) {
+function onDragMove (event) {
     if (!isDragging) return
+    dragCurrentY = getClientY(event)
+}
+
+function onDragEnd () {
+    if (!isDragging) return
+    isDragging = false
+
+    // Gỡ các listener khỏi document để dọn dẹp, tránh rò rỉ bộ nhớ
+    document.removeEventListener('mousemove', onDragMove)
+    document.removeEventListener('touchmove', onDragMove)
+    document.removeEventListener('mouseup', onDragEnd)
+    document.removeEventListener('touchend', onDragEnd)
 
     const dragDeltaY = dragCurrentY - dragStartY
 
-    // Vuốt xuống -> Hiện panel
+    // Vuốt/kéo xuống
     if (dragDeltaY > DRAG_THRESHOLD) {
         panelElement.classList.add('visible')
     }
 
-    // Vuốt lên -> Ẩn panel
+    // Vuốt/kéo lên
     if (dragDeltaY < -DRAG_THRESHOLD) {
         panelElement.classList.remove('visible')
     }
-
-    // Reset lại trạng thái
-    isDragging = false
-    dragStartY = 0
-    dragCurrentY = 0
 }
 
 export function initializeSwipePanel (options) {
@@ -52,7 +66,7 @@ export function initializeSwipePanel (options) {
     targetElement = options.targetElement
     panelElement = options.panelElement
 
-    targetElement.addEventListener('touchstart', onTouchStart, { passive: true })
-    targetElement.addEventListener('touchmove', onTouchMove, { passive: true })
-    targetElement.addEventListener('touchend', onTouchEnd)
+    // Thêm listener cho cả sự kiện mousedown và touchstart trên phần tử mục tiêu
+    targetElement.addEventListener('mousedown', onDragStart)
+    targetElement.addEventListener('touchstart', onDragStart, { passive: false })
 }
