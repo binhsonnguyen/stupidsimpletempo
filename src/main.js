@@ -97,7 +97,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register(new URL('sw.js', import.meta.url))
-                .then(registration => {
+                .then(() => {
                     console.log('Service Worker đã được đăng ký thành công.')
                 })
                 .catch(error => {
@@ -108,7 +108,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('visibilitychange', () => {
         if (metronome.isRunning && document.visibilityState === 'visible') {
-            wakeLockService.request()
+            wakeLockService.request().then(() => {})
         }
     })
 })
