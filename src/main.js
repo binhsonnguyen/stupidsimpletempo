@@ -52,48 +52,32 @@ const dependencies = {
 presenter.initializePresenter(dependencies)
 
 window.addEventListener('DOMContentLoaded', () => {
+    // --- 1. Thiết lập giao diện ban đầu ---
     view.createTickMarks()
     view.displayAppVersion(APP_VERSION)
     view.updateDialVisual(state.currentDialRotation)
-    view.setButtonState('loading')
 
-    const audioReadyPromise = new Promise((resolve, reject) => {
-        if (!audioService.initializeAudioContext()) {
-            return reject(new Error("AudioContext không được hỗ trợ."))
-        }
+    // --- 2. Khởi tạo các dịch vụ cốt lõi ---
+    const isAudioSupported = audioService.initializeAudioContext()
 
-        const audioCtx = audioService.getAudioContext() // Sửa lại tên hàm chính xác
-
-        if (audioCtx.state === 'running') {
-            return resolve()
-        }
-
-        const unlockHandler = () => {
-            audioCtx.resume()
-                .then(() => resolve())
-                .catch(err => reject(err))
-                .finally(() => {
-                    document.body.removeEventListener('touchstart', unlockHandler, true)
-                    document.body.removeEventListener('click', unlockHandler, true)
-                })
-        }
-
-        document.body.addEventListener('touchstart', unlockHandler, { once: true, capture: true })
-        document.body.addEventListener('click', unlockHandler, { once: true, capture: true })
-    })
-
-    audioReadyPromise.then(() => {
-        initializeController(dependencies)
-        view.setButtonState(state.isMetronomeRunning)
-    }).catch(err => {
-        console.error("Không thể làm cho audio sẵn sàng:", err)
-        if(dom.startStopButtonElement) {
-            dom.startStopButtonElement.classList.remove('loading')
+    if (!isAudioSupported) {
+        console.error("AudioContext không được hỗ trợ trên trình duyệt này.")
+        if (dom.startStopButtonElement) {
             dom.startStopButtonElement.classList.add('error')
             dom.startStopButtonElement.style.cursor = 'not-allowed'
         }
-    })
+        return // Dừng khởi tạo nếu không có audio
+    }
 
+    // --- 3. Thiết lập trạng thái và Controller ---
+    // Thay vì 'loading', đặt nút về trạng thái ban đầu thực sự của nó ('off')
+    view.setButtonState(metronome.isRunning)
+
+    // Khởi tạo controller ngay lập tức.
+    // Controller đã đủ thông minh để xử lý việc kích hoạt AudioContext khi người dùng nhấn nút lần đầu.
+    initializeController(dependencies)
+
+    // --- 4. Đăng ký PWA & xử lý chạy nền ---
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register(new URL('sw.js', import.meta.url))
@@ -108,7 +92,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('visibilitychange', () => {
         if (metronome.isRunning && document.visibilityState === 'visible') {
-            wakeLockService.request()
+            wakeLockService.request().then(r => {})
         }
     })
 })
