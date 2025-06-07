@@ -49,8 +49,8 @@ export function createTickMarks() {
     const layerCenterY = layerHeight / 2
     const trackBorderWidth = 5
     const radiusContentEquivalent = (layerWidth / 2) - trackBorderWidth
-    const rotationOriginYForTicks = radiusContentEquivalent - config.TICK_INITIAL_TOP_OFFSET
-    const radiusForLabels = radiusContentEquivalent - config.TICK_INITIAL_TOP_OFFSET - config.TICK_LARGE_HEIGHT - 10
+    const rotationOriginYForTicks = (layerHeight / 2) - config.TICK_INITIAL_TOP_OFFSET
+    const radiusForLabels = radiusContentEquivalent - config.TICK_INITIAL_TOP_OFFSET - config.TICK_LARGE_HEIGHT - config.LABEL_OFFSET_FROM_TICK
 
     const marks = []
 
