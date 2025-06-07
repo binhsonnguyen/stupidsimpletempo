@@ -8,3 +8,6 @@ export const dialTrackBorderLayerElement = document.getElementById('dialTrackBor
 export const arcLayerElement = document.getElementById('arcLayer')
 
 export const appVersionElement = document.getElementById('appVersion')
+
+export const mainAppElement = document.querySelector('.app-main')
+export const advancedPanelElement = document.getElementById('advancedPanel')
