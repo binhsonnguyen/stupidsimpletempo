@@ -8,34 +8,13 @@ import { initializeController } from './application/controller.js'
 import { Metronome } from './domain/metronome.js'
 import * as useCases from './domain/useCases.js'
 import * as config from './infrastructure/config.js'
+import { wakeLockService } from './infrastructure/services/wakeLockService.js'
 
 const metronome = new Metronome({
     initialBpm: config.MIN_SCALE_BPM,
     minBpm: config.MIN_SCALE_BPM,
     maxBpm: config.MAX_SCALE_BPM
 })
-
-const wakeLockService = {
-    sentinel: null,
-    async request() {
-        if ('wakeLock' in navigator && this.sentinel === null) {
-            try {
-                this.sentinel = await navigator.wakeLock.request('screen')
-                this.sentinel.addEventListener('release', () => {
-                    this.sentinel = null
-                })
-            } catch (err) {
-                console.error(`${err.name}, ${err.message}`)
-            }
-        }
-    },
-    async release() {
-        if (this.sentinel) {
-            await this.sentinel.release()
-            this.sentinel = null
-        }
-    }
-}
 
 const dependencies = {
     metronome,
@@ -119,7 +98,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('visibilitychange', () => {
         if (metronome.isRunning && document.visibilityState === 'visible') {
-            wakeLockService.request().then(() => {})
+            wakeLockService.request().then(r => {})
         }
     })
 })
