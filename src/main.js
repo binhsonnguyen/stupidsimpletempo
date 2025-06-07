@@ -62,15 +62,19 @@ window.addEventListener('DOMContentLoaded', () => {
             return reject(new Error("AudioContext không được hỗ trợ."))
         }
 
-        const audioCtx = audioService.getAudioContext() // Sửa lại tên hàm chính xác
+        const audioCtx = audioService.getAudioContext()
 
         if (audioCtx.state === 'running') {
-            return resolve()
+            return resolve(null) // Resolve với target rỗng nếu audio đã chạy
         }
 
-        const unlockHandler = () => {
+        const unlockHandler = (event) => {
+            // Ngăn các hành vi mặc định có thể gây click ảo trên mobile
+            event.preventDefault()
+            event.stopPropagation()
+
             audioCtx.resume()
-                .then(() => resolve())
+                .then(() => resolve(event.target)) // Truyền "mục tiêu" của sự kiện đi
                 .catch(err => reject(err))
                 .finally(() => {
                     document.body.removeEventListener('touchstart', unlockHandler, true)
@@ -82,12 +86,19 @@ window.addEventListener('DOMContentLoaded', () => {
         document.body.addEventListener('click', unlockHandler, { once: true, capture: true })
     })
 
-    audioReadyPromise.then(() => {
+    audioReadyPromise.then((firstInteractionTarget) => {
         initializeController(dependencies)
-        view.setButtonState(state.isMetronomeRunning)
+
+        // Nếu tương tác đầu tiên là vào nút Start/Stop, hãy bật metronome
+        if (firstInteractionTarget && dom.startStopButtonElement.contains(firstInteractionTarget)) {
+            useCases.toggleMetronome(dependencies.metronome, dependencies.audioService, dependencies.wakeLockService)
+        }
+
+        // Dùng presenter để cập nhật toàn bộ UI theo trạng thái cuối cùng
+        presenter.renderApp()
     }).catch(err => {
         console.error("Không thể làm cho audio sẵn sàng:", err)
-        if(dom.startStopButtonElement) {
+        if (dom.startStopButtonElement) {
             dom.startStopButtonElement.classList.remove('loading')
             dom.startStopButtonElement.classList.add('error')
             dom.startStopButtonElement.style.cursor = 'not-allowed'
