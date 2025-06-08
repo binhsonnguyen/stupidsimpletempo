@@ -2,7 +2,7 @@
 
 // Domain
 import { Metronome } from './domain/metronome.js'
-import * as useCases from './domain/useCases.js'
+import { createUseCases } from './domain/useCases.js'
 
 // Application
 import * as state from './application/state.js'
@@ -26,12 +26,21 @@ const metronome = new Metronome({
     maxBpm: config.MAX_SCALE_BPM
 })
 
+// --- Gọi "nhà máy" để tạo ra các use case ---
+
+const useCases = createUseCases({
+    metronome,
+    audioService,
+    wakeLockService,
+    config
+})
+
 // --- Lắp ráp và export đối tượng dependencies ---
 
 export const dependencies = {
     // Domain
     metronome,
-    useCases,
+    useCases, // Đây là đối tượng useCases mới đã được tiêm phụ thuộc
     // Application
     state,
     presenter,

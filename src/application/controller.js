@@ -2,7 +2,7 @@ let isDraggingDial = false
 let previousPointerAngle = 0
 let dependencies = {}
 
-function getAngleFromEvent(clientX, clientY) {
+function getAngleFromEvent (clientX, clientY) {
     const rect = dependencies.dom.rotaryDialContainerElement.getBoundingClientRect()
     const centerX = rect.left + rect.width / 2
     const centerY = rect.top + rect.height / 2
@@ -17,7 +17,7 @@ function getAngleFromEvent(clientX, clientY) {
     return angleDeg
 }
 
-function handleDialInteractionStart(event) {
+function handleDialInteractionStart (event) {
     if (!dependencies.dom.startStopButtonElement.contains(event.target)) {
         event.preventDefault()
     }
@@ -28,7 +28,7 @@ function handleDialInteractionStart(event) {
     previousPointerAngle = getAngleFromEvent(clientX, clientY)
 }
 
-function handleDialInteractionMove(event) {
+function handleDialInteractionMove (event) {
     if (!isDraggingDial) return
     event.preventDefault()
 
@@ -45,10 +45,9 @@ function handleDialInteractionMove(event) {
     const newRawDialRotation = dependencies.state.currentDialRotation + deltaAngle
     dependencies.state.setCurrentDialRotation(newRawDialRotation)
 
+    // Lời gọi use case đã được đơn giản hóa
     dependencies.useCases.changeBpmFromAngle(
-        dependencies.metronome,
-        dependencies.state.effectiveKnobAngleOnDialScale,
-        dependencies.config
+        dependencies.state.effectiveKnobAngleOnDialScale
     )
 
     dependencies.presenter.renderApp()
@@ -56,14 +55,14 @@ function handleDialInteractionMove(event) {
     previousPointerAngle = currentPointerAngle
 }
 
-function handleDialInteractionEnd() {
+function handleDialInteractionEnd () {
     if (!isDraggingDial) return
     isDraggingDial = false
     dependencies.dom.rotaryDialContainerElement.style.cursor = 'grab'
 }
 
-function handleStartStopInteraction(event) {
-    if(event) {
+function handleStartStopInteraction (event) {
+    if (event) {
         event.preventDefault()
         event.stopPropagation()
     }
@@ -71,11 +70,8 @@ function handleStartStopInteraction(event) {
     const audioCtx = dependencies.audioService.getAudioContext()
 
     const performToggle = () => {
-        dependencies.useCases.toggleMetronome(
-            dependencies.metronome,
-            dependencies.audioService,
-            dependencies.wakeLockService
-        )
+        // Lời gọi use case đã được đơn giản hóa
+        dependencies.useCases.toggleMetronome()
         dependencies.presenter.renderApp()
     }
 
@@ -84,13 +80,13 @@ function handleStartStopInteraction(event) {
     } else if (audioCtx && audioCtx.state === 'running') {
         performToggle()
     } else if (!audioCtx) {
-        if(dependencies.audioService.initializeAudioContext()) {
+        if (dependencies.audioService.initializeAudioContext()) {
             handleStartStopInteraction()
         }
     }
 }
 
-export function initializeController(deps) {
+export function initializeController (deps) {
     dependencies = deps
 
     const dialElement = dependencies.dom.rotaryDialContainerElement

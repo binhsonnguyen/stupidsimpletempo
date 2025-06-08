@@ -1,6 +1,8 @@
 import { APP_VERSION } from './version.js'
 import { dependencies } from './container.js'
 
+// --- Các hàm khởi tạo dùng chung ---
+
 function initializeSharedUI ({ view, state }) {
     view.createTickMarks()
     view.displayAppVersion(APP_VERSION)
@@ -43,9 +45,10 @@ function setupCoreAppLogic ({
     })
 
     audioReadyPromise.then((firstInteractionTarget) => {
-        initializeController(dependencies) // Controller cần tất cả dependencies
+        initializeController(dependencies)
         if (firstInteractionTarget && dom.startStopButtonElement.contains(firstInteractionTarget)) {
-            useCases.toggleMetronome(metronome, audioService, wakeLockService)
+            // Lời gọi use case đã được đơn giản hóa
+            useCases.toggleMetronome()
         }
         presenter.renderApp()
     }).catch(err => {
@@ -85,7 +88,7 @@ function initializeAppV2 () {
     initializeSharedUI(dependencies)
     setupCoreAppLogic(dependencies)
 
-    const { dom, panelService, initializePullToReveal } = dependencies
+    const { dom, panelService, initializePullToReveal, rotaryDialContainerElement } = dependencies
     if (dom.advancedPanelElement && dom.dialAreaWrapperElement) {
         panelService.init({
             panelElement: dom.advancedPanelElement,
