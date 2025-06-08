@@ -39,7 +39,7 @@ presenter.initializePresenter(dependencies)
 function initializeSharedUI() {
     view.createTickMarks()
     view.displayAppVersion(APP_VERSION)
-    view.updateDialVisual(state.currentRotation)
+    view.updateDialVisual(state.currentDialRotation)
 }
 
 function setupCoreAppLogic() {
