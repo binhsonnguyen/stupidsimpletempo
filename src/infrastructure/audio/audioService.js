@@ -1,4 +1,5 @@
 import * as config from '../config.js'
+import { noteToFreq } from '../../domain/audioUtils.js'
 
 let audioContextInstance = null
 let schedulerTimerId = null
@@ -8,37 +9,6 @@ let nextNoteTimestamp = 0.0
 let currentBeat = null
 let isRunningCallback = () => false
 let getBpmCallback = () => config.MIN_SCALE_BPM
-
-function noteToFreq (note) {
-    const noteMap = { C: -9, D: -7, E: -5, F: -4, G: -2, A: 0, B: 2 }
-    const referenceOctave = 4
-    const referenceFreq = 440
-
-    const match = note.match(/^([A-G])([#b]*)(\d+)$/i)
-    if (!match) {
-        return referenceFreq
-    }
-
-    const noteName = match[1].toUpperCase()
-    const accidentals = match[2]
-    const octave = parseInt(match[3], 10)
-
-    let semitoneOffset = noteMap[noteName]
-    if (semitoneOffset == null) {
-        return referenceFreq
-    }
-
-    for (const accidental of accidentals) {
-        if (accidental === '#') {
-            semitoneOffset++
-        } else if (accidental === 'b') {
-            semitoneOffset--
-        }
-    }
-
-    const semitonesFromA4 = semitoneOffset + (octave - referenceOctave) * 12
-    return referenceFreq * Math.pow(2, semitonesFromA4 / 12)
-}
 
 // === playClickSound đã được khôi phục lại logic envelope gốc ===
 function playClickSound (timeToPlay, { note, gain }) {
