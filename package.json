@@ -3,6 +3,7 @@
   "version": "1.0.37",
   "scripts": {
     "generate-version": "node generate-version.js",
+    "test": "jest",
     "dev": "npm run generate-version && parcel src/index.html --dist-dir dev_dist",
     "build": "npm version patch && npm run generate-version && parcel build src/index.html --dist-dir public",
     "deploy": "npm run build && firebase deploy --only hosting"
@@ -11,8 +12,12 @@
   "license": "ISC",
   "description": "Stupid Simple Tempo",
   "devDependencies": {
+    "@babel/core": "^7.27.4",
+    "@babel/preset-env": "^7.27.2",
     "@parcel/packager-raw-url": "^2.15.2",
     "@parcel/transformer-webmanifest": "^2.15.2",
+    "babel-jest": "^30.0.0-beta.3",
+    "jest": "^29.7.0",
     "live-server": "^1.2.2",
     "parcel": "^2.15.2",
     "process": "^0.11.10"
