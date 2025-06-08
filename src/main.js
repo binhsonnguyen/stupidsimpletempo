@@ -9,7 +9,8 @@ import { Metronome } from './domain/metronome.js'
 import * as useCases from './domain/useCases.js'
 import * as config from './infrastructure/config.js'
 import { wakeLockService } from './infrastructure/services/wakeLockService.js'
-import { initializeSwipePanel } from './infrastructure/ui/gestureService.js'
+import { initializePullToReveal } from './infrastructure/ui/gestureService.js'
+import { panelService } from './infrastructure/ui/panelService.js'
 
 // --- Các đối tượng và dependencies dùng chung ---
 const metronome = new Metronome({
@@ -27,7 +28,8 @@ const dependencies = {
     view,
     presenter,
     audioService,
-    wakeLockService
+    wakeLockService,
+    panelService
 }
 
 presenter.initializePresenter(dependencies)
@@ -37,7 +39,7 @@ presenter.initializePresenter(dependencies)
 function initializeSharedUI() {
     view.createTickMarks()
     view.displayAppVersion(APP_VERSION)
-    view.updateDialVisual(state.currentDialRotation)
+    view.updateDialVisual(state.currentRotation)
 }
 
 function setupCoreAppLogic() {
@@ -107,13 +109,19 @@ function initializeAppV1() {
 function initializeAppV2() {
     console.log('Khởi tạo phiên bản nâng cao (V2)...')
     initializeSharedUI()
-    setupCoreAppLogic() // V2 vẫn cần logic cốt lõi của máy đếm nhịp
+    setupCoreAppLogic()
 
-    // Logic riêng của V2: khởi tạo panel và cử chỉ vuốt
-    if (dom.mainAppElement && dom.advancedPanelElement) {
-        initializeSwipePanel({
-            targetElement: dom.mainAppElement,
+    // Logic riêng của V2: khởi tạo các service cho panel
+    if (dom.advancedPanelElement && dom.dialAreaWrapperElement) {
+        // 1. Khởi tạo panel service trước
+        panelService.init({
             panelElement: dom.advancedPanelElement
+        })
+
+        // 2. Khởi tạo gesture service và "tiêm" panelService vào
+        initializePullToReveal({
+            targetElement: dom.dialAreaWrapperElement,
+            panelService: panelService
         })
     }
 }

@@ -8,42 +8,40 @@ html, body {
 body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     display: flex;
-    flex-direction: column; /* Sắp xếp các hàng theo chiều dọc */
-    min-height: 100dvh;      /* Đảm bảo body luôn chiếm ít nhất toàn bộ chiều cao màn hình */
+    flex-direction: column;
+    min-height: 100dvh;
 }
 
 .app-header {
-    flex-shrink: 0; /* Ngăn header bị co lại */
-    padding: 15px 0; /* Tạo khoảng trống cho logo, đây là chiều cao "cố định" của hàng */
-    text-align: center; /* Thêm để đảm bảo logo được căn giữa nếu có vấn đề về margin */
+    flex-shrink: 0;
+    padding: 15px 0;
+    text-align: center;
 }
 
 .app-logo {
     display: inline-block;
-    margin: 0 auto;  /* Chỉ cần căn giữa ngang */
-    max-height: 40px; /* Giới hạn chiều cao của logo để kiểm soát chiều cao của header */
+    margin: 0 auto;
+    max-height: 40px;
     width: auto;
     filter: invert(1);
     mix-blend-mode: screen;
 }
 
 .app-main {
-    flex-grow: 1; /* Đây là chìa khóa: làm cho hàng giữa tự động lấp đầy không gian còn lại */
-    display: flex;
-    justify-content: center; /* Căn giữa dial theo chiều ngang */
-    align-items: center;     /* Căn giữa dial theo chiều dọc */
-    overflow: hidden; /* Ngăn các hiệu ứng lớn tràn ra ngoài nếu có */
+    flex-grow: 1;
+    display: flex;          /* Chuyển thành flex container */
+    flex-direction: column; /* Sắp xếp các con theo chiều dọc */
+    overflow: hidden;       /* Giữ nguyên để ẩn phần thừa */
 }
 
 .app-credit {
-    flex-shrink: 0; /* Ngăn footer bị co lại */
+    flex-shrink: 0;
     width: 100%;
     padding: 10px 0;
     text-align: center;
     font-size: 0.75em;
     color: #6c757d;
-    background-color: rgba(0, 0, 0, 0.1); /* Tùy chọn */
-    /* Không cần position: fixed nữa */
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
 .rotary-dial-container {
@@ -52,7 +50,6 @@ body {
     height: 250px;
     cursor: grab;
     border-radius: 50%;
-
 }
 
 .dial-layer {
@@ -108,22 +105,21 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-
 }
 
 .start-stop-button.loading {
-    box-shadow: 0 0 15px rgba(108, 117, 125, 0.5); /* Quầng sáng màu xám */
-    cursor: wait; /* Con trỏ chuột hình đồng hồ cát, báo hiệu đang bận */
+    box-shadow: 0 0 15px rgba(108, 117, 125, 0.5);
+    cursor: wait;
 }
 
 .start-stop-button.off {
     box-shadow: 0 0 15px rgba(40, 167, 69, 0.7);
-    cursor: pointer; /* Đảm bảo con trỏ đúng khi đã sẵn sàng */
+    cursor: pointer;
 }
 
 .start-stop-button.on {
     box-shadow: 0 0 15px rgba(220, 53, 69, 0.7);
-    cursor: pointer; /* Đảm bảo con trỏ đúng khi đang chạy */
+    cursor: pointer;
 }
 
 .tick {
@@ -149,25 +145,37 @@ body {
     white-space: nowrap;
 }
 
-/* --- Advanced Control Panel --- */
-.advanced-panel {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 40vh; /* Cao bằng 40% chiều cao màn hình */
-    background-color: #2c3034;
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.4);
-    z-index: 10;
-    padding: 20px;
-    box-sizing: border-box;
+/* --- Giao diện nâng cao (Mô hình Flexbox co giãn chiều cao) --- */
 
-    /* Mặc định: ẩn panel bên dưới màn hình */
-    transform: translateY(100%);
-    transition: transform 0.3s ease-in-out;
+.advanced-panel {
+    flex-shrink: 0; /* Không bị co lại khi không đủ chỗ */
+    height: 0;      /* Mặc định ẩn hoàn toàn */
+    background-color: #2c3034;
+    box-sizing: border-box;
+    overflow-y: auto; /* Cho phép cuộn khi nội dung vượt quá chiều cao */
+    transition: height 0.35s ease-in-out;
 }
 
 .advanced-panel.visible {
-    /* Trạng thái khi panel hiện ra */
-    transform: translateY(0);
+    height: 300px; /* Chiều cao cố định khi hiện ra, có thể thay đổi sau */
+    padding: 20px; /* Chỉ thêm padding khi panel hiện ra */
+}
+
+.dial-area-wrapper {
+    flex-grow: 1; /* Luôn lấp đầy không gian còn lại */
+    min-height: 0; /* Cho phép co lại nhỏ hơn nội dung, rất quan trọng cho flexbox */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
+    transition: min-height 0.35s ease-in-out;
+}
+
+.dial-container-outer {
+    flex-shrink: 0; /* Ngăn không bị bóp méo */
+    width: 300px;  /* Kích thước lớn hơn vòng dial để tạo gap */
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
