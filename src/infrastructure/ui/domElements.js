@@ -1,13 +1,25 @@
-export const rotaryDialContainerElement = document.getElementById('rotaryDialContainer')
-export const startStopButtonElement = document.getElementById('startStopButton')
-export const rotaryKnobElement = document.getElementById('rotaryKnob')
+export const dom = {
+    rotaryDialContainerElement: null,
+    startStopButtonElement: null,
+    rotaryKnobElement: null,
+    labelLayerElement: null,
+    tickMarkLayerElement: null,
+    dialTrackBorderLayerElement: null,
+    arcLayerElement: null,
+    appVersionElement: null,
+    advancedPanelElement: null,
+    dialAreaWrapperElement: null
+}
 
-export const labelLayerElement = document.getElementById('labelLayer')
-export const tickMarkLayerElement = document.getElementById('tickMarkLayer')
-export const dialTrackBorderLayerElement = document.getElementById('dialTrackBorderLayer')
-export const arcLayerElement = document.getElementById('arcLayer')
-
-export const appVersionElement = document.getElementById('appVersion')
-
-export const advancedPanelElement = document.getElementById('advancedPanel')
-export const dialAreaWrapperElement = document.querySelector('.dial-area-wrapper')
+export function initDomElements () {
+    dom.rotaryDialContainerElement = document.getElementById('rotaryDialContainer')
+    dom.startStopButtonElement = document.getElementById('startStopButton')
+    dom.rotaryKnobElement = document.getElementById('rotaryKnob')
+    dom.labelLayerElement = document.getElementById('labelLayer')
+    dom.tickMarkLayerElement = document.getElementById('tickMarkLayer')
+    dom.dialTrackBorderLayerElement = document.getElementById('dialTrackBorderLayer')
+    dom.arcLayerElement = document.getElementById('arcLayer')
+    dom.appVersionElement = document.getElementById('appVersion')
+    dom.advancedPanelElement = document.getElementById('advancedPanel')
+    dom.dialAreaWrapperElement = document.querySelector('.dial-area-wrapper')
+}

@@ -1,48 +1,40 @@
-import {
-    rotaryDialContainerElement,
-    labelLayerElement,
-    tickMarkLayerElement,
-    dialTrackBorderLayerElement,
-    startStopButtonElement,
-    appVersionElement,
-    arcLayerElement
-} from './domElements.js'
+import { dom } from './domElements.js'
 import * as config from '../config.js'
 
-export function updateDialVisual(rotationAngle) {
+export function updateDialVisual (rotationAngle) {
     const transformValue = `rotate(${rotationAngle}deg)`
-    if (labelLayerElement) {
-        labelLayerElement.style.transform = transformValue
+    if (dom.labelLayerElement) {
+        dom.labelLayerElement.style.transform = transformValue
     }
-    if (tickMarkLayerElement) {
-        tickMarkLayerElement.style.transform = transformValue
+    if (dom.tickMarkLayerElement) {
+        dom.tickMarkLayerElement.style.transform = transformValue
     }
-    if (dialTrackBorderLayerElement) {
-        dialTrackBorderLayerElement.style.transform = transformValue
+    if (dom.dialTrackBorderLayerElement) {
+        dom.dialTrackBorderLayerElement.style.transform = transformValue
     }
-    if (arcLayerElement) {
-        arcLayerElement.style.transform = transformValue
+    if (dom.arcLayerElement) {
+        dom.arcLayerElement.style.transform = transformValue
     }
 }
 
-export function setButtonState(state) {
-    if (!startStopButtonElement) return
+export function setButtonState (state) {
+    if (!dom.startStopButtonElement) return
 
-    startStopButtonElement.classList.remove('on', 'off', 'loading')
+    dom.startStopButtonElement.classList.remove('on', 'off', 'loading', 'error')
 
-    if (state === 'loading') {
-        startStopButtonElement.classList.add('loading')
+    if (state === 'loading' || state === 'error') {
+        dom.startStopButtonElement.classList.add(state)
     } else if (state === true) {
-        startStopButtonElement.classList.add('on')
+        dom.startStopButtonElement.classList.add('on')
     } else {
-        startStopButtonElement.classList.add('off')
+        dom.startStopButtonElement.classList.add('off')
     }
 }
 
-export function createTickMarks() {
-    if (!rotaryDialContainerElement || !tickMarkLayerElement || !labelLayerElement) return
+export function createTickMarks () {
+    if (!dom.rotaryDialContainerElement || !dom.tickMarkLayerElement || !dom.labelLayerElement) return
 
-    const referenceElementForSize = rotaryDialContainerElement
+    const referenceElementForSize = dom.rotaryDialContainerElement
     const layerWidth = referenceElementForSize.offsetWidth
     const layerHeight = referenceElementForSize.offsetHeight
     const layerCenterX = layerWidth / 2
@@ -75,7 +67,7 @@ export function createTickMarks() {
     if (bpmScaleRange > 0 && angleScaleRange !== 0) {
         effectiveDegreesPerBpmOnScale = angleScaleRange / bpmScaleRange
     } else if (!(bpmScaleRange === 0 && angleScaleRange === 0)) {
-        console.warn("Kiểm tra lại cấu hình thang đo BPM trong config.js.")
+        console.warn('Kiểm tra lại cấu hình thang đo BPM trong config.js.')
     }
 
     if (bpmScaleRange > 0 && effectiveDegreesPerBpmOnScale !== 0) {
@@ -120,8 +112,8 @@ export function createTickMarks() {
         tickElement.style.top = `${config.TICK_INITIAL_TOP_OFFSET}px`
         tickElement.style.transformOrigin = `50% ${rotationOriginYForTicks}px`
         tickElement.style.transform = `translateX(${translateXValueForTick}) rotate(${markInfo.angle}deg)`
-        if (tickMarkLayerElement) {
-            tickMarkLayerElement.appendChild(tickElement)
+        if (dom.tickMarkLayerElement) {
+            dom.tickMarkLayerElement.appendChild(tickElement)
         }
 
         if (markInfo.needsLabel) {
@@ -134,19 +126,19 @@ export function createTickMarks() {
             labelElement.style.left = `${labelX}px`
             labelElement.style.top = `${labelY}px`
             labelElement.style.transform = `translate(-50%, -50%) rotate(${markInfo.angle}deg)`
-            if (labelLayerElement) {
-                labelLayerElement.appendChild(labelElement)
+            if (dom.labelLayerElement) {
+                dom.labelLayerElement.appendChild(labelElement)
             }
         }
     })
 }
 
-export function displayAppVersion(version) {
-    if (appVersionElement) {
+export function displayAppVersion (version) {
+    if (dom.appVersionElement) {
         if (typeof version !== 'undefined' && version) {
-            appVersionElement.textContent = version
+            dom.appVersionElement.textContent = version
         } else {
-            appVersionElement.textContent = 'N/A'
+            dom.appVersionElement.textContent = 'N/A'
         }
     }
 }
