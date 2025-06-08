@@ -1,61 +1,16 @@
 import * as config from '../config.js'
-import { noteToFreq } from '../../domain/audioUtils.js'
+import { soundFactory } from './soundFactory.js'
 
 let audioContextInstance = null
 let schedulerTimerId = null
 let nextNoteTimestamp = 0.0
 
-// === Các biến trạng thái mới cho scheduler ===
+// === Các biến trạng thái cho scheduler ===
 let currentBeat = null
 let isRunningCallback = () => false
 let getBpmCallback = () => config.MIN_SCALE_BPM
 
-// === playClickSound đã được khôi phục lại logic envelope gốc ===
-function playClickSound (timeToPlay, { note, gain }) {
-    if (!audioContextInstance || audioContextInstance.state !== 'running') {
-        return
-    }
-
-    try {
-        const osc = audioContextInstance.createOscillator()
-        const gainNode = audioContextInstance.createGain()
-        const gainParam = gainNode.gain
-
-        // --- Bắt đầu khối logic tạo âm bao gốc ---
-        const soundDuration = 0.05
-        const sustainDuration = soundDuration / 3
-        const decayEndTime = timeToPlay + soundDuration
-        const endVolume = 0.0001
-
-        const sustainPoints = 10
-        const randomAmplitude = 0.05
-        const randomValues = new Float32Array(sustainPoints)
-
-        for (let i = 0; i < sustainPoints; i++) {
-            const randomFactor = (Math.random() - 0.5) * 2
-            // Sử dụng `gain` từ đối tượng Beat thay vì giá trị cố định
-            randomValues[i] = gain + (randomFactor * randomAmplitude)
-        }
-        randomValues[sustainPoints - 1] = gain // Điểm cuối cùng phải chính xác bằng gain
-
-        gainParam.setValueCurveAtTime(randomValues, timeToPlay, sustainDuration)
-        gainParam.exponentialRampToValueAtTime(endVolume, decayEndTime)
-        // --- Kết thúc khối logic tạo âm bao gốc ---
-
-        osc.type = config.BEAT_OSCILLATOR_TYPE
-        osc.frequency.setValueAtTime(noteToFreq(note), timeToPlay)
-
-        osc.connect(gainNode)
-        gainNode.connect(audioContextInstance.destination)
-
-        osc.start(timeToPlay)
-        osc.stop(decayEndTime)
-    } catch (e) {
-        console.error('Lỗi trong playClickSound:', e)
-    }
-}
-
-// === Bộ định thời được viết lại hoàn toàn ===
+// === Bộ định thời đã được nâng cấp để dùng soundFactory ===
 function audioScheduler () {
     if (!isRunningCallback()) {
         stop()
@@ -69,13 +24,21 @@ function audioScheduler () {
             return
         }
 
-        playClickSound(nextNoteTimestamp, { note: currentBeat.note, gain: currentBeat.gain })
+        // 1. Yêu cầu "nhà máy" cung cấp đúng đối tượng Sound cần thiết
+        const sound = soundFactory.getSound({
+            note: currentBeat.note,
+            oscillatorType: config.BEAT_OSCILLATOR_TYPE
+        })
 
+        // 2. Ra lệnh cho đối tượng Sound tự chơi
+        if (sound) {
+            sound.play(nextNoteTimestamp, currentBeat.gain)
+        }
+
+        // 3. Tính toán và di chuyển đến beat tiếp theo
         const bpm = getBpmCallback()
         const secondsPerBeat = (60.0 / bpm) * currentBeat.durationFactor
-
         nextNoteTimestamp += secondsPerBeat
-
         currentBeat = currentBeat.nextBeat
     }
 
@@ -89,6 +52,10 @@ export function initializeAudioContext () {
             if (!audioContextInstance) {
                 return false
             }
+
+            // Khởi tạo nhà máy âm thanh ngay khi có context
+            soundFactory.init({ audioContext: audioContextInstance })
+
             audioContextInstance.onstatechange = () => {
                 console.log('Trạng thái AudioContext đã thay đổi thành:', audioContextInstance.state)
             }
@@ -104,7 +71,6 @@ export function getAudioContext () {
     return audioContextInstance
 }
 
-// === Hàm start được cập nhật để nhận chuỗi beat ===
 export function start ({ getBpm, isRunning, beatSequence }) {
     if (!audioContextInstance || audioContextInstance.state !== 'running' || !beatSequence) {
         return false
@@ -118,7 +84,6 @@ export function start ({ getBpm, isRunning, beatSequence }) {
     return true
 }
 
-// === Hàm stop không thay đổi ===
 export function stop () {
     clearTimeout(schedulerTimerId)
     schedulerTimerId = null
