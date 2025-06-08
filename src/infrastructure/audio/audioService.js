@@ -10,7 +10,13 @@ let currentBeat = null
 let isRunningCallback = () => false
 let getBpmCallback = () => config.MIN_SCALE_BPM
 
-// === Bộ định thời đã được nâng cấp để dùng soundFactory ===
+// === Nơi định nghĩa "ngoại hình" cho từng loại phách ===
+const BEAT_SOUND_MAP = {
+    accent: { note: 'A6', gain: 1.0 },
+    regular: { note: 'C6', gain: 0.6 }
+}
+
+// === Bộ định thời đã được nâng cấp để diễn giải Beat Type ===
 function audioScheduler () {
     if (!isRunningCallback()) {
         stop()
@@ -24,18 +30,21 @@ function audioScheduler () {
             return
         }
 
-        // 1. Yêu cầu "nhà máy" cung cấp đúng đối tượng Sound cần thiết
+        // 1. "Diễn giải" loại beat thành các thuộc tính âm thanh cụ thể
+        const soundProps = BEAT_SOUND_MAP[currentBeat.type] || BEAT_SOUND_MAP.regular
+
+        // 2. Yêu cầu "nhà máy" cung cấp âm thanh với nốt đã được diễn giải
         const sound = soundFactory.getSound({
-            note: currentBeat.note,
+            note: soundProps.note,
             oscillatorType: config.BEAT_OSCILLATOR_TYPE
         })
 
-        // 2. Ra lệnh cho đối tượng Sound tự chơi
+        // 3. Ra lệnh cho âm thanh chơi với cường độ đã được diễn giải
         if (sound) {
-            sound.play(nextNoteTimestamp, currentBeat.gain)
+            sound.play(nextNoteTimestamp, soundProps.gain)
         }
 
-        // 3. Tính toán và di chuyển đến beat tiếp theo
+        // 4. Tính toán và di chuyển đến beat tiếp theo
         const bpm = getBpmCallback()
         const secondsPerBeat = (60.0 / bpm) * currentBeat.durationFactor
         nextNoteTimestamp += secondsPerBeat
@@ -53,7 +62,6 @@ export function initializeAudioContext () {
                 return false
             }
 
-            // Khởi tạo nhà máy âm thanh ngay khi có context
             soundFactory.init({ audioContext: audioContextInstance })
 
             audioContextInstance.onstatechange = () => {

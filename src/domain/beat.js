@@ -1,14 +1,12 @@
 export class Beat {
     /**
      * Khởi tạo một đối tượng Beat.
-     * @param {object} params - Các thuộc tính của beat.
-     * @param {string} params.note - Nốt nhạc của beat (ví dụ: 'A6').
-     * @param {number} [params.gain=1.0] - Cường độ của beat.
-     * @param {number} [params.durationFactor=1.0] - Hệ số trường độ.
+     * @param {object} [options={}] - Các thuộc tính của beat.
+     * @param {string} [options.type='regular'] - Kiểu của beat ('accent' hoặc 'regular').
+     * @param {number} [options.durationFactor=1.0] - Hệ số trường độ.
      */
-    constructor ({ note, gain = 1.0, durationFactor = 1.0 }) {
-        this.note = note
-        this.gain = gain
+    constructor ({ type = 'regular', durationFactor = 1.0 } = {}) {
+        this.type = type
         this.durationFactor = durationFactor
         this.nextBeat = null
     }

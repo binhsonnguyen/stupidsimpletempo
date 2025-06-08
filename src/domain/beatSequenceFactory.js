@@ -1,16 +1,36 @@
 import { Beat } from './beat.js'
 
-// Định nghĩa các thuộc tính cho một phách mạnh mặc định
-const ACCENT_BEAT_PROPS = { note: 'A6', gain: 1.0 }
-
 /**
- * Tạo một chuỗi beat (danh sách liên kết vòng).
- * @param {string} signature - Tên của mẫu nhịp (hiện chỉ hỗ trợ 'basic').
+ * Tạo một chuỗi beat (danh sách liên kết vòng) dựa trên một mẫu nhịp.
+ * @param {string} signature - Tên của mẫu nhịp (vd: 'basic', '4/4', '3/4').
  * @returns {Beat} - Node đầu tiên của chuỗi beat.
  */
 export function createBeatSequence (signature = 'basic') {
-    // Để pass test, chúng ta chỉ cần xử lý trường hợp 'basic'
-    const beat = new Beat(ACCENT_BEAT_PROPS)
-    beat.setNext(beat) // Tự trỏ về chính nó để tạo vòng lặp
-    return beat
+    switch (signature) {
+        case '4/4': {
+            const beat1 = new Beat({ type: 'accent' })
+            const beat2 = new Beat({ type: 'regular' })
+            const beat3 = new Beat({ type: 'regular' })
+            const beat4 = new Beat({ type: 'regular' })
+
+            beat1.setNext(beat2).setNext(beat3).setNext(beat4).setNext(beat1)
+            return beat1
+        }
+
+        case '3/4': {
+            const beat1 = new Beat({ type: 'accent' })
+            const beat2 = new Beat({ type: 'regular' })
+            const beat3 = new Beat({ type: 'regular' })
+
+            beat1.setNext(beat2).setNext(beat3).setNext(beat1)
+            return beat1
+        }
+
+        case 'basic':
+        default: {
+            const beat = new Beat({ type: 'accent' }) // Phách cơ bản là một phách mạnh lặp lại
+            beat.setNext(beat)
+            return beat
+        }
+    }
 }
