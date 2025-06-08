@@ -10,10 +10,10 @@ let currentBeat = null
 let isRunningCallback = () => false
 let getBpmCallback = () => config.MIN_SCALE_BPM
 
-// === Nơi định nghĩa "ngoại hình" cho từng loại phách ===
+// === "Bộ phiên dịch" từ Beat Type sang thuộc tính âm thanh, đọc từ config ===
 const BEAT_SOUND_MAP = {
-    accent: { note: 'A6', gain: 1.0 },
-    regular: { note: 'C6', gain: 0.6 }
+    accent: { note: config.ACCENT_BEAT_NOTE, gain: config.ACCENT_BEAT_GAIN },
+    regular: { note: config.REGULAR_BEAT_NOTE, gain: config.REGULAR_BEAT_GAIN }
 }
 
 // === Bộ định thời đã được nâng cấp để diễn giải Beat Type ===
@@ -36,7 +36,7 @@ function audioScheduler () {
         // 2. Yêu cầu "nhà máy" cung cấp âm thanh với nốt đã được diễn giải
         const sound = soundFactory.getSound({
             note: soundProps.note,
-            oscillatorType: config.BEAT_OSCILLATOR_TYPE
+            oscillatorType: config.BEAT_OSCILLATOR_TYPE.value
         })
 
         // 3. Ra lệnh cho âm thanh chơi với cường độ đã được diễn giải
