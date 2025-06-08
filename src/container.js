@@ -1,4 +1,4 @@
-// --- Import tất cả các module trong ứng dụng ---
+// --- Import các module cốt lõi ---
 
 // Domain
 import { Metronome } from './domain/metronome.js'
@@ -16,8 +16,6 @@ import { dom, initDomElements } from './infrastructure/ui/domElements.js'
 import * as view from './infrastructure/ui/view.js'
 import * as audioService from './infrastructure/audio/audioService.js'
 import { wakeLockService } from './infrastructure/services/wakeLockService.js'
-import { panelService } from './infrastructure/ui/panelService.js'
-import { initializePullToReveal } from './infrastructure/ui/gestureService.js'
 
 // --- Khởi tạo các đối tượng gốc ---
 
@@ -27,14 +25,12 @@ const metronome = new Metronome({
     maxBpm: config.MAX_SCALE_BPM
 })
 
-// --- Gọi "nhà máy" để tạo ra các use case ---
-
 const useCases = createUseCases({
     metronome,
     audioService,
     wakeLockService,
     config,
-    createBeatSequence // Tiêm "nhà máy" tạo beat vào cho use case
+    createBeatSequence
 })
 
 // --- Lắp ráp và export đối tượng dependencies ---
@@ -43,7 +39,6 @@ export const dependencies = {
     // Domain
     metronome,
     useCases,
-    createBeatSequence,
     // Application
     state,
     presenter,
@@ -54,9 +49,7 @@ export const dependencies = {
     initDomElements,
     view,
     audioService,
-    wakeLockService,
-    panelService,
-    initializePullToReveal
+    wakeLockService
 }
 
 // --- Thực hiện các kết nối ban đầu ---

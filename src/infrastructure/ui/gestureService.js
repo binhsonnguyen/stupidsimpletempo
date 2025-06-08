@@ -1,14 +1,17 @@
 import { GESTURE_DRAG_THRESHOLD_PX } from '../config.js'
 
-let targetElement = null
-let panelService = null
+let onSwipeCallback = null
+let gestureTargetElement = null
 
 let isDragging = false
+let dragStartX = 0
 let dragStartY = 0
+let dragCurrentX = 0
 let dragCurrentY = 0
 
-function getClientY (event) {
-    return event.touches ? event.touches[0].clientY : event.clientY
+function getCoords (event) {
+    const source = event.touches ? event.touches[0] : event
+    return { x: source.clientX, y: source.clientY }
 }
 
 function onDragStart (event) {
@@ -16,7 +19,10 @@ function onDragStart (event) {
     event.preventDefault()
 
     isDragging = true
-    dragStartY = getClientY(event)
+    const { x, y } = getCoords(event)
+    dragStartX = x
+    dragStartY = y
+    dragCurrentX = dragStartX
     dragCurrentY = dragStartY
 
     document.addEventListener('mousemove', onDragMove)
@@ -27,11 +33,13 @@ function onDragStart (event) {
 
 function onDragMove (event) {
     if (!isDragging) return
-    dragCurrentY = getClientY(event)
+    const { x, y } = getCoords(event)
+    dragCurrentX = x
+    dragCurrentY = y
 }
 
 function onDragEnd () {
-    if (!isDragging) return
+    if (!isDragging || !onSwipeCallback) return
     isDragging = false
 
     document.removeEventListener('mousemove', onDragMove)
@@ -39,28 +47,34 @@ function onDragEnd () {
     document.removeEventListener('mouseup', onDragEnd)
     document.removeEventListener('touchend', onDragEnd)
 
+    const dragDeltaX = dragCurrentX - dragStartX
     const dragDeltaY = dragCurrentY - dragStartY
 
-    // Kéo xuống để ra lệnh "hiện" panel
-    if (dragDeltaY > GESTURE_DRAG_THRESHOLD_PX) {
-        panelService.show()
-    }
+    const absDeltaX = Math.abs(dragDeltaX)
+    const absDeltaY = Math.abs(dragDeltaY)
 
-    // Kéo lên để ra lệnh "ẩn" panel
-    if (dragDeltaY < -GESTURE_DRAG_THRESHOLD_PX) {
-        panelService.hide()
-    }
-}
-
-export function initializePullToReveal (options) {
-    if (!options.targetElement || !options.panelService) {
-        console.error('initializePullToReveal yêu cầu có targetElement và panelService.')
+    if (absDeltaX < GESTURE_DRAG_THRESHOLD_PX && absDeltaY < GESTURE_DRAG_THRESHOLD_PX) {
         return
     }
 
-    targetElement = options.targetElement
-    panelService = options.panelService
+    if (absDeltaX > absDeltaY) {
+        // Vuốt ngang là chủ yếu
+        onSwipeCallback(dragDeltaX > 0 ? 'right' : 'left')
+    } else {
+        // Vuốt dọc là chủ yếu
+        onSwipeCallback(dragDeltaY > 0 ? 'down' : 'up')
+    }
+}
 
-    targetElement.addEventListener('mousedown', onDragStart)
-    targetElement.addEventListener('touchstart', onDragStart, { passive: false })
+export function initializeGestureDetector (options) {
+    if (!options.targetElement || typeof options.onSwipe !== 'function') {
+        console.error('initializeGestureDetector yêu cầu có targetElement và hàm onSwipe.')
+        return
+    }
+
+    gestureTargetElement = options.targetElement
+    onSwipeCallback = options.onSwipe
+
+    gestureTargetElement.addEventListener('mousedown', onDragStart)
+    gestureTargetElement.addEventListener('touchstart', onDragStart, { passive: false })
 }
