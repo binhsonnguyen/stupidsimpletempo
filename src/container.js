@@ -3,6 +3,7 @@
 // Domain
 import { Metronome } from './domain/metronome.js'
 import { createUseCases } from './domain/useCases.js'
+import { createBeatSequence } from './domain/beatSequenceFactory.js'
 
 // Application
 import * as state from './application/state.js'
@@ -32,7 +33,8 @@ const useCases = createUseCases({
     metronome,
     audioService,
     wakeLockService,
-    config
+    config,
+    createBeatSequence // Tiêm "nhà máy" tạo beat vào cho use case
 })
 
 // --- Lắp ráp và export đối tượng dependencies ---
@@ -40,7 +42,8 @@ const useCases = createUseCases({
 export const dependencies = {
     // Domain
     metronome,
-    useCases, // Đây là đối tượng useCases mới đã được tiêm phụ thuộc
+    useCases,
+    createBeatSequence,
     // Application
     state,
     presenter,

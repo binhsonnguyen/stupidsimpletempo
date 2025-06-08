@@ -1,7 +1,7 @@
-export function createUseCases ({ metronome, audioService, wakeLockService, config }) {
+// Thêm createBeatSequence vào danh sách các phụ thuộc được tiêm vào
+export function createUseCases ({ metronome, audioService, wakeLockService, config, createBeatSequence }) {
     /**
      * Bật hoặc tắt máy đếm nhịp.
-     * Hàm này không cần tham số vì nó đã nhận các phụ thuộc từ closure của factory.
      */
     function toggleMetronome () {
         metronome.toggle()
@@ -9,7 +9,17 @@ export function createUseCases ({ metronome, audioService, wakeLockService, conf
         if (metronome.isRunning) {
             const getBpm = () => metronome.bpm
             const isRunning = () => metronome.isRunning
-            audioService.start(getBpm, isRunning)
+
+            // 1. Dùng "nhà máy" để tạo ra chuỗi nhịp cơ bản
+            const beatSequence = createBeatSequence('basic')
+
+            // 2. Cung cấp chuỗi nhịp này cho audioService
+            audioService.start({
+                getBpm,
+                isRunning,
+                beatSequence
+            })
+
             wakeLockService.request()
         } else {
             audioService.stop()
