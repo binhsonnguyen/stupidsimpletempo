@@ -1,4 +1,4 @@
-// --- Import các module cốt lõi ---
+// --- Import tất cả các module trong ứng dụng ---
 
 // Domain
 import { Metronome } from './domain/metronome.js'
@@ -16,6 +16,10 @@ import { dom, initDomElements } from './infrastructure/ui/domElements.js'
 import * as view from './infrastructure/ui/view.js'
 import * as audioService from './infrastructure/audio/audioService.js'
 import { wakeLockService } from './infrastructure/services/wakeLockService.js'
+
+// --- Import các UI Component mới ---
+import { StartButton } from './infrastructure/ui/components/StartButton.js'
+import { Dial } from './infrastructure/ui/components/Dial.js'
 
 // --- Khởi tạo các đối tượng gốc ---
 
@@ -49,8 +53,10 @@ export const dependencies = {
     initDomElements,
     view,
     audioService,
-    wakeLockService
+    wakeLockService,
+    // UI Components
+    components: {
+        StartButton,
+        Dial
+    }
 }
-
-// --- Thực hiện các kết nối ban đầu ---
-presenter.initializePresenter(dependencies)
