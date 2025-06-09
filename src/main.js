@@ -1,16 +1,23 @@
+// /src/main.js
 import { APP_VERSION } from './version.js'
 import { dependencies } from './container.js'
 import * as controller from './application/controller.js'
 
 function initializeApp () {
-    const { dom, components, presenter, useCases, audioService, metronome, wakeLockService } = dependencies
+    const {
+        dom, components, presenter, useCases, audioService, metronome, wakeLockService,
+        advancedPanelController, orientationService, initializeGestureDetector, panelAnimator
+    } = dependencies
 
-    const startButton = new components.StartButton({
+    // Tạo và gán instance của StartButton
+    const startButtonInstance = new components.StartButton({
         element: dom.startStopButtonElement,
         onTap: () => controller.handleButtonTap({ useCases, presenter, audioService })
     })
+    dependencies.startButton = startButtonInstance // Gán lại vào dependencies
 
-    const dial = new components.Dial({
+    // Tạo và gán instance của Dial
+    const dialInstance = new components.Dial({
         element: dom.rotaryDialContainerElement,
         layersToRotate: [
             dom.labelLayerElement,
@@ -22,13 +29,25 @@ function initializeApp () {
         labelLayerElement: dom.labelLayerElement,
         onAngleChanged: (newAngle) => controller.handleAngleChanged({ useCases, presenter }, newAngle)
     })
+    dependencies.dial = dialInstance // Gán lại vào dependencies (nếu presenter cần)
 
-    dependencies.startButton = startButton
-    dependencies.dial = dial
+    advancedPanelController.init(
+        {
+            panelElement: dom.advancedPanelElement,
+            gestureTargetElement: dom.dialAreaWrapperElement
+        },
+        { // services
+            panelAnimator,
+            orientationService,
+            initializeGestureDetector
+        },
+        components
+    )
 
-    presenter.initializePresenter(dependencies)
+    presenter.initializePresenter(dependencies) // Bây giờ presenter sẽ nhận được các instance đúng
     presenter.renderInitialUi(dependencies, APP_VERSION)
 
+    // eslint-disable-next-line no-unused-vars
     const audioUnlocker = new Promise((resolve) => {
         const unlock = () => {
             audioService.getAudioContext()?.resume().then(resolve)
