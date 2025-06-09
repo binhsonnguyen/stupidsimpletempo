@@ -16,13 +16,11 @@ import * as audioService from './infrastructure/audio/audioService.js'
 import { wakeLockService } from './infrastructure/services/wakeLockService.js'
 import { orientationService } from './infrastructure/services/orientationService.js'
 import { initializeGestureDetector } from './infrastructure/ui/gestureService.js'
-import { panelAnimator } from './infrastructure/ui/panelAnimator.js'
-// import { panelService } from './infrastructure/ui/panelService.js' // Xóa dòng này
 
 // UI Components
 import { StartButton } from './infrastructure/ui/components/StartButton.js'
 import { Dial } from './infrastructure/ui/components/Dial.js'
-import { AdvancedPanel } from './infrastructure/ui/components/AdvancedPanel.js' // Import component mới
+import { AdvancedPanel } from './infrastructure/ui/components/AdvancedPanel.js'
 
 const metronome = new Metronome({
     initialBpm: config.MIN_SCALE_BPM,
@@ -54,13 +52,10 @@ export const dependencies = {
     wakeLockService,
     orientationService,
     initializeGestureDetector,
-    panelAnimator,
-    // panelService, // Xóa dòng này
     // UI Components
     components: {
         StartButton,
         Dial,
-        AdvancedPanel // Thêm component mới
+        AdvancedPanel
     }
 }
-    

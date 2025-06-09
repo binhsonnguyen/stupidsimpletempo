@@ -6,7 +6,7 @@ import * as controller from './application/controller.js'
 function initializeApp () {
     const {
         dom, components, presenter, useCases, audioService, metronome, wakeLockService,
-        advancedPanelController, orientationService, initializeGestureDetector, panelAnimator
+        advancedPanelController, orientationService, initializeGestureDetector // panelAnimator đã bị xóa
     } = dependencies
 
     // Tạo và gán instance của StartButton
@@ -14,7 +14,7 @@ function initializeApp () {
         element: dom.startStopButtonElement,
         onTap: () => controller.handleButtonTap({ useCases, presenter, audioService })
     })
-    dependencies.startButton = startButtonInstance // Gán lại vào dependencies
+    dependencies.startButton = startButtonInstance
 
     // Tạo và gán instance của Dial
     const dialInstance = new components.Dial({
@@ -29,7 +29,7 @@ function initializeApp () {
         labelLayerElement: dom.labelLayerElement,
         onAngleChanged: (newAngle) => controller.handleAngleChanged({ useCases, presenter }, newAngle)
     })
-    dependencies.dial = dialInstance // Gán lại vào dependencies (nếu presenter cần)
+    dependencies.dial = dialInstance
 
     advancedPanelController.init(
         {
@@ -37,14 +37,14 @@ function initializeApp () {
             gestureTargetElement: dom.dialAreaWrapperElement
         },
         { // services
-            panelAnimator,
+            // panelAnimator, // Xóa dòng này
             orientationService,
             initializeGestureDetector
         },
         components
     )
 
-    presenter.initializePresenter(dependencies) // Bây giờ presenter sẽ nhận được các instance đúng
+    presenter.initializePresenter(dependencies)
     presenter.renderInitialUi(dependencies, APP_VERSION)
 
     // eslint-disable-next-line no-unused-vars

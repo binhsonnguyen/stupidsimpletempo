@@ -1,23 +1,25 @@
-// /src/application/advancedPanelController.js
 import { logger } from '../infrastructure/logger.js'
 
-let panelAnimatorService = null // Đổi tên để rõ ràng đây là service animator
 let orientationServiceInstance = null
 let gestureServiceInitializeFn = null
-// let advancedPanelComponent = null // Chúng ta sẽ tạo instance trong init
+let advancedPanelComponent = null
 
 function handleSwipe (direction) {
     logger.log(`AdvancedPanelController nhận được tín hiệu vuốt: ${direction}`)
     const orientation = orientationServiceInstance.get()
 
+    if (!advancedPanelComponent) {
+        logger.error('AdvancedPanelController: advancedPanelComponent chưa được khởi tạo.')
+        return
+    }
+
     if (orientation === 'portrait') {
         switch (direction) {
             case 'down':
-                // Vẫn dùng panelAnimatorService ở bước này
-                panelAnimatorService.revealFrom('top')
+                advancedPanelComponent.revealFrom('top') // Gọi trên component
                 break
             case 'up':
-                panelAnimatorService.hide()
+                advancedPanelComponent.hide() // Gọi trên component
                 break
         }
     }
@@ -25,47 +27,38 @@ function handleSwipe (direction) {
     if (orientation === 'landscape') {
         switch (direction) {
             case 'right':
-                panelAnimatorService.revealFrom('left')
+                advancedPanelComponent.revealFrom('left') // Gọi trên component
                 break
             case 'left':
-                panelAnimatorService.hide()
+                advancedPanelComponent.hide() // Gọi trên component
                 break
         }
     }
 }
 
-function init (options, services, components) { // Thêm components vào tham số
+function init (options, services, components) {
     if (!options.gestureTargetElement || !options.panelElement) {
         return logger.error('AdvancedPanelController.init thất bại: thiếu các phần tử DOM.')
     }
-    // panelService không còn được truyền vào đây nữa
-    if (!services.panelAnimator || !services.orientationService || !services.initializeGestureDetector) {
-        return logger.error('AdvancedPanelController.init thất bại: thiếu các service cần thiết.')
+    if (!services.orientationService || !services.initializeGestureDetector) {
+        return logger.error('AdvancedPanelController.init thất bại: thiếu các service (orientation, gesture) cần thiết.')
     }
-    if (!components || !components.AdvancedPanel) { // Kiểm tra component
+    if (!components || !components.AdvancedPanel) {
         return logger.error('AdvancedPanelController.init thất bại: thiếu AdvancedPanel component.')
     }
 
-    panelAnimatorService = services.panelAnimator
     orientationServiceInstance = services.orientationService
     gestureServiceInitializeFn = services.initializeGestureDetector
 
-    // Khởi tạo AdvancedPanel component nhưng chưa dùng nhiều
-    // eslint-disable-next-line no-new
-    new components.AdvancedPanel({ panelElement: options.panelElement })
-    // advancedPanelComponent = new components.AdvancedPanel({ panelElement: options.panelElement })
-
-    // panelAnimator vẫn init như cũ, nó sẽ tự init panelService bên trong nó
-    panelAnimatorService.init({ panelElement: options.panelElement })
+    advancedPanelComponent = new components.AdvancedPanel({ panelElement: options.panelElement })
 
     gestureServiceInitializeFn({
         targetElement: options.gestureTargetElement,
         onSwipe: handleSwipe
     })
-    logger.log('AdvancedPanelController đã khởi tạo.')
+    logger.log('AdvancedPanelController đã khởi tạo và sử dụng AdvancedPanel Component.')
 }
 
 export const advancedPanelController = {
     init
 }
-    
