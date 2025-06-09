@@ -1,50 +1,54 @@
+import * as config from '../../config.js'
+
 export class Dial {
-    /**
-     * @param {object} options
-     * @param {HTMLElement} options.element - Phần tử DOM chính của dial.
-     * @param {HTMLElement[]} [options.layers=[]] - Mảng các layer cần được xoay.
-     * @param {function} [options.onAngleChanged] - Callback được gọi khi góc xoay thay đổi.
-     */
-    constructor ({ element, layers = [], onAngleChanged = () => {} }) {
+    constructor ({
+                     element,
+                     layersToRotate = [],
+                     tickMarkLayerElement,
+                     labelLayerElement,
+                     onAngleChanged = () => {}
+                 }) {
         if (!element) {
             throw new Error('Dial component yêu cầu có một element.')
         }
+        if (!tickMarkLayerElement) {
+            console.warn('Dial component: tickMarkLayerElement không được cung cấp. Vạch chia sẽ không được tạo.')
+        }
+        if (!labelLayerElement) {
+            console.warn('Dial component: labelLayerElement không được cung cấp. Nhãn sẽ không được tạo.')
+        }
+
         this.element = element
-        this.layers = layers
+        this.layersToRotate = layersToRotate
+        this.tickMarkLayerElement = tickMarkLayerElement
+        this.labelLayerElement = labelLayerElement
         this.onAngleChanged = onAngleChanged
 
-        // Trạng thái nội bộ của component
         this._isDragging = false
         this._previousPointerAngle = 0
         this._currentRotation = 0
 
-        // Bind 'this' cho các event handler
         this._handleInteractionStart = this._handleInteractionStart.bind(this)
         this._handleInteractionMove = this._handleInteractionMove.bind(this)
         this._handleInteractionEnd = this._handleInteractionEnd.bind(this)
 
         this._setupListeners()
+        this._createTickMarks()
     }
 
-    /**
-     * Phương thức công khai để đặt góc xoay từ bên ngoài.
-     * @param {number} angle - Góc xoay (độ).
-     */
     setRotation (angle) {
         this._currentRotation = angle
         const transformValue = `rotate(${angle}deg)`
-        this.layers.forEach(layer => {
-            layer.style.transform = transformValue
+        this.layersToRotate.forEach(layer => {
+            if (layer) {
+                layer.style.transform = transformValue
+            }
         })
     }
-
-    // --- Các phương thức "private" xử lý cử chỉ ---
 
     _setupListeners () {
         this.element.addEventListener('mousedown', this._handleInteractionStart)
         this.element.addEventListener('touchstart', this._handleInteractionStart, { passive: false })
-
-        // Gắn các listener cho document để đảm bảo kéo/thả mượt mà
         document.addEventListener('mousemove', this._handleInteractionMove)
         document.addEventListener('touchmove', this._handleInteractionMove, { passive: false })
         document.addEventListener('mouseup', this._handleInteractionEnd)
@@ -66,8 +70,6 @@ export class Dial {
     }
 
     _handleInteractionStart (event) {
-        // Controller sẽ xử lý việc `event.stopPropagation()` trên nút Start/Stop
-        // để ngăn việc kéo dial khi nhấn nút.
         event.preventDefault()
         this._isDragging = true
         this.element.style.cursor = 'grabbing'
@@ -92,13 +94,8 @@ export class Dial {
         const newRotation = this._currentRotation + deltaAngle
         this.setRotation(newRotation)
 
-        let normalizedAngle = -this._currentRotation % 360
-        if (normalizedAngle < 0) {
-            normalizedAngle += 360
-        }
-        // Thông báo cho thế giới bên ngoài về sự thay đổi
+        const normalizedAngle = ((-this._currentRotation % 360) + 360) % 360
         this.onAngleChanged(normalizedAngle)
-
         this._previousPointerAngle = currentPointerAngle
     }
 
@@ -106,5 +103,109 @@ export class Dial {
         if (!this._isDragging) return
         this._isDragging = false
         this.element.style.cursor = 'grab'
+    }
+
+    _createTickMarks () {
+        if (!this.element || !this.tickMarkLayerElement || !this.labelLayerElement) {
+            console.warn('Dial._createTickMarks: Thiếu các phần tử DOM cần thiết để tạo vạch chia/nhãn.')
+            return
+        }
+
+        this.tickMarkLayerElement.innerHTML = ''
+        this.labelLayerElement.innerHTML = ''
+
+        const referenceElementForSize = this.element
+        const layerWidth = referenceElementForSize.offsetWidth
+        const layerHeight = referenceElementForSize.offsetHeight
+        const layerCenterX = layerWidth / 2
+        const layerCenterY = layerHeight / 2
+        const trackBorderWidth = 5
+        const radiusContentEquivalent = (layerWidth / 2) - trackBorderWidth
+        const rotationOriginYForTicks = (layerHeight / 2) - config.TICK_INITIAL_TOP_OFFSET
+        const radiusForLabels = radiusContentEquivalent - config.TICK_INITIAL_TOP_OFFSET - config.TICK_LARGE_HEIGHT - config.LABEL_OFFSET_FROM_TICK
+
+        const marks = []
+
+        marks.push({
+            bpm: config.BPM_VALUE_FOR_0_DEG_MARK,
+            angle: config.ANGLE_FOR_0_BPM_MARK,
+            type: 'large',
+            needsLabel: true
+        })
+
+        marks.push({
+            bpm: config.MIN_SCALE_BPM,
+            angle: config.ANGLE_FOR_MIN_SCALE_BPM_MARK,
+            type: 'large',
+            needsLabel: true
+        })
+
+        const bpmScaleRange = config.MAX_SCALE_BPM - config.MIN_SCALE_BPM
+        const angleScaleRange = config.ANGLE_FOR_MAX_SCALE_BPM_MARK - config.ANGLE_FOR_MIN_SCALE_BPM_MARK
+        let effectiveDegreesPerBpmOnScale = 0
+
+        if (bpmScaleRange > 0 && angleScaleRange !== 0) {
+            effectiveDegreesPerBpmOnScale = angleScaleRange / bpmScaleRange
+        } else if (!(bpmScaleRange === 0 && angleScaleRange === 0)) {
+            console.warn('Kiểm tra lại cấu hình thang đo BPM trong config.js.')
+        }
+
+        if (bpmScaleRange > 0 && effectiveDegreesPerBpmOnScale !== 0) {
+            for (let bpmValue = config.MIN_SCALE_BPM + 5; bpmValue < config.MAX_SCALE_BPM; bpmValue += 5) {
+                const angle = config.ANGLE_FOR_MIN_SCALE_BPM_MARK +
+                    (bpmValue - config.MIN_SCALE_BPM) * effectiveDegreesPerBpmOnScale
+                const isLargeTick = (bpmValue % 10 === 0)
+                const type = isLargeTick ? 'large' : 'small'
+                const needsLabelForIntermediate = isLargeTick &&
+                    bpmValue >= 60 &&
+                    (bpmValue % 20 === 0)
+                marks.push({ bpm: bpmValue, angle: angle, type: type, needsLabel: needsLabelForIntermediate })
+            }
+        }
+
+        if (config.MAX_SCALE_BPM !== config.MIN_SCALE_BPM || config.ANGLE_FOR_MAX_SCALE_BPM_MARK !== config.ANGLE_FOR_MIN_SCALE_BPM_MARK) {
+            marks.push({
+                bpm: config.MAX_SCALE_BPM,
+                angle: config.ANGLE_FOR_MAX_SCALE_BPM_MARK,
+                type: 'large',
+                needsLabel: true
+            })
+        }
+
+        marks.forEach(markInfo => {
+            const tickElement = document.createElement('div')
+            tickElement.classList.add('tick')
+
+            let translateXValueForTick
+            if (markInfo.type === 'large') {
+                tickElement.classList.add('large-tick')
+                tickElement.style.width = `${config.TICK_LARGE_WIDTH}px`
+                tickElement.style.height = `${config.TICK_LARGE_HEIGHT}px`
+                translateXValueForTick = `-${config.TICK_LARGE_WIDTH / 2}px`
+            } else {
+                tickElement.classList.add('small-tick')
+                tickElement.style.width = `${config.TICK_SMALL_WIDTH}px`
+                tickElement.style.height = `${config.TICK_SMALL_HEIGHT}px`
+                translateXValueForTick = `-${config.TICK_SMALL_WIDTH / 2}px`
+            }
+
+            tickElement.style.top = `${config.TICK_INITIAL_TOP_OFFSET}px`
+            tickElement.style.transformOrigin = `50% ${rotationOriginYForTicks}px`
+            tickElement.style.transform = `translateX(${translateXValueForTick}) rotate(${markInfo.angle}deg)`
+            this.tickMarkLayerElement.appendChild(tickElement)
+
+            if (markInfo.needsLabel) {
+                const labelElement = document.createElement('div')
+                labelElement.className = 'bpm-label'
+                labelElement.textContent = markInfo.bpm.toString()
+                const angleRad = (markInfo.angle - 90) * (Math.PI / 180)
+                const labelX = layerCenterX + radiusForLabels * Math.cos(angleRad)
+                const labelY = layerCenterY + radiusForLabels * Math.sin(angleRad)
+                labelElement.style.left = `${labelX}px`
+                labelElement.style.top = `${labelY}px`
+                labelElement.style.transform = `translate(-50%, -50%) rotate(${markInfo.angle}deg)`
+                this.labelLayerElement.appendChild(labelElement)
+            }
+        })
     }
 }
