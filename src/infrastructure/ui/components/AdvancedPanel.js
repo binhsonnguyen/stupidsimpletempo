@@ -1,30 +1,41 @@
 // /src/infrastructure/ui/components/AdvancedPanel.js
-import {logger} from '../../logger.js'
+import { logger } from '../../logger.js'
+import { initializeGestureDetector } from '../gestureService.js' // Import trực tiếp
+import { orientationService } from '../../services/orientationService.js' // Import trực tiếp
 
 export class AdvancedPanel {
-    constructor({panelElement}) {
+    constructor ({ panelElement, gestureTargetElement }) { // Thêm gestureTargetElement
         if (!panelElement) {
             throw new Error('AdvancedPanel component yêu cầu có panelElement.')
         }
+        if (!gestureTargetElement) { // Kiểm tra gestureTargetElement
+            throw new Error('AdvancedPanel component yêu cầu có gestureTargetElement.')
+        }
+
         this.panelElement = panelElement
+        this.gestureTargetElement = gestureTargetElement // Lưu lại
         this.isVisible = this.panelElement.classList.contains('visible')
+
+        this._handleSwipe = this._handleSwipe.bind(this) // Bind _handleSwipe
+        this._setupGestureListener() // Gọi hàm cài đặt listener
     }
 
-    show() {
+    // --- Các phương thức show, hide, toggle, getIsVisible, revealFrom giữ nguyên từ Bước 2 ---
+    show () {
         if (this.isVisible || !this.panelElement) return
         this.panelElement.classList.add('visible')
         this.isVisible = true
         logger.log('AdvancedPanel Component: showed')
     }
 
-    hide() {
+    hide () {
         if (!this.isVisible || !this.panelElement) return
         this.panelElement.classList.remove('visible')
         this.isVisible = false
         logger.log('AdvancedPanel Component: hidden')
     }
 
-    toggle() {
+    toggle () {
         if (this.isVisible) {
             this.hide()
         } else {
@@ -32,26 +43,59 @@ export class AdvancedPanel {
         }
     }
 
-    getIsVisible() {
+    getIsVisible () {
         return this.isVisible
     }
 
     revealFrom (direction) {
         logger.log(`AdvancedPanel Component: Lệnh revealFrom với hướng: '${direction}'`)
         if (!this.panelElement) return
-
-        // Hiện tại, animation được xử lý bởi CSS qua class 'visible'
-        // Các hướng 'left', 'right', 'bottom' có thể cần CSS riêng nếu muốn hiệu ứng khác 'top'
         switch (direction) {
             case 'top':
-            case 'left': // Giả sử 'left' cũng dùng hiệu ứng trượt từ trên xuống hoặc hiệu ứng mặc định
+            case 'left':
             case 'right':
             case 'bottom':
-                this.show() // Gọi phương thức show của chính component này
+                this.show()
                 break
             default:
                 logger.warn(`AdvancedPanel Component: Hướng hoạt ảnh không xác định: ${direction}, đang hiển thị mặc định.`)
                 this.show()
+        }
+    }
+
+    // --- Thêm logic xử lý cử chỉ vào component ---
+    _setupGestureListener () {
+        initializeGestureDetector({
+            targetElement: this.gestureTargetElement,
+            onSwipe: this._handleSwipe // Callback là _handleSwipe của chính component này
+        })
+        logger.log('AdvancedPanel Component: Gesture detector đã được khởi tạo.')
+    }
+
+    _handleSwipe (direction) {
+        logger.log(`AdvancedPanel Component nhận được tín hiệu vuốt: ${direction}`)
+        const orientation = orientationService.get() // Sử dụng orientationService đã import
+
+        if (orientation === 'portrait') {
+            switch (direction) {
+                case 'down':
+                    this.revealFrom('top')
+                    break
+                case 'up':
+                    this.hide()
+                    break
+            }
+        }
+
+        if (orientation === 'landscape') {
+            switch (direction) {
+                case 'right':
+                    this.revealFrom('left')
+                    break
+                case 'left':
+                    this.hide()
+                    break
+            }
         }
     }
 }

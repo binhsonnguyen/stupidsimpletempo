@@ -6,7 +6,7 @@ import * as controller from './application/controller.js'
 function initializeApp () {
     const {
         dom, components, presenter, useCases, audioService, metronome, wakeLockService,
-        advancedPanelController, orientationService, initializeGestureDetector // panelAnimator đã bị xóa
+        orientationService, initializeGestureDetector // advancedPanelController đã bị xóa
     } = dependencies
 
     // Tạo và gán instance của StartButton
@@ -31,18 +31,12 @@ function initializeApp () {
     })
     dependencies.dial = dialInstance
 
-    advancedPanelController.init(
-        {
-            panelElement: dom.advancedPanelElement,
-            gestureTargetElement: dom.dialAreaWrapperElement
-        },
-        { // services
-            // panelAnimator, // Xóa dòng này
-            orientationService,
-            initializeGestureDetector
-        },
-        components
-    )
+    // Trực tiếp khởi tạo AdvancedPanel component
+    // eslint-disable-next-line no-new
+    new components.AdvancedPanel({
+        panelElement: dom.advancedPanelElement,
+        gestureTargetElement: dom.dialAreaWrapperElement // Truyền phần tử để lắng nghe cử chỉ
+    })
 
     presenter.initializePresenter(dependencies)
     presenter.renderInitialUi(dependencies, APP_VERSION)
