@@ -1,6 +1,6 @@
 {
   "name": "stupidsimpletempo",
-  "version": "1.0.44",
+  "version": "1.0.45",
   "scripts": {
     "generate-version": "node generate-version.js",
     "test": "jest",
