@@ -5,9 +5,10 @@ import * as controller from './application/controller.js'
 
 function initializeApp () {
     const {
-        dom, components, presenter, useCases, audioService, metronome, wakeLockService,
-        orientationService, initializeGestureDetector // advancedPanelController đã bị xóa
+        dom, components, presenter, useCases, audioService, metronome, wakeLockService
     } = dependencies
+
+    audioService.initializeAudioContext();
 
     // Tạo và gán instance của StartButton
     const startButtonInstance = new components.StartButton({
@@ -31,11 +32,10 @@ function initializeApp () {
     })
     dependencies.dial = dialInstance
 
-    // Trực tiếp khởi tạo AdvancedPanel component
     // eslint-disable-next-line no-new
     new components.AdvancedPanel({
         panelElement: dom.advancedPanelElement,
-        gestureTargetElement: dom.dialAreaWrapperElement // Truyền phần tử để lắng nghe cử chỉ
+        gestureTargetElement: dom.dialAreaWrapperElement
     })
 
     presenter.initializePresenter(dependencies)
@@ -44,7 +44,12 @@ function initializeApp () {
     // eslint-disable-next-line no-unused-vars
     const audioUnlocker = new Promise((resolve) => {
         const unlock = () => {
-            audioService.getAudioContext()?.resume().then(resolve)
+            const ctx = audioService.getAudioContext()
+            if (ctx && ctx.state === 'suspended') {
+                ctx.resume().then(resolve).catch(console.error);
+            } else if (ctx && ctx.state === 'running') {
+                resolve();
+            }
             document.body.removeEventListener('touchstart', unlock, true)
             document.body.removeEventListener('click', unlock, true)
         }
