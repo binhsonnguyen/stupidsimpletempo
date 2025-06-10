@@ -1,4 +1,3 @@
-// Xóa hết các import đến service cấp dưới, chỉ giữ lại logger nếu cần
 import { logger } from '../infrastructure/logger.js'
 
 // Các biến để giữ tham chiếu đến service sẽ được "tiêm" vào
