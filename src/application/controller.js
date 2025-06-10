@@ -9,22 +9,37 @@
  * @param {object} dependencies - Các phụ thuộc cần thiết.
  */
 export function handleButtonTap ({ useCases, presenter, audioService }) {
-    const audioCtx = audioService.getAudioContext()
-
     const performToggle = () => {
         useCases.toggleMetronome()
         presenter.renderApp()
     }
 
-    // Xử lý việc "mở khóa" AudioContext trên trình duyệt
-    if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume().then(performToggle)
-    } else if (audioCtx && audioCtx.state === 'running') {
-        performToggle()
-    } else if (!audioCtx) {
+    let audioCtx = audioService.getAudioContext()
+
+    if (!audioCtx) {
         if (audioService.initializeAudioContext()) {
-            handleButtonTap({ useCases, presenter, audioService })
+            audioCtx = audioService.getAudioContext() // Lấy lại context sau khi khởi tạo
         }
+    }
+
+    if (audioCtx) {
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume().then(() => {
+                if (audioService.getAudioContext().state === 'running') {
+                    performToggle() // Thực hiện công việc chính
+                } else {
+                    console.warn('AudioContext resumed but state is not "running". Metronome may not start.')
+                }
+            }).catch(err => {
+                console.error('Error resuming AudioContext:', err)
+            })
+        } else if (audioCtx.state === 'running') {
+            performToggle()
+        } else {
+            console.warn(`AudioContext is in an unexpected state: ${audioCtx.state}`)
+        }
+    } else {
+        console.error('Failed to initialize or get AudioContext. Metronome cannot start.')
     }
 }
 
