@@ -1,4 +1,4 @@
-// /src/infrastructure/ui/components/AdvancedPanel.js
+// /src/infrastructure/ui/components/advancedPanel.js
 import { logger } from '../../logger.js'
 import { initializeGestureDetector } from '../gestureService.js' // Import trực tiếp
 import { orientationService } from '../../services/orientationService.js' // Import trực tiếp

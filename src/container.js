@@ -17,7 +17,7 @@ import { wakeLockService } from './infrastructure/services/wakeLockService.js'
 // UI Components
 import { StartButton } from './infrastructure/ui/components/StartButton.js'
 import { Dial } from './infrastructure/ui/components/Dial.js'
-import { AdvancedPanel } from './infrastructure/ui/components/AdvancedPanel.js'
+import { AdvancedPanel } from './infrastructure/ui/components/advancedPanel.js'
 
 const metronome = new Metronome({
     initialBpm: config.MIN_SCALE_BPM,
