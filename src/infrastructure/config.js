@@ -12,6 +12,7 @@ export const GESTURE_DRAG_THRESHOLD_PX = 50
 export const MIN_SCALE_BPM = 40
 export const MAX_SCALE_BPM = 200
 
+// hard code từ svg ra
 export const ANGLE_FOR_0_BPM_MARK = 0
 export const BPM_VALUE_FOR_0_DEG_MARK = 0
 export const ANGLE_FOR_MIN_SCALE_BPM_MARK = 12
