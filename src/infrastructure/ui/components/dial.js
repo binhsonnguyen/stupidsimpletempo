@@ -58,7 +58,7 @@ export class Dial {
     }
 
     _handleInteractionStart (event) {
-        if (!this.layersToRotate.includes(event.target)) {
+        if (this.element !== event.target && !this.layersToRotate.includes(event.target)) {
             return
         }
 
