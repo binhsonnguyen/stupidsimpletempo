@@ -64,10 +64,18 @@ body {
 
 #labelLayer {
     z-index: 1;
+    background-image: url('../svg/bpm-labels.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 #tickMarkLayer {
     z-index: 2;
+    background-image: url('../svg/bpm-markers.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 #dialTrackBorderLayer {
@@ -120,29 +128,6 @@ body {
 .start-stop-button.on {
     box-shadow: 0 0 15px rgba(220, 53, 69, 0.7);
     cursor: pointer;
-}
-
-.tick {
-    position: absolute;
-    left: 50%;
-}
-
-.large-tick {
-    background-color: #adb5bd;
-}
-
-.small-tick {
-    background-color: #6c757d;
-}
-
-.bpm-label {
-    position: absolute;
-    font-size: 11px;
-    color: #dee2e6;
-    user-select: none;
-    pointer-events: none;
-    text-align: center;
-    white-space: nowrap;
 }
 
 /* --- Giao diện nâng cao (Mô hình Flexbox co giãn chiều cao) --- */
