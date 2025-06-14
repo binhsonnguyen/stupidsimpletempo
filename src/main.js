@@ -10,45 +10,25 @@ function initializeApp () {
 
     audioService.initializeAudioContext();
 
-    const unlockAudioContext = () => {
-        new Promise((resolve) => {
+    const unlockAudioContext = (ctx) => {
+        return new Promise((resolve) => {
             const b = document.body;
             const events = ["touchstart", "touchend", "mousedown", "keydown"];
-            const unlock = () => {
-                console.log('unlocking')
-
-                const ctx = audioService.getAudioContext()
-
-                if (!!ctx && ctx.state === 'suspended') {
-                    console.log('suspending')
-
-                    ctx.resume().then(resolve).catch(console.error);
-                } else if (!!ctx && ctx.state === 'running') {
-                    resolve();
-                }
-                events.forEach(e => b.removeEventListener(e, unlock, true));
-                console.log('removed listeners')
-            }
-
-            events.forEach(e => b.addEventListener(e, unlock, { once: true, capture: true }));
-            console.log('added listeners')
-
+            const unlock = () => { ctx.resume().then(clean).then(resolve) };
+            const clean = () => { events.forEach(e => b.removeEventListener(e, unlock));};
+            events.forEach(e => b.addEventListener(e, unlock, false));
         })
     }
 
-
     // Tạo và gán instance của StartButton
-    const startButtonInstance = new components.StartButton({
+    dependencies.startButton = new components.StartButton({
         element: dom.startStopButtonElement,
-        onTap: () => {
-            unlockAudioContext()
-            controller.handleButtonTap({ useCases, presenter, audioService })
-        }
+        onTap: () => unlockAudioContext(audioService.getAudioContext())
+            .then(() => controller.handleButtonTap({ useCases, presenter, audioService }))
     })
-    dependencies.startButton = startButtonInstance
 
     // Tạo và gán instance của Dial
-    const dialInstance = new components.Dial({
+    dependencies.dial = new components.Dial({
         element: dom.rotaryDialContainerElement,
         layersToRotate: [
             dom.labelLayerElement,
@@ -58,7 +38,6 @@ function initializeApp () {
         ],
         onAngleChanged: (newAngle) => controller.handleAngleChanged({ useCases, presenter }, newAngle)
     })
-    dependencies.dial = dialInstance
 
     // eslint-disable-next-line no-new
     new components.AdvancedPanel({
