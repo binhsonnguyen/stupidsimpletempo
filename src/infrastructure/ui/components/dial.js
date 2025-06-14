@@ -23,7 +23,6 @@ export class Dial {
         this._handleInteractionEnd = this._handleInteractionEnd.bind(this)
 
         this._setupListeners()
-        this._createTickMarks()
     }
 
     setRotation (angle) {
