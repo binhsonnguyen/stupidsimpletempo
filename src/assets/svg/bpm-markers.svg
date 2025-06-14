@@ -1,0 +1,44 @@
+<svg width="250" height="250" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <rect id="large-tick-shape" x="124.25" y="8" width="1.5" height="10" fill="#adb5bd"/>
+
+        <rect id="small-tick-shape" x="124.5" y="8" width="1" height="6" fill="#6c757d"/>
+    </defs>
+
+    <g id="tick-marks-layer">
+        <use href="#large-tick-shape" transform="rotate(0 125 117)" />
+        <use href="#large-tick-shape" transform="rotate(12 125 117)" />
+        <use href="#small-tick-shape" transform="rotate(21.625 125 117)" />
+        <use href="#large-tick-shape" transform="rotate(31.25 125 117)" />
+        <use href="#small-tick-shape" transform="rotate(40.875 125 117)" />
+        <use href="#large-tick-shape" transform="rotate(50.5 125 117)" />
+        <use href="#small-tick-shape" transform="rotate(60.125 125 117)" />
+        <use href="#large-tick-shape" transform="rotate(69.75 125 117)" />
+        <use href="#small-tick-shape" transform="rotate(79.375 125 117)" />
+        <use href="#large-tick-shape" transform="rotate(89 125 117)" />
+        <use href="#small-tick-shape" transform="rotate(98.625 125 117)" />
+        <use href="#large-tick-shape" transform="rotate(108.25 125 117)" />
+        <use href="#small-tick-shape" transform="rotate(117.875 125 117)" />
+        <use href="#large-tick-shape" transform="rotate(127.5 125 117)" />
+        <use href="#small-tick-shape" transform="rotate(137.125 125 117)" />
+        <use href="#large-tick-shape" transform="rotate(146.75 125 117)" />
+        <use href="#small-tick-shape" transform="rotate(156.375 125 117)" />
+        <use href="#large-tick-shape" transform="rotate(166 125 117)" />
+        <use href="#small-tick-shape" transform="rotate(175.625 125 117)" />
+        <use href="#large-tick-shape" transform="rotate(185.25 125 117)" />
+        <use href="#small-tick-shape" transform="rotate(194.875 125 117)" />
+        <use href="#large-tick-shape" transform="rotate(204.5 125 117)" />
+        <use href="#small-tick-shape" transform="rotate(214.125 125 117)" />
+        <use href="#large-tick-shape" transform="rotate(223.75 125 117)" />
+        <use href="#small-tick-shape" transform="rotate(233.375 125 117)" />
+        <use href="#large-tick-shape" transform="rotate(243 125 117)" />
+        <use href="#small-tick-shape" transform="rotate(252.625 125 117)" />
+        <use href="#large-tick-shape" transform="rotate(262.25 125 117)" />
+        <use href="#small-tick-shape" transform="rotate(271.875 125 117)" />
+        <use href="#large-tick-shape" transform="rotate(281.5 125 117)" />
+        <use href="#small-tick-shape" transform="rotate(291.125 125 117)" />
+        <use href="#large-tick-shape" transform="rotate(300.75 125 117)" />
+        <use href="#small-tick-shape" transform="rotate(310.375 125 117)" />
+        <use href="#large-tick-shape" transform="rotate(320 125 117)" />
+    </g>
+</svg>
