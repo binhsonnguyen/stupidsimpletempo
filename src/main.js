@@ -10,15 +10,12 @@ function initializeApp () {
 
     audioService.initializeAudioContext();
 
-    // Tạo và gán instance của StartButton
-    const startButtonInstance = new components.StartButton({
+    dependencies.startButton = new components.StartButton({
         element: dom.startStopButtonElement,
         onTap: () => controller.handleButtonTap({ useCases, presenter, audioService })
     })
-    dependencies.startButton = startButtonInstance
 
-    // Tạo và gán instance của Dial
-    const dialInstance = new components.Dial({
+    dependencies.dial = new components.Dial({
         element: dom.rotaryDialContainerElement,
         layersToRotate: [
             dom.labelLayerElement,
@@ -26,11 +23,8 @@ function initializeApp () {
             dom.dialTrackBorderLayerElement,
             dom.arcLayerElement
         ],
-        // tickMarkLayerElement: dom.tickMarkLayerElement,
-        labelLayerElement: dom.labelLayerElement,
         onAngleChanged: (newAngle) => controller.handleAngleChanged({ useCases, presenter }, newAngle)
     })
-    dependencies.dial = dialInstance
 
     // eslint-disable-next-line no-new
     new components.AdvancedPanel({

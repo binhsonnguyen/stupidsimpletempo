@@ -4,24 +4,14 @@ export class Dial {
     constructor ({
                      element,
                      layersToRotate = [],
-                     tickMarkLayerElement,
-                     labelLayerElement,
                      onAngleChanged = () => {}
                  }) {
         if (!element) {
             throw new Error('Dial component yêu cầu có một element.')
         }
-        if (!tickMarkLayerElement) {
-            console.warn('Dial component: tickMarkLayerElement không được cung cấp. Vạch chia sẽ không được tạo.')
-        }
-        if (!labelLayerElement) {
-            console.warn('Dial component: labelLayerElement không được cung cấp. Nhãn sẽ không được tạo.')
-        }
 
         this.element = element
         this.layersToRotate = layersToRotate
-        this.tickMarkLayerElement = tickMarkLayerElement
-        this.labelLayerElement = labelLayerElement
         this.onAngleChanged = onAngleChanged
 
         this._isDragging = false
@@ -103,68 +93,5 @@ export class Dial {
         if (!this._isDragging) return
         this._isDragging = false
         this.element.style.cursor = 'grab'
-    }
-
-    _createTickMarks () {
-        if (!this.tickMarkLayerElement || !this.labelLayerElement) {
-            console.warn('Dial._createTickMarks: Thiếu tickMarkLayerElement hoặc labelLayerElement để dọn dẹp.')
-            return
-        }
-
-        this.labelLayerElement.innerHTML = ''
-
-        const referenceElementForSize = this.element
-        const layerWidth = referenceElementForSize.offsetWidth
-        const layerHeight = referenceElementForSize.offsetHeight
-        const layerCenterX = layerWidth / 2
-        const layerCenterY = layerHeight / 2
-
-        const marks = []
-
-        marks.push({
-            bpm: config.BPM_VALUE_FOR_0_DEG_MARK,
-            angle: config.ANGLE_FOR_0_BPM_MARK,
-            type: 'large',
-            needsLabel: true
-        })
-
-        marks.push({
-            bpm: config.MIN_SCALE_BPM,
-            angle: config.ANGLE_FOR_MIN_SCALE_BPM_MARK,
-            type: 'large',
-            needsLabel: true
-        })
-
-        const bpmScaleRange = config.MAX_SCALE_BPM - config.MIN_SCALE_BPM
-        const angleScaleRange = config.ANGLE_FOR_MAX_SCALE_BPM_MARK - config.ANGLE_FOR_MIN_SCALE_BPM_MARK
-        let effectiveDegreesPerBpmOnScale = 0
-
-        if (bpmScaleRange > 0 && angleScaleRange !== 0) {
-            effectiveDegreesPerBpmOnScale = angleScaleRange / bpmScaleRange
-        } else if (!(bpmScaleRange === 0 && angleScaleRange === 0)) {
-            console.warn('Kiểm tra lại cấu hình thang đo BPM trong config.js.')
-        }
-
-        if (bpmScaleRange > 0 && effectiveDegreesPerBpmOnScale !== 0) {
-            for (let bpmValue = config.MIN_SCALE_BPM + 5; bpmValue < config.MAX_SCALE_BPM; bpmValue += 5) {
-                const angle = config.ANGLE_FOR_MIN_SCALE_BPM_MARK +
-                    (bpmValue - config.MIN_SCALE_BPM) * effectiveDegreesPerBpmOnScale
-                const isLargeTick = (bpmValue % 10 === 0)
-                const type = isLargeTick ? 'large' : 'small'
-                const needsLabelForIntermediate = isLargeTick &&
-                    bpmValue >= 60 &&
-                    (bpmValue % 20 === 0)
-                marks.push({ bpm: bpmValue, angle: angle, type: type, needsLabel: needsLabelForIntermediate })
-            }
-        }
-
-        if (config.MAX_SCALE_BPM !== config.MIN_SCALE_BPM || config.ANGLE_FOR_MAX_SCALE_BPM_MARK !== config.ANGLE_FOR_MIN_SCALE_BPM_MARK) {
-            marks.push({
-                bpm: config.MAX_SCALE_BPM,
-                angle: config.ANGLE_FOR_MAX_SCALE_BPM_MARK,
-                type: 'large',
-                needsLabel: true
-            })
-        }
     }
 }
