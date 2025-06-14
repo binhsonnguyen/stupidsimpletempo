@@ -26,7 +26,7 @@ function initializeApp () {
             dom.dialTrackBorderLayerElement,
             dom.arcLayerElement
         ],
-        tickMarkLayerElement: dom.tickMarkLayerElement,
+        // tickMarkLayerElement: dom.tickMarkLayerElement,
         labelLayerElement: dom.labelLayerElement,
         onAngleChanged: (newAngle) => controller.handleAngleChanged({ useCases, presenter }, newAngle)
     })

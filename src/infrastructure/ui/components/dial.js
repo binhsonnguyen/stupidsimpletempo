@@ -106,12 +106,11 @@ export class Dial {
     }
 
     _createTickMarks () {
-        if (!this.element || !this.tickMarkLayerElement || !this.labelLayerElement) {
-            console.warn('Dial._createTickMarks: Thiếu các phần tử DOM cần thiết để tạo vạch chia/nhãn.')
+        if (!this.tickMarkLayerElement || !this.labelLayerElement) {
+            console.warn('Dial._createTickMarks: Thiếu tickMarkLayerElement hoặc labelLayerElement để dọn dẹp.')
             return
         }
 
-        this.tickMarkLayerElement.innerHTML = ''
         this.labelLayerElement.innerHTML = ''
 
         const referenceElementForSize = this.element
@@ -119,10 +118,6 @@ export class Dial {
         const layerHeight = referenceElementForSize.offsetHeight
         const layerCenterX = layerWidth / 2
         const layerCenterY = layerHeight / 2
-        const trackBorderWidth = 5
-        const radiusContentEquivalent = (layerWidth / 2) - trackBorderWidth
-        const rotationOriginYForTicks = (layerHeight / 2) - config.TICK_INITIAL_TOP_OFFSET
-        const radiusForLabels = radiusContentEquivalent - config.TICK_INITIAL_TOP_OFFSET - config.TICK_LARGE_HEIGHT - config.LABEL_OFFSET_FROM_TICK
 
         const marks = []
 
@@ -171,41 +166,5 @@ export class Dial {
                 needsLabel: true
             })
         }
-
-        marks.forEach(markInfo => {
-            const tickElement = document.createElement('div')
-            tickElement.classList.add('tick')
-
-            let translateXValueForTick
-            if (markInfo.type === 'large') {
-                tickElement.classList.add('large-tick')
-                tickElement.style.width = `${config.TICK_LARGE_WIDTH}px`
-                tickElement.style.height = `${config.TICK_LARGE_HEIGHT}px`
-                translateXValueForTick = `-${config.TICK_LARGE_WIDTH / 2}px`
-            } else {
-                tickElement.classList.add('small-tick')
-                tickElement.style.width = `${config.TICK_SMALL_WIDTH}px`
-                tickElement.style.height = `${config.TICK_SMALL_HEIGHT}px`
-                translateXValueForTick = `-${config.TICK_SMALL_WIDTH / 2}px`
-            }
-
-            tickElement.style.top = `${config.TICK_INITIAL_TOP_OFFSET}px`
-            tickElement.style.transformOrigin = `50% ${rotationOriginYForTicks}px`
-            tickElement.style.transform = `translateX(${translateXValueForTick}) rotate(${markInfo.angle}deg)`
-            this.tickMarkLayerElement.appendChild(tickElement)
-
-            if (markInfo.needsLabel) {
-                const labelElement = document.createElement('div')
-                labelElement.className = 'bpm-label'
-                labelElement.textContent = markInfo.bpm.toString()
-                const angleRad = (markInfo.angle - 90) * (Math.PI / 180)
-                const labelX = layerCenterX + radiusForLabels * Math.cos(angleRad)
-                const labelY = layerCenterY + radiusForLabels * Math.sin(angleRad)
-                labelElement.style.left = `${labelX}px`
-                labelElement.style.top = `${labelY}px`
-                labelElement.style.transform = `translate(-50%, -50%) rotate(${markInfo.angle}deg)`
-                this.labelLayerElement.appendChild(labelElement)
-            }
-        })
     }
 }
