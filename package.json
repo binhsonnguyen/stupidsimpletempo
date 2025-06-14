@@ -7,10 +7,10 @@
     "test": "jest",
     "patch": "npm version patch && npm run generate-version",
     "build": "npm run parcel:build",
-    "deploy": "npm run build && npm run firebase:deploy",
+    "deploy:dev": "npm run build && firebase deploy --only hosting -P dev --config firebase.dev.json",
+    "deploy:prod": "npm run build && firebase deploy --only hosting",
     "parcel:dev": "parcel src/index.html --dist-dir dev_dist",
-    "parcel:build": "parcel build src/index.html --dist-dir public",
-    "firebase:deploy": "firebase deploy --only hosting"
+    "parcel:build": "parcel build src/index.html --dist-dir public"
   },
   "author": "Nguyen Binh Son",
   "license": "ISC",

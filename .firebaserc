@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "stupidsimpletempo"
+    "default": "stupidsimpletempo",
+    "dev": "stupidsimpletempo-dev"
   }
 }
