@@ -1,88 +1,43 @@
 <svg width="250" height="250" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg">
     <g
-            id="labels-layer-correct"
+            id="labels-layer-centered"
             font-family="system-ui, -apple-system, sans-serif"
-            font-size="12"
+            font-size="11"
             fill="#dee2e6"
+            text-anchor="middle"
     >
-        <text
-                x="125"
-                y="27"
-                text-anchor="middle"
-                dominant-baseline="middle"
-                transform="rotate(0 125 27)"
-        >0</text>
+        <g transform="rotate(0 125 125)">
+            <text x="125" y="31">0</text>
+        </g>
 
-        <text
-                x="145.375"
-                y="29.1415"
-                text-anchor="middle"
-                dominant-baseline="middle"
-                transform="rotate(12 145.375 29.1415)"
-        >40</text>
+        <g transform="rotate(12 125 125)">
+            <text x="125" y="31">40</text>
+        </g>
 
-        <text
-                x="200.619"
-                y="62.6643"
-                text-anchor="middle"
-                dominant-baseline="middle"
-                transform="rotate(50.5 200.619 62.6643)"
-        >60</text>
+        <g transform="rotate(50.5 125 125)">
+            <text x="125" y="31">60</text>
+        </g>
 
-        <text
-                x="222.985"
-                y="123.29"
-                text-anchor="middle"
-                dominant-baseline="middle"
-                transform="rotate(89 222.985 123.29)"
-        >80</text>
-
-        <text
-                x="202.749"
-                y="184.659"
-                text-anchor="middle"
-                dominant-baseline="middle"
-                transform="rotate(127.5 202.749 184.659)"
-        >100</text>
-
-        <text
-                x="148.708"
-                y="220.089"
-                text-anchor="middle"
-                dominant-baseline="middle"
-                transform="rotate(166 148.708 220.089)"
-        >120</text>
-
-        <text
-                x="84.3601"
-                y="214.176"
-                text-anchor="middle"
-                dominant-baseline="middle"
-                transform="rotate(204.5 84.3601 214.176)"
-        >140</text>
-
-        <text
-                x="37.6814"
-                y="169.491"
-                text-anchor="middle"
-                dominant-baseline="middle"
-                transform="rotate(243 37.6814 169.491)"
-        >160</text>
-
-        <text
-                x="28.9674"
-                y="105.462"
-                text-anchor="middle"
-                dominant-baseline="middle"
-                transform="rotate(281.5 28.9674 105.462)"
-        >180</text>
-
-        <text
-                x="62.0068"
-                y="49.9276"
-                text-anchor="middle"
-                dominant-baseline="middle"
-                transform="rotate(320 62.0068 49.9276)"
-        >200</text>
+        <g transform="rotate(89 125 125)">
+            <text x="125" y="31">80</text>
+        </g>
+        <g transform="rotate(127.5 125 125)">
+            <text x="125" y="31">100</text>
+        </g>
+        <g transform="rotate(166 125 125)">
+            <text x="125" y="31">120</text>
+        </g>
+        <g transform="rotate(204.5 125 125)">
+            <text x="125" y="31">140</text>
+        </g>
+        <g transform="rotate(243 125 125)">
+            <text x="125" y="31">160</text>
+        </g>
+        <g transform="rotate(281.5 125 125)">
+            <text x="125" y="31">180</text>
+        </g>
+        <g transform="rotate(320 125 125)">
+            <text x="125" y="31">200</text>
+        </g>
     </g>
 </svg>
