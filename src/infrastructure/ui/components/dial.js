@@ -58,6 +58,10 @@ export class Dial {
     }
 
     _handleInteractionStart (event) {
+        if (!this.layersToRotate.includes(event.target)) {
+            return
+        }
+
         event.preventDefault()
         this._isDragging = true
         this.element.style.cursor = 'grabbing'
