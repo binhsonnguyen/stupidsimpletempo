@@ -163,7 +163,7 @@ function requestWakeLock() {
 function unlockAudioContext(ctx) {
     if (!ctx) return Promise.reject(new Error("AudioContext is null"))
 
-    return ctx.state === 'suspended' ? new Promise((resolve) => {
+    return ctx.state === 'suspended' ? new Promise((resolve, reject) => {
         const b = document.body
         const events = ["touchstart", "touchend", "mousedown", "keydown"]
         let hasUnlocked = false
@@ -172,22 +172,26 @@ function unlockAudioContext(ctx) {
             if (ctx.state === 'suspended') {
                 ctx.resume().then(() => {
                     hasUnlocked = true
+                    logger.log('AudioContext resumed successfully by user interaction.');
                     clean()
                     resolve()
                 }).catch(err => {
                     hasUnlocked = true
+                    logger.error('AudioContext resume failed:', err);
                     clean()
                     reject(err)
                 })
             } else {
                 hasUnlocked = true
+                logger.log(`AudioContext already in state: ${ctx.state}. No resume needed or possible.`);
                 clean()
                 resolve()
             }
         }
         const clean = () => {
-            events.forEach(e => b.removeEventListener(e, unlock))
+            events.forEach(e => b.removeEventListener(e, unlock, false))
         }
         events.forEach(e => b.addEventListener(e, unlock, false))
+        logger.log('unlockAudioContext: Event listeners added to body to await user interaction.');
     }) : Promise.resolve()
 }
