@@ -4,6 +4,8 @@ import { dependencies } from './container.js'
 import * as controller from './application/controller.js'
 import {wakeLockServiceRequest} from "./infrastructure/controllers/visibilityChange";
 import {registerServiceWorker} from "./infrastructure/controllers/registerSW";
+import {registerUnlockAudioContextHook} from "./infrastructure/hooks/registerUnlockAudioContextHook";
+import {isMobile} from "./infrastructure/services/device";
 
 window.addEventListener('DOMContentLoaded', () => {
     dependencies.initDomElements().then(() => initializeApp())
@@ -21,30 +23,9 @@ function initializeApp () {
     } = dependencies
 
     audioService.initializeAudioContext();
-    function isMobile() {
-        const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
-        return regex.test(navigator.userAgent);
-    }
-
-    const unlockAudioContext = (ctx) => {
-        return new Promise((resolve) => {
-            const b = document.body;
-            const events = ["touchstart", "touchend", "mousedown", "keydown"];
-            const unlock = () => {
-                if (ctx.state === 'suspended') {
-                    ctx.resume().then(clean).then(resolve);
-                } else {
-                    clean()
-                    resolve()
-                }
-            };
-            const clean = () => { events.forEach(e => b.removeEventListener(e, unlock));};
-            events.forEach(e => b.addEventListener(e, unlock, false));
-        })
-    }
 
     if (!isMobile()) {
-        unlockAudioContext(audioService.getAudioContext()).then(() => {})
+        registerUnlockAudioContextHook(audioService.getAudioContext()).then(() => {})
     }
 
     // Tạo và gán instance của StartButton
@@ -52,7 +33,7 @@ function initializeApp () {
         element: dom.startStopButtonElement,
         onTap: () => {
             if (isMobile()) {
-                unlockAudioContext(audioService.getAudioContext())
+                registerUnlockAudioContextHook(audioService.getAudioContext())
                     .then(() => controller.handleButtonTap({
                         useCases,
                         presenter,
@@ -63,7 +44,7 @@ function initializeApp () {
                     useCases,
                     presenter,
                     audioService
-                });
+                }).then(() => {});
             }
         }
     });
