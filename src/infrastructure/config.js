@@ -2,14 +2,11 @@ export const SCHEDULER_RUN_INTERVAL_MS = 25.0
 export const AUDIO_SCHEDULE_LOOKAHEAD_SECONDS = 0.1
 
 // hard code từ svg ra, dùng trong usecase (mã xấu)
-export const MIN_SCALE_BPM = 40
-export const MAX_SCALE_BPM = 200
-
-// hard code từ svg ra, dùng trong usecase (mã xấu)
 export const ANGLE_FOR_0_BPM_MARK = 0
-export const BPM_VALUE_FOR_0_DEG_MARK = 0
 export const ANGLE_FOR_MIN_SCALE_BPM_MARK = 12
 export const ANGLE_FOR_MAX_SCALE_BPM_MARK = 320
+export const MIN_SCALE_BPM = 40
+export const MAX_SCALE_BPM = 200
 
 // --- Cấu hình Âm thanh & Phách ---
 
