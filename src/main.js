@@ -3,6 +3,7 @@ import { APP_VERSION } from './version.js'
 import { dependencies } from './container.js'
 import * as controller from './ui/controllers/controller.js'
 import * as device from "./infrastructure/services/device";
+import {logger} from "./infrastructure/logger";
 
 const {
     dom,
@@ -15,11 +16,14 @@ const {
 } = dependencies
 
 window.addEventListener('DOMContentLoaded', () => {
-    dependencies.initDomElements().then(() => initializeApp())
+    dependencies.initDomElements()
+        .then(() => audioService.initializeAudioContext())
+        .then(() => initializeApp())
+
 })
 
 function initializeApp () {
-    audioService.initializeAudioContext();
+    logger.log('initializeApp')
 
     if (!device.isMobile()) {
         registerUnlockAudioContextHook(audioService.getAudioContext()).then(() => {})
