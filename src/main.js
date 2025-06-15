@@ -62,7 +62,17 @@ function initializeApp () {
     presenter.renderInitialUi(dependencies, APP_VERSION)
 
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => controller.registerServiceWorker())
+        window.addEventListener('load', () => {
+            navigator.serviceWorker
+                .register(new URL('./infrastructure/services/sw.js', import.meta.url))
+                .then(() => {
+                    console.log('Service worker has been registered.')
+                })
+        })
     }
-    document.addEventListener('visibilitychange', () => controller.wakeLockServiceRequest())
+    document.addEventListener('visibilitychange', () => {
+        if (dependencies.metronome.isRunning && document.visibilityState === 'visible') {
+            dependencies.wakeLockService.request().then(() => { })
+        }
+    })
 }

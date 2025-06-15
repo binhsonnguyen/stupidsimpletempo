@@ -77,17 +77,3 @@ export function registerUnlockAudioContextHook (ctx) {
         events.forEach(e => b.addEventListener(e, unlock, false));
     })
 }
-
-export function registerServiceWorker() {
-    navigator.serviceWorker
-        .register(new URL('../../infrastructure/services/sw.js', import.meta.url))
-        .then(() => {
-            console.log('Service worker has been registered.')
-        })
-}
-
-export function wakeLockServiceRequest() {
-    if (dependencies.metronome.isRunning && document.visibilityState === 'visible') {
-        dependencies.wakeLockService.request().then(() => { })
-    }
-}
