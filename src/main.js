@@ -67,9 +67,41 @@ function initializeApp () {
             dom.arcLayerElement
         ],
         onDialChangeToNewBpmValue: (newValue) => {
-            unlockMobileAudioContext(audioService.getAudioContext())
-                .then(() => controller.handleDialChanged({ useCases, presenter }, newValue))
+            const audioCtx = audioService.getAudioContext();
 
+            if (audioCtx.state === 'running') {
+                controller.handleDialChanged({ useCases, presenter }, newValue);
+            } else if (audioCtx.state === 'suspended' && device.isMobile()) {
+                logger.log(`Dial changed to ${newValue} BPM while mobile audio suspended. Storing as latest.`);
+                latestBpmDuringAudioContextUnlocking = newValue; // Luôn cập nhật giá trị BPM mới nhất
+
+                if (!audioContextInprogress) {
+                    audioContextInprogress = true;
+                    logger.log('Mobile audio unlock not in progress. Initiating.');
+
+                    activeAudioUnlockPromise = unlockAudioContext(audioCtx)
+                        .then(() => {
+                            logger.log('Mobile audio unlocked. Processing latest BPM from unlock period.');
+                            if (!latestBpmDuringAudioContextUnlocking) {
+                                controller.handleDialChanged({ useCases, presenter }, latestBpmDuringMobileUnlock);
+                            }
+                        })
+                        .catch(err => {
+                            logger.error('Mobile audio unlock failed:', err);
+                        })
+                        .finally(() => {
+                            logger.log('Resetting mobile audio unlock state.');
+                            audioContextInprogress = false;
+                            latestBpmDuringAudioContextUnlocking = null;
+                            activeAudioUnlockPromise = null;
+                        });
+                } else {
+                    logger.log('Mobile audio unlock already in progress. Latest BPM updated.');
+                }
+            } else {
+                logger.log(`Dial changed to ${newValue} BPM. State: ${audioCtx.state}, Mobile: ${device.isMobile()}. Proceeding directly.`);
+                controller.handleDialChanged({ useCases, presenter }, newValue);
+            }
         }
     })
 
