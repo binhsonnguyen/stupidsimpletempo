@@ -47,7 +47,7 @@ function initializeApp () {
             dom.dialTrackBorderLayerElement,
             dom.arcLayerElement
         ],
-        onAngleChanged: (newAngle) => controller.handleAngleChanged({ useCases, presenter }, newAngle)
+        onDialChangeToNewBpmValue: (newValue) => controller.handleDialChanged({ useCases, presenter }, newValue)
     })
 
     presenter.initializePresenter(dependencies)

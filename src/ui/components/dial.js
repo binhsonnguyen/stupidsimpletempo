@@ -1,15 +1,17 @@
+import * as config from "../../infrastructure/config";
+
 export class Dial {
     constructor ({
                      element,
                      layersToRotate = [],
-                     onAngleChanged = () => {}
+                     onDialChangeToNewBpmValue = () => {}
                  }) {
         if (!element) {
             throw new Error('Dial component yêu cầu có một element.')
         }
         this.element = element
         this.layersToRotate = layersToRotate
-        this.onAngleChanged = onAngleChanged
+        this.onDialChangeToNewBpmValue = onDialChangeToNewBpmValue
 
         this._isDragging = false
         this._previousPointerAngle = 0
@@ -84,16 +86,59 @@ export class Dial {
         const newRotation = this._currentRotation + deltaAngle
         this.setRotation(newRotation)
 
-        const normalizedAngle = ((-this._currentRotation % 360) + 360) % 360
+        const displayAngle = ((-this._currentRotation % 360) + 360) % 360;
         this._previousPointerAngle = currentPointerAngle
 
-        this.onAngleChanged(normalizedAngle)
+        const newBpmValue = this._angleToBpmValue(displayAngle); // Hoặc this._angleToBpmValue(this._currentRotation)
+
+        if (newBpmValue !== undefined) {
+            this.onDialChangeToNewBpmValue(newBpmValue);
+        }
     }
 
     _handleInteractionEnd () {
         if (!this._isDragging) return
         this._isDragging = false
         this.element.style.cursor = 'grab'
+    }
+
+    _angleToBpmValue(angle) {
+        const {
+            ANGLE_FOR_0_BPM_MARK,
+            ANGLE_FOR_MIN_SCALE_BPM_MARK,
+            ANGLE_FOR_MAX_SCALE_BPM_MARK,
+            MIN_SCALE_BPM,
+            MAX_SCALE_BPM
+        } = config
+
+        let normalizedAngle = Math.round(angle);
+        normalizedAngle = ((normalizedAngle % 360) + 360) % 360;
+
+        if (normalizedAngle === ANGLE_FOR_0_BPM_MARK) {
+            return undefined
+        }
+
+        let newBpmCandidate
+
+        if (angle > ANGLE_FOR_0_BPM_MARK && angle < ANGLE_FOR_MIN_SCALE_BPM_MARK) {
+            newBpmCandidate = MIN_SCALE_BPM
+        } else if (angle >= ANGLE_FOR_MIN_SCALE_BPM_MARK && angle <= ANGLE_FOR_MAX_SCALE_BPM_MARK) {
+            const bpmScaleRange = MAX_SCALE_BPM - MIN_SCALE_BPM
+            const angleScaleRange = ANGLE_FOR_MAX_SCALE_BPM_MARK - ANGLE_FOR_MIN_SCALE_BPM_MARK
+
+            if (angleScaleRange <= 0 || bpmScaleRange < 0) {
+                newBpmCandidate = MIN_SCALE_BPM
+            } else {
+                const percentageInAngleRange = (angle - ANGLE_FOR_MIN_SCALE_BPM_MARK) / angleScaleRange
+                const calculatedBpm = MIN_SCALE_BPM + percentageInAngleRange * bpmScaleRange
+                newBpmCandidate = Math.round(calculatedBpm)
+            }
+            newBpmCandidate = Math.max(MIN_SCALE_BPM, Math.min(MAX_SCALE_BPM, newBpmCandidate))
+        } else {
+            newBpmCandidate = MAX_SCALE_BPM
+        }
+
+        return newBpmCandidate
     }
 
 }
