@@ -1,9 +1,7 @@
 // /src/main.js
 import { APP_VERSION } from './version.js'
 import { dependencies } from './container.js'
-import * as controller from './application/controller.js'
-import {wakeLockServiceRequest} from "./infrastructure/controllers/visibilityChange";
-import {registerServiceWorker} from "./infrastructure/controllers/registerSW";
+import * as controller from './infrastructure/controllers/controller.js'
 import {registerUnlockAudioContextHook} from "./infrastructure/hooks/registerUnlockAudioContextHook";
 import {isMobile} from "./infrastructure/services/device";
 
@@ -64,9 +62,8 @@ function initializeApp () {
     presenter.initializePresenter(dependencies)
     presenter.renderInitialUi(dependencies, APP_VERSION)
 
-
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => registerServiceWorker())
+        window.addEventListener('load', () => controller.registerServiceWorker())
     }
-    document.addEventListener('visibilitychange', () => wakeLockServiceRequest())
+    document.addEventListener('visibilitychange', () => controller.wakeLockServiceRequest())
 }
