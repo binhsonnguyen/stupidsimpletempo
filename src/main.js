@@ -2,8 +2,8 @@
 import { APP_VERSION } from './version.js'
 import { dependencies } from './container.js'
 import * as controller from './ui/controllers/controller.js'
-import * as device from "./infrastructure/services/device";
-import {logger} from "./infrastructure/logger";
+import * as device from "./infrastructure/services/device"
+import {logger} from "./infrastructure/logger"
 
 const {
     dom,
@@ -27,15 +27,15 @@ window.addEventListener('DOMContentLoaded', () => {
             const audioCtx = audioService.getAudioContext()
             activeAudioUnlockPromise = unlockAudioContext(audioCtx)
             activeAudioUnlockPromise.catch(err => {
-                logger.warn('Initial audio unlock promise rejected or timed out (no user interaction?):', err);
+                logger.warn('Initial audio unlock promise rejected or timed out (no user interaction?):', err)
             })
             return activeAudioUnlockPromise
         })
         .then(registerServiceWorker)
         .then(requestWakeLock)
         .catch(error => {
-            logger.error("Error during app initialization chain:", error);
-        });
+            logger.error("Error during app initialization chain:", error)
+        })
 })
 
 function initializeApp () {
@@ -44,27 +44,35 @@ function initializeApp () {
     dependencies.startButton = new components.StartButton({
         element: dom.startStopButtonElement,
         onTap: () => {
-            const audioCtx = audioService.getAudioContext();
-            if (audioCtx.state === 'suspended' && device.isMobile()) {
+            const audioCtx = audioService.getAudioContext()
+            if (audioCtx.state === 'running') {
+                controller.handleButtonTap({ useCases, presenter })
+            } else if (audioCtx.state === 'suspended') {
+                logger.log('StartButton tapped while audio suspended. Awaiting initial unlock.')
                 if (!audioContextInprogress) {
-                    audioContextInprogress = true;
-                    activeAudioUnlockPromise = unlockAudioContext(audioCtx)
-                        .then(() => controller.handleButtonTap({ useCases, presenter }))
-                        .catch(err => logger.error('Start button audio unlock failed:', err))
-                        .finally(() => {
-                            audioContextInprogress = false;
-                            activeAudioUnlockPromise = null;
-                        });
-                } else if (!!activeAudioUnlockPromise) {
+                    audioContextInprogress = true
                     activeAudioUnlockPromise
-                        .then(() => controller.handleButtonTap({ useCases, presenter }))
-                        .catch(err => logger.error('Start button tap after dial unlock failed:', err));
+                        .then(() => {
+                            logger.log('Mobile audio unlocked (awaited by StartButton). Handling tap.')
+                            controller.handleButtonTap({ useCases, presenter })
+                        })
+                        .catch(err => logger.error('Start button: Error awaiting initial audio unlock:', err))
+                        .finally(() => {
+                            audioContextInprogress = false
+                        })
+                } else {
+                    activeAudioUnlockPromise
+                        .then(() => {
+                            logger.log('Mobile audio unlock already in progress (awaited by other). Handling StartButton tap post-unlock.')
+                            controller.handleButtonTap({ useCases, presenter })
+                        })
+                        .catch(err => logger.error('Start button: Error chaining to active audio unlock:', err))
                 }
             } else {
-                controller.handleButtonTap({ useCases, presenter });
+                controller.handleButtonTap({ useCases, presenter })
             }
         }
-    });
+    })
 
     dependencies.dial = new components.Dial({
         element: dom.rotaryDialContainerElement,
@@ -75,40 +83,39 @@ function initializeApp () {
             dom.arcLayerElement
         ],
         onDialChangeToNewBpmValue: (newValue) => {
-            const audioCtx = audioService.getAudioContext();
+            const audioCtx = audioService.getAudioContext()
 
             if (audioCtx.state === 'running') {
-                controller.handleDialChanged({ useCases, presenter }, newValue);
-            } else if (audioCtx.state === 'suspended' && device.isMobile()) {
-                logger.log(`Dial changed to ${newValue} BPM while mobile audio suspended. Storing as latest.`);
-                latestBpmDuringAudioContextUnlocking = newValue; // Luôn cập nhật giá trị BPM mới nhất
+                controller.handleDialChanged({ useCases, presenter }, newValue)
+            } else if (audioCtx.state === 'suspended') {
+                logger.log(`Dial changed to ${newValue} BPM while audio suspended. Storing as latest.`)
+                latestBpmDuringAudioContextUnlocking = newValue
 
                 if (!audioContextInprogress) {
-                    audioContextInprogress = true;
-                    logger.log('Mobile audio unlock not in progress. Initiating.');
+                    audioContextInprogress = true // Đánh dấu là dial đang đợi
+                    logger.log('Dial is now waiting for initial mobile audio unlock.')
 
-                    activeAudioUnlockPromise = unlockAudioContext(audioCtx)
+                    activeAudioUnlockPromise
                         .then(() => {
-                            logger.log('Mobile audio unlocked. Processing latest BPM from unlock period.');
-                            if (!latestBpmDuringAudioContextUnlocking) {
-                                controller.handleDialChanged({ useCases, presenter }, latestBpmDuringMobileUnlock);
+                            logger.log('Mobile audio unlocked (awaited by Dial). Processing latest BPM.')
+                            if (latestBpmDuringAudioContextUnlocking !== undefined && latestBpmDuringAudioContextUnlocking !== null) {
+                                controller.handleDialChanged({ useCases, presenter }, latestBpmDuringAudioContextUnlocking)
                             }
                         })
                         .catch(err => {
-                            logger.error('Mobile audio unlock failed:', err);
+                            logger.error('Dial: Error awaiting initial mobile audio unlock:', err)
                         })
                         .finally(() => {
-                            logger.log('Resetting mobile audio unlock state.');
-                            audioContextInprogress = false;
-                            latestBpmDuringAudioContextUnlocking = null;
-                            activeAudioUnlockPromise = null;
-                        });
+                            logger.log('Dial finished waiting for mobile audio unlock state.')
+                            audioContextInprogress = false
+                            latestBpmDuringAudioContextUnlocking = null
+                        })
                 } else {
-                    logger.log('Mobile audio unlock already in progress. Latest BPM updated.');
+                    logger.log('Mobile audio unlock already being awaited by another component. Latest BPM updated for dial.')
                 }
             } else {
-                logger.log(`Dial changed to ${newValue} BPM. State: ${audioCtx.state}, Mobile: ${device.isMobile()}. Proceeding directly.`);
-                controller.handleDialChanged({ useCases, presenter }, newValue);
+                logger.log(`Dial changed to ${newValue} BPM. State: ${audioCtx.state}, Mobile: ${device.isMobile()}. Proceeding directly.`)
+                controller.handleDialChanged({ useCases, presenter }, newValue)
             }
         }
     })
@@ -128,19 +135,19 @@ function registerServiceWorker() {
                         resolve()
                     })
                     .catch(error => {
-                        logger.error('Service worker registration failed:', error);
+                        logger.error('Service worker registration failed:', error)
                         resolve()
-                    });
+                    })
             })
         } else {
-            logger.log('Service worker not supported.');
+            logger.log('Service worker not supported.')
             resolve()
         }
     })
 }
 
 function requestWakeLock() {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
         document.addEventListener('visibilitychange', () => {
             if (dependencies.metronome.isRunning && document.visibilityState === 'visible') {
                 if (!!dependencies.wakeLockService) {
@@ -154,33 +161,33 @@ function requestWakeLock() {
 }
 
 function unlockAudioContext(ctx) {
-    if (!ctx) return Promise.reject(new Error("AudioContext is null"));
+    if (!ctx) return Promise.reject(new Error("AudioContext is null"))
 
     return ctx.state === 'suspended' ? new Promise((resolve) => {
         const b = document.body
         const events = ["touchstart", "touchend", "mousedown", "keydown"]
         let hasUnlocked = false
         const unlock = () => {
-            if (hasUnlocked) return;
+            if (hasUnlocked) return
             if (ctx.state === 'suspended') {
                 ctx.resume().then(() => {
-                    hasUnlocked = true;
+                    hasUnlocked = true
                     clean()
                     resolve()
                 }).catch(err => {
-                    hasUnlocked = true;
-                    clean();
-                    reject(err);
+                    hasUnlocked = true
+                    clean()
+                    reject(err)
                 })
             } else {
-                hasUnlocked = true;
+                hasUnlocked = true
                 clean()
                 resolve()
             }
-        };
+        }
         const clean = () => {
             events.forEach(e => b.removeEventListener(e, unlock))
-        };
+        }
         events.forEach(e => b.addEventListener(e, unlock, false))
     }) : Promise.resolve()
 }
