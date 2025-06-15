@@ -1,4 +1,5 @@
 import * as config from "../../infrastructure/config";
+import {logger} from "../../infrastructure/logger";
 
 export class Dial {
     constructor ({
@@ -141,4 +142,47 @@ export class Dial {
         return newBpmCandidate
     }
 
+    /**
+     * Chuyển đổi một giá trị BPM (đã được làm tròn) thành góc (đã làm tròn, 0-359) tương ứng trên dial.
+     * @param {number|undefined} bpm - Giá trị BPM (kết quả từ _angleToBpmValue).
+     * @returns {number} Góc (số nguyên, 0-359) tương ứng trên dial.
+     */
+    _bpmToAngleValue(bpm) {
+        const {
+            ANGLE_FOR_0_BPM_MARK,
+            ANGLE_FOR_MIN_SCALE_BPM_MARK,
+            ANGLE_FOR_MAX_SCALE_BPM_MARK,
+            MIN_SCALE_BPM,
+            MAX_SCALE_BPM
+        } = config;
+
+        if (bpm === undefined) { // Tương ứng với ANGLE_FOR_0_BPM_MARK từ _angleToBpmValue
+            return ANGLE_FOR_0_BPM_MARK;
+        }
+
+        // Dựa trên logic của _angleToBpmValue, nếu BPM là MIN hoặc MAX,
+        // chúng ta snap tới các vạch chia tương ứng.
+        if (bpm <= MIN_SCALE_BPM) {
+            return ANGLE_FOR_MIN_SCALE_BPM_MARK;
+        }
+        if (bpm >= MAX_SCALE_BPM) {
+            return ANGLE_FOR_MAX_SCALE_BPM_MARK;
+        }
+
+        // Nội suy ngược cho các giá trị BPM trong khoảng (MIN_SCALE_BPM, MAX_SCALE_BPM)
+        // để tìm góc trong [ANGLE_FOR_MIN_SCALE_BPM_MARK, ANGLE_FOR_MAX_SCALE_BPM_MARK]
+        const bpmScaleRange = MAX_SCALE_BPM - MIN_SCALE_BPM;
+        const angleScaleRange = ANGLE_FOR_MAX_SCALE_BPM_MARK - ANGLE_FOR_MIN_SCALE_BPM_MARK;
+
+        // Kiểm tra để tránh chia cho 0 nếu config không hợp lệ
+        if (bpmScaleRange <= 0 || angleScaleRange <= 0) {
+            return ANGLE_FOR_MIN_SCALE_BPM_MARK; // Fallback an toàn
+        }
+
+        const percentageInBpmRange = (bpm - MIN_SCALE_BPM) / bpmScaleRange;
+        const calculatedAngle = ANGLE_FOR_MIN_SCALE_BPM_MARK + percentageInBpmRange * angleScaleRange;
+
+        // Làm tròn góc để snap vào "vạch" (độ nguyên) gần nhất.
+        return Math.round(calculatedAngle);
+    }
 }
