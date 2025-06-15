@@ -5,7 +5,7 @@
  */
 
 import {dependencies} from "../../container";
-import * as config from "../config";
+import * as config from "../../infrastructure/config";
 
 /**
  * Xử lý sự kiện khi StartButton được nhấn.
@@ -63,7 +63,7 @@ export function handleAngleChanged ({ useCases, presenter }, angle) {
 
 export function registerServiceWorker() {
     navigator.serviceWorker
-        .register(new URL('../services/sw.js', import.meta.url))
+        .register(new URL('../../infrastructure/services/sw.js', import.meta.url))
         .then(() => {
             console.log('Service worker has been registered.')
         })
