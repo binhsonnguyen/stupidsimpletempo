@@ -4,21 +4,21 @@ import { dependencies } from './container.js'
 import * as controller from './ui/controllers/controller.js'
 import * as device from "./infrastructure/services/device";
 
+const {
+    dom,
+    components,
+    presenter,
+    useCases,
+    audioService,
+    metronome,
+    wakeLockService
+} = dependencies
+
 window.addEventListener('DOMContentLoaded', () => {
     dependencies.initDomElements().then(() => initializeApp())
 })
 
 function initializeApp () {
-    const {
-        dom,
-        components,
-        presenter,
-        useCases,
-        audioService,
-        metronome,
-        wakeLockService
-    } = dependencies
-
     audioService.initializeAudioContext();
 
     if (!device.isMobile()) {
