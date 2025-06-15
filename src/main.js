@@ -17,16 +17,17 @@ const {
 
 window.addEventListener('DOMContentLoaded', () => {
     dependencies.initDomElements()
+        .then(() => initializeApp())
         .then(audioService.initializeAudioContext())
         .then(unlockDesktopAudioContext(audioService.getAudioContext()))
-        .then(() => initializeApp())
+        .then(registerServiceWorker())
+        .then(requestWakeLock())
 
 })
 
 function initializeApp () {
     logger.log('initializeApp')
 
-    // Tạo và gán instance của StartButton
     dependencies.startButton = new components.StartButton({
         element: dom.startStopButtonElement,
         onTap: () => {
@@ -39,7 +40,6 @@ function initializeApp () {
         }
     });
 
-    // Tạo và gán instance của Dial
     dependencies.dial = new components.Dial({
         element: dom.rotaryDialContainerElement,
         layersToRotate: [
@@ -53,23 +53,33 @@ function initializeApp () {
 
     presenter.initializePresenter(dependencies)
     presenter.renderInitialUi(dependencies, APP_VERSION)
+}
 
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker
-                .register(new URL('./infrastructure/services/sw.js', import.meta.url))
-                .then(() => {
-                    console.log('Service worker has been registered.')
-                })
-        })
-    }
-    document.addEventListener('visibilitychange', () => {
-        if (dependencies.metronome.isRunning && document.visibilityState === 'visible') {
-            dependencies.wakeLockService.request().then(() => { })
+function registerServiceWorker() {
+    return new Promise((resolve, reject) => {
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker
+                    .register(new URL('./infrastructure/services/sw.js', import.meta.url))
+                    .then(() => {
+                        logger.log('Service worker has been registered.')
+                    })
+            })
         }
+        resolve()
     })
 }
 
+function requestWakeLock() {
+    return new Promise((resolve, reject) => {
+        document.addEventListener('visibilitychange', () => {
+            if (dependencies.metronome.isRunning && document.visibilityState === 'visible') {
+                dependencies.wakeLockService.request().then(() => { })
+            }
+        })
+        resolve()
+    })
+}
 
 function unlockDesktopAudioContext(audioCtx) {
     return new Promise(resolve => {
