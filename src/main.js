@@ -2,7 +2,7 @@
 import { APP_VERSION } from './version.js'
 import { dependencies } from './container.js'
 import * as controller from './ui/controllers/controller.js'
-import {isMobile} from "./infrastructure/services/device";
+import * as device from "./infrastructure/services/device";
 
 window.addEventListener('DOMContentLoaded', () => {
     dependencies.initDomElements().then(() => initializeApp())
@@ -21,7 +21,7 @@ function initializeApp () {
 
     audioService.initializeAudioContext();
 
-    if (!isMobile()) {
+    if (!device.isMobile()) {
         registerUnlockAudioContextHook(audioService.getAudioContext()).then(() => {})
     }
 
@@ -29,7 +29,7 @@ function initializeApp () {
     dependencies.startButton = new components.StartButton({
         element: dom.startStopButtonElement,
         onTap: () => {
-            if (isMobile()) {
+            if (device.isMobile()) {
                 registerUnlockAudioContextHook(audioService.getAudioContext())
                     .then(() => controller.handleButtonTap({
                         useCases,
