@@ -2,7 +2,6 @@
 import { APP_VERSION } from './version.js'
 import { dependencies } from './container.js'
 import * as controller from './ui/controllers/controller.js'
-import {registerUnlockAudioContextHook} from "./infrastructure/hooks/registerUnlockAudioContextHook";
 import {isMobile} from "./infrastructure/services/device";
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -23,7 +22,7 @@ function initializeApp () {
     audioService.initializeAudioContext();
 
     if (!isMobile()) {
-        registerUnlockAudioContextHook(audioService.getAudioContext()).then(() => {})
+        controller.registerUnlockAudioContextHook(audioService.getAudioContext()).then(() => {})
     }
 
     // Tạo và gán instance của StartButton
@@ -31,7 +30,7 @@ function initializeApp () {
         element: dom.startStopButtonElement,
         onTap: () => {
             if (isMobile()) {
-                registerUnlockAudioContextHook(audioService.getAudioContext())
+                controller.registerUnlockAudioContextHook(audioService.getAudioContext())
                     .then(() => controller.handleButtonTap({
                         useCases,
                         presenter,
