@@ -74,7 +74,7 @@ function initializeApp () {
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register(new URL('sw.js', import.meta.url))
+            navigator.serviceWorker.register(new URL('./infrastructure/services/sw.js', import.meta.url))
         })
     }
     document.addEventListener('visibilitychange', () => {
