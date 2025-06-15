@@ -3,13 +3,13 @@
   "version": "1.1.8",
   "scripts": {
     "generate-version": "node generate-version.js",
-    "dev": "npm run generate-version && npm run parcel:dev",
+    "dev": "NODE_ENV=development npm run generate-version && npm run parcel:dev",
     "test": "jest",
     "patch": "npm version patch && npm run generate-version",
     "build": "npm run parcel:build",
-    "deploy:dev": "npm run build && firebase deploy --only hosting -P dev --config firebase.dev.json",
+    "deploy:dev": "NODE_ENV=development npm run build && firebase deploy --only hosting -P dev --config firebase.dev.json",
     "deploy:prod": "npm run build && firebase deploy --only hosting",
-    "parcel:dev": "parcel src/index.html --dist-dir dev_dist",
+    "parcel:dev": "NODE_ENV=development parcel src/index.html --dist-dir dev_dist",
     "parcel:build": "parcel build src/index.html --dist-dir public"
   },
   "author": "Nguyen Binh Son",
