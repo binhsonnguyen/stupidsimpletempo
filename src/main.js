@@ -22,7 +22,7 @@ function initializeApp () {
     audioService.initializeAudioContext();
 
     if (!isMobile()) {
-        controller.registerUnlockAudioContextHook(audioService.getAudioContext()).then(() => {})
+        registerUnlockAudioContextHook(audioService.getAudioContext()).then(() => {})
     }
 
     // Tạo và gán instance của StartButton
@@ -30,7 +30,7 @@ function initializeApp () {
         element: dom.startStopButtonElement,
         onTap: () => {
             if (isMobile()) {
-                controller.registerUnlockAudioContextHook(audioService.getAudioContext())
+                registerUnlockAudioContextHook(audioService.getAudioContext())
                     .then(() => controller.handleButtonTap({
                         useCases,
                         presenter,
@@ -74,5 +74,22 @@ function initializeApp () {
         if (dependencies.metronome.isRunning && document.visibilityState === 'visible') {
             dependencies.wakeLockService.request().then(() => { })
         }
+    })
+}
+
+function registerUnlockAudioContextHook (ctx) {
+    return new Promise((resolve) => {
+        const b = document.body;
+        const events = ["touchstart", "touchend", "mousedown", "keydown"];
+        const unlock = () => {
+            if (ctx.state === 'suspended') {
+                ctx.resume().then(clean).then(resolve);
+            } else {
+                clean()
+                resolve()
+            }
+        };
+        const clean = () => { events.forEach(e => b.removeEventListener(e, unlock));};
+        events.forEach(e => b.addEventListener(e, unlock, false));
     })
 }
