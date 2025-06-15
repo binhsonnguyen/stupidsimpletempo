@@ -14,7 +14,7 @@ export function createUseCases ({ metronome, audioService, wakeLockService, conf
             const beatSequence = createBeatSequence('basic')
 
             // 2. Cung cấp chuỗi nhịp này cho audioService
-            audioService.start({
+            audioService.playSequence({
                 getBpm,
                 isRunning,
                 beatSequence
