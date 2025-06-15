@@ -7,7 +7,7 @@ export function createUseCases ({ metronome, audioService, wakeLockService, conf
         metronome.toggle()
 
         if (metronome.isRunning) {
-            const getBpm = () => metronome.getBpm
+            const getBpm = () => metronome.bpm
             const isRunning = () => metronome.isRunning
 
             // 1. Dùng "nhà máy" để tạo ra chuỗi nhịp cơ bản
@@ -28,7 +28,7 @@ export function createUseCases ({ metronome, audioService, wakeLockService, conf
     }
 
     function changeBpm (bpm) {
-        metronome.setBpm(bpm)
+        metronome.bpm = bpm
     }
 
     // Trả về một đối tượng chứa các use case đã được "tiêm" phụ thuộc
