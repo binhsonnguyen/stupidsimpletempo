@@ -15,14 +15,18 @@ const {
     wakeLockService
 } = dependencies
 
+let audioContextInprogress = false
+let activeAudioUnlockPromise = undefined
+
 window.addEventListener('DOMContentLoaded', () => {
     dependencies.initDomElements()
         .then(() => initializeApp())
-        .then(audioService.initializeAudioContext())
-        .then(unlockDesktopAudioContext(audioService.getAudioContext()))
+        .then(() => {
+            audioService.initializeAudioContext()
+            return unlockDesktopAudioContext(audioService.getAudioContext())
+        })
         .then(registerServiceWorker())
         .then(requestWakeLock())
-
 })
 
 function initializeApp () {
@@ -31,11 +35,25 @@ function initializeApp () {
     dependencies.startButton = new components.StartButton({
         element: dom.startStopButtonElement,
         onTap: () => {
-            unlockMobileAudioContext(audioService.getAudioContext())
-                .then(() => controller.handleButtonTap({
-                    useCases,
-                    presenter
-                }));
+            const audioCtx = audioService.getAudioContext();
+            if (audioCtx.state === 'suspended' && device.isMobile()) {
+                if (!audioContextInprogress) {
+                    audioContextInprogress = true;
+                    activeAudioUnlockPromise = unlockAudioContext(audioCtx)
+                        .then(() => controller.handleButtonTap({ useCases, presenter }))
+                        .catch(err => logger.error('Start button audio unlock failed:', err))
+                        .finally(() => {
+                            audioContextInprogress = false;
+                            activeAudioUnlockPromise = null;
+                        });
+                } else if (!!activeAudioUnlockPromise) {
+                    activeAudioUnlockPromise
+                        .then(() => controller.handleButtonTap({ useCases, presenter }))
+                        .catch(err => logger.error('Start button tap after dial unlock failed:', err));
+                }
+            } else {
+                controller.handleButtonTap({ useCases, presenter });
+            }
         }
     });
 
