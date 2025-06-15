@@ -102,30 +102,6 @@ function requestWakeLock() {
     })
 }
 
-function unlockDesktopAudioContext(audioCtx) {
-    return audioCtx.state === 'suspended' ? new Promise(resolve => {
-        if (device.isDesktop()) {
-            logger.log('unlockDesktopAudioContext')
-            unlockAudioContext(audioCtx).then(resolve);
-        } else {
-            logger.log('by pass unlockDesktopAudioContext')
-            resolve()
-        }
-    }) : new Promise(r => r())
-}
-
-function unlockMobileAudioContext(audioCtx) {
-    return audioCtx.state === 'suspended' ?  new Promise(resolve => {
-        if (device.isMobile()) {
-            logger.log('unlockMobileAudioContext')
-            unlockAudioContext(audioCtx).then(resolve);
-        } else {
-            logger.log('by pass unlockMobileAudioContext')
-            resolve()
-        }
-    }) : new Promise(r => r())
-}
-
 function unlockAudioContext(ctx) {
     if (!ctx) return Promise.reject(new Error("AudioContext is null"));
 
