@@ -17,7 +17,8 @@ const {
 
 window.addEventListener('DOMContentLoaded', () => {
     dependencies.initDomElements()
-        .then(() => audioService.initializeAudioContext())
+        .then(audioService.initializeAudioContext())
+        .then(unlockDesktopAudioContext(audioService.getAudioContext()))
         .then(() => initializeApp())
 
 })
@@ -25,28 +26,16 @@ window.addEventListener('DOMContentLoaded', () => {
 function initializeApp () {
     logger.log('initializeApp')
 
-    if (!device.isMobile()) {
-        registerUnlockAudioContextHook(audioService.getAudioContext()).then(() => {})
-    }
-
     // Tạo và gán instance của StartButton
     dependencies.startButton = new components.StartButton({
         element: dom.startStopButtonElement,
         onTap: () => {
-            if (device.isMobile()) {
-                registerUnlockAudioContextHook(audioService.getAudioContext())
-                    .then(() => controller.handleButtonTap({
-                        useCases,
-                        presenter,
-                        audioService
-                    }));
-            } else {
-                controller.handleButtonTap({
+            unlockMobileAudioContext(audioService.getAudioContext())
+                .then(() => controller.handleButtonTap({
                     useCases,
                     presenter,
                     audioService
-                }).then(() => {});
-            }
+                }));
         }
     });
 
@@ -81,7 +70,32 @@ function initializeApp () {
     })
 }
 
-function registerUnlockAudioContextHook (ctx) {
+
+function unlockDesktopAudioContext(audioCtx) {
+    return new Promise(resolve => {
+        if (device.isDesktop()) {
+            logger.log('unlockDesktopAudioContext')
+            unlockAudioContext(audioCtx).then(resolve);
+        } else {
+            logger.log('by pass unlockDesktopAudioContext')
+            resolve()
+        }
+    })
+}
+
+function unlockMobileAudioContext(audioCtx) {
+    return new Promise(resolve => {
+        if (device.isMobile()) {
+            logger.log('unlockMobileAudioContext')
+            unlockAudioContext(audioCtx).then(resolve);
+        } else {
+            logger.log('by pass unlockMobileAudioContext')
+            resolve()
+        }
+    })
+}
+
+function unlockAudioContext (ctx) {
     return new Promise((resolve) => {
         const b = document.body;
         const events = ["touchstart", "touchend", "mousedown", "keydown"];
