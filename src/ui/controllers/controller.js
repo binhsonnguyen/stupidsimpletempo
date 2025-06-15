@@ -25,4 +25,8 @@ export function handleDialChanged ({ useCases, presenter }, newBpmValue) {
 
     useCases.changeBpm(newBpmValue)
     presenter.renderApp()
+
+    if (navigator.vibrate) {
+        navigator.vibrate(10)
+    }
 }
