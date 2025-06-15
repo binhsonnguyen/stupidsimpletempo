@@ -25,12 +25,14 @@ export class Dial {
         this._setupListeners()
     }
 
-    setRotation (angle) {
-        this._currentRotation = angle
-        const transformValue = `rotate(${angle}deg)`
+    setRotation (angle, useTransition = false) { // Thêm tham số useTransition
+        this._currentRotation = angle;
+        const transformValue = `rotate(${angle}deg)`;
+
         this.layersToRotate.forEach(layer => {
-            if (layer) {
-                layer.style.transform = transformValue
+            if (!!layer) {
+                layer.style.transition = useTransition ? 'transform 0.3s ease-out' : 'none';
+                layer.style.transform = transformValue;
             }
         })
     }
