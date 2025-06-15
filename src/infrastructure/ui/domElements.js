@@ -7,7 +7,6 @@ export const dom = {
     dialTrackBorderLayerElement: null,
     arcLayerElement: null,
     appVersionElement: null,
-    advancedPanelElement: null,
     dialAreaWrapperElement: null
 }
 
@@ -20,6 +19,5 @@ export function initDomElements () {
     dom.dialTrackBorderLayerElement = document.getElementById('dialTrackBorderLayer')
     dom.arcLayerElement = document.getElementById('arcLayer')
     dom.appVersionElement = document.getElementById('appVersion')
-    dom.advancedPanelElement = document.getElementById('advancedPanel')
     dom.dialAreaWrapperElement = document.querySelector('.dial-area-wrapper')
 }

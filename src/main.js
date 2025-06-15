@@ -68,12 +68,6 @@ function initializeApp () {
         onAngleChanged: (newAngle) => controller.handleAngleChanged({ useCases, presenter }, newAngle)
     })
 
-    // eslint-disable-next-line no-new
-    new components.AdvancedPanel({
-        panelElement: dom.advancedPanelElement,
-        gestureTargetElement: dom.dialAreaWrapperElement
-    })
-
     presenter.initializePresenter(dependencies)
     presenter.renderInitialUi(dependencies, APP_VERSION)
 

@@ -1,14 +1,7 @@
 export const SCHEDULER_RUN_INTERVAL_MS = 25.0
 export const AUDIO_SCHEDULE_LOOKAHEAD_SECONDS = 0.1
 
-export const TICK_INITIAL_TOP_OFFSET = 8
-export const TICK_LARGE_WIDTH = 1.5
-export const TICK_LARGE_HEIGHT = 10
-export const TICK_SMALL_WIDTH = 1
-export const TICK_SMALL_HEIGHT = 6
-export const LABEL_OFFSET_FROM_TICK = 4
-export const GESTURE_DRAG_THRESHOLD_PX = 50
-
+// hard code từ svg ra, dùng trong usecase (mã xấu)
 export const MIN_SCALE_BPM = 40
 export const MAX_SCALE_BPM = 200
 
