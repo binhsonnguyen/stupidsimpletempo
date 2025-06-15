@@ -85,18 +85,7 @@ function initializeApp () {
 
 
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register(new URL('./infrastructure/services/sw.js', import.meta.url))
-        })
+        window.addEventListener('load', () => registerServiceWorker())
     }
-    document.addEventListener('visibilitychange', () => {
-        if (metronome.isRunning && document.visibilityState === 'visible') {
-            wakeLockService.request()
-        }
-    })
+    document.addEventListener('visibilitychange', () => wakeLockServiceRequest())
 }
-
-window.addEventListener('DOMContentLoaded', () => {
-    dependencies.initDomElements()
-    initializeApp()
-})
