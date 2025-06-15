@@ -5,6 +5,7 @@
  */
 
 import {dependencies} from "../../container";
+import * as config from "../config";
 
 /**
  * Xử lý sự kiện khi StartButton được nhấn.
@@ -22,10 +23,45 @@ export async function handleButtonTap ({ useCases, presenter, audioService }) {
 /**
  * Xử lý sự kiện khi góc của Dial bị thay đổi.
  * @param {object} dependencies - Các phụ thuộc cần thiết.
- * @param {number} newAngle - Góc mới do Dial cung cấp.
+ * @param {number} angle - Góc mới do Dial cung cấp.
  */
-export function handleAngleChanged ({ useCases, presenter }, newAngle) {
-    useCases.changeBpmFromAngle(newAngle)
+export function handleAngleChanged ({ useCases, presenter }, angle) {
+    // useCases.changeBpmFromAngle(newAngle)
+    let newBpmCandidate
+    const roundedAngle = Math.round(angle)
+
+    const {
+        ANGLE_FOR_0_BPM_MARK,
+        ANGLE_FOR_MIN_SCALE_BPM_MARK,
+        ANGLE_FOR_MAX_SCALE_BPM_MARK,
+        MIN_SCALE_BPM,
+        MAX_SCALE_BPM
+    } = config
+
+    if (roundedAngle % 360 === ANGLE_FOR_0_BPM_MARK) {
+        return
+    }
+
+    if (angle > ANGLE_FOR_0_BPM_MARK && angle < ANGLE_FOR_MIN_SCALE_BPM_MARK) {
+        newBpmCandidate = MIN_SCALE_BPM
+    } else if (angle >= ANGLE_FOR_MIN_SCALE_BPM_MARK && angle <= ANGLE_FOR_MAX_SCALE_BPM_MARK) {
+        const bpmScaleRange = MAX_SCALE_BPM - MIN_SCALE_BPM
+        const angleScaleRange = ANGLE_FOR_MAX_SCALE_BPM_MARK - ANGLE_FOR_MIN_SCALE_BPM_MARK
+
+        if (angleScaleRange <= 0 || bpmScaleRange < 0) {
+            newBpmCandidate = MIN_SCALE_BPM
+        } else {
+            const percentageInAngleRange = (angle - ANGLE_FOR_MIN_SCALE_BPM_MARK) / angleScaleRange
+            const calculatedBpm = MIN_SCALE_BPM + percentageInAngleRange * bpmScaleRange
+            newBpmCandidate = Math.round(calculatedBpm)
+        }
+        newBpmCandidate = Math.max(MIN_SCALE_BPM, Math.min(MAX_SCALE_BPM, newBpmCandidate))
+    } else {
+        newBpmCandidate = MAX_SCALE_BPM
+    }
+
+    useCases.changeBpm(newBpmCandidate)
+
     presenter.renderApp()
 }
 
