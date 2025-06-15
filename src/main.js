@@ -24,10 +24,18 @@ window.addEventListener('DOMContentLoaded', () => {
         .then(() => initializeApp())
         .then(() => {
             audioService.initializeAudioContext()
-            return unlockAudioContext(audioService.getAudioContext())
+            const audioCtx = audioService.getAudioContext()
+            activeAudioUnlockPromise = unlockAudioContext(audioCtx)
+            activeAudioUnlockPromise.catch(err => {
+                logger.warn('Initial audio unlock promise rejected or timed out (no user interaction?):', err);
+            })
+            return activeAudioUnlockPromise
         })
-        .then(registerServiceWorker())
-        .then(requestWakeLock())
+        .then(registerServiceWorker)
+        .then(requestWakeLock)
+        .catch(error => {
+            logger.error("Error during app initialization chain:", error);
+        });
 })
 
 function initializeApp () {
@@ -110,17 +118,24 @@ function initializeApp () {
 }
 
 function registerServiceWorker() {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker
                     .register(new URL('./infrastructure/services/sw.js', import.meta.url))
                     .then(() => {
                         logger.log('Service worker has been registered.')
+                        resolve()
                     })
+                    .catch(error => {
+                        logger.error('Service worker registration failed:', error);
+                        resolve()
+                    });
             })
+        } else {
+            logger.log('Service worker not supported.');
+            resolve()
         }
-        resolve()
     })
 }
 
@@ -128,7 +143,10 @@ function requestWakeLock() {
     return new Promise((resolve, reject) => {
         document.addEventListener('visibilitychange', () => {
             if (dependencies.metronome.isRunning && document.visibilityState === 'visible') {
-                dependencies.wakeLockService.request().then(() => { })
+                if (!!dependencies.wakeLockService) {
+                    dependencies.wakeLockService.request()
+                        .catch(err => logger.warn("Wake lock request failed:", err))
+                }
             }
         })
         resolve()
