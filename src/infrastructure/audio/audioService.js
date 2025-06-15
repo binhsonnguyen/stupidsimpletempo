@@ -56,26 +56,28 @@ function audioScheduler () {
 }
 
 export function initializeAudioContext () {
-    return new Promise(() => {
-        logger.log('initializeAudioContext')
+    return new Promise((resolve, reject) => {
         if (!audioContextInstance) {
             try {
                 audioContextInstance = new (window.AudioContext || window.webkitAudioContext)()
                 if (!audioContextInstance) {
+                    logger.log('initializeAudioContext failed, unknowed why')
                     return false
                 }
+
+                logger.log('initializeAudioContext', audioContextInstance.state)
 
                 soundFactory.init({ audioContext: audioContextInstance })
 
                 audioContextInstance.onstatechange = () => {
-                    console.log('Trạng thái AudioContext đã thay đổi thành:', audioContextInstance.state)
+                    logger.log('Trạng thái AudioContext đã thay đổi thành:', audioContextInstance.state)
                 }
             } catch (e) {
-                console.error('Lỗi khi tạo AudioContext:', e)
-                return false
+                logger.error('Lỗi khi tạo AudioContext:', e)
+                reject()
             }
         }
-        return true
+        resolve()
     })
 }
 
