@@ -1,5 +1,6 @@
 import * as config from '../config.js'
 import { soundFactory } from './soundFactory.js'
+import {logger} from "../logger";
 
 let audioContextInstance = null
 let schedulerTimerId = null
@@ -55,24 +56,27 @@ function audioScheduler () {
 }
 
 export function initializeAudioContext () {
-    if (!audioContextInstance) {
-        try {
-            audioContextInstance = new (window.AudioContext || window.webkitAudioContext)()
-            if (!audioContextInstance) {
+    return new Promise(() => {
+        logger.log('initializeAudioContext')
+        if (!audioContextInstance) {
+            try {
+                audioContextInstance = new (window.AudioContext || window.webkitAudioContext)()
+                if (!audioContextInstance) {
+                    return false
+                }
+
+                soundFactory.init({ audioContext: audioContextInstance })
+
+                audioContextInstance.onstatechange = () => {
+                    console.log('Trạng thái AudioContext đã thay đổi thành:', audioContextInstance.state)
+                }
+            } catch (e) {
+                console.error('Lỗi khi tạo AudioContext:', e)
                 return false
             }
-
-            soundFactory.init({ audioContext: audioContextInstance })
-
-            audioContextInstance.onstatechange = () => {
-                console.log('Trạng thái AudioContext đã thay đổi thành:', audioContextInstance.state)
-            }
-        } catch (e) {
-            console.error('Lỗi khi tạo AudioContext:', e)
-            return false
         }
-    }
-    return true
+        return true
+    })
 }
 
 export function getAudioContext () {
