@@ -37,6 +37,6 @@ export const ACCENT_BEAT_GAIN = 1.0
 export const REGULAR_BEAT_NOTE = 'C6'
 export const REGULAR_BEAT_GAIN = 0.6
 
-export const DIAL_TICK_NOTE = 'C8'; // Một nốt cao, ngắn gọn
-export const DIAL_TICK_GAIN = 0.01; // Âm lượng rất nhỏ
-export const DIAL_TICK_OSCILLATOR_TYPE = OSCILLATOR_CONFIGS.TRIANGLE;
+export const DIAL_TICK_NOTE = 'B7';
+export const DIAL_TICK_GAIN = 0.001;
+export const DIAL_TICK_OSCILLATOR_TYPE = OSCILLATOR_CONFIGS.SINE;
