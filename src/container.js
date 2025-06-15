@@ -2,7 +2,7 @@
 
 // Domain
 import { Metronome } from './core/domain/metronome.js'
-import { createUseCases } from './core/domain/useCases.js'
+import { createUseCases } from './core/use-case/useCases.js'
 import { createBeatSequence } from './core/domain/beatSequenceFactory.js'
 
 // Application
