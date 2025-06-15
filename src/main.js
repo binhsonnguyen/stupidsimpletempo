@@ -1,7 +1,7 @@
 // /src/main.js
 import { APP_VERSION } from './version.js'
 import { dependencies } from './container.js'
-import * as controller from './infrastructure/controllers/controller.js'
+import * as controller from './ui/controllers/controller.js'
 import {registerUnlockAudioContextHook} from "./infrastructure/hooks/registerUnlockAudioContextHook";
 import {isMobile} from "./infrastructure/services/device";
 
