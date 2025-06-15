@@ -87,7 +87,7 @@ export class Dial {
         }
 
         const newRotation = this._currentRotation + deltaAngle
-        this.setRotation(newRotation)
+        this.setRotation(newRotation, false)
 
         const displayAngle = ((-this._currentRotation % 360) + 360) % 360;
         this._previousPointerAngle = currentPointerAngle
