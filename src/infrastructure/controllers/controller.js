@@ -12,12 +12,8 @@ import * as config from "../config";
  * @param {object} dependencies - Các phụ thuộc cần thiết.
  */
 export async function handleButtonTap ({ useCases, presenter, audioService }) {
-    const performToggle = () => {
-        useCases.toggleMetronome()
-        presenter.renderApp()
-    }
-    performToggle()
-
+    useCases.toggleMetronome()
+    presenter.renderApp()
 }
 
 /**
