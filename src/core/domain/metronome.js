@@ -3,7 +3,7 @@ export class Metronome {
         this.minBpm = minBpm
         this.maxBpm = maxBpm
         this.isRunning = false
-        this.bpm = this.clampBpm(initialBpm)
+        this._bpm = this.clampBpm(initialBpm)
     }
 
     start() {
@@ -17,9 +17,12 @@ export class Metronome {
     toggle() {
         this.isRunning = !this.isRunning
     }
+    get bpm() {
+        return this._bpm;
+    }
 
-    setBpm(newBpm) {
-        this.bpm = this.clampBpm(newBpm)
+    set bpm(value) {
+        this._bpm = this.clampBpm(value);
     }
 
     clampBpm(bpm) {
