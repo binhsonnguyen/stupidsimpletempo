@@ -126,19 +126,34 @@ function unlockMobileAudioContext(audioCtx) {
     }) : new Promise(r => r())
 }
 
-function unlockAudioContext (ctx) {
+function unlockAudioContext(ctx) {
+    if (!ctx) return Promise.reject(new Error("AudioContext is null"));
+
     return ctx.state === 'suspended' ? new Promise((resolve) => {
-        const b = document.body;
-        const events = ["touchstart", "touchend", "mousedown", "keydown"];
+        const b = document.body
+        const events = ["touchstart", "touchend", "mousedown", "keydown"]
+        let hasUnlocked = false
         const unlock = () => {
+            if (hasUnlocked) return;
             if (ctx.state === 'suspended') {
-                ctx.resume().then(clean).then(resolve);
+                ctx.resume().then(() => {
+                    hasUnlocked = true;
+                    clean()
+                    resolve()
+                }).catch(err => {
+                    hasUnlocked = true;
+                    clean();
+                    reject(err);
+                })
             } else {
+                hasUnlocked = true;
                 clean()
                 resolve()
             }
         };
-        const clean = () => { events.forEach(e => b.removeEventListener(e, unlock));};
-        events.forEach(e => b.addEventListener(e, unlock, false));
-    }) : new Promise(r => r())
+        const clean = () => {
+            events.forEach(e => b.removeEventListener(e, unlock))
+        };
+        events.forEach(e => b.addEventListener(e, unlock, false))
+    }) : Promise.resolve()
 }
