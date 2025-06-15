@@ -17,13 +17,14 @@ const {
 
 let audioContextInprogress = false
 let activeAudioUnlockPromise = undefined
+let latestBpmDuringAudioContextUnlocking = undefined
 
 window.addEventListener('DOMContentLoaded', () => {
     dependencies.initDomElements()
         .then(() => initializeApp())
         .then(() => {
             audioService.initializeAudioContext()
-            return unlockDesktopAudioContext(audioService.getAudioContext())
+            return unlockAudioContext(audioService.getAudioContext())
         })
         .then(registerServiceWorker())
         .then(requestWakeLock())
