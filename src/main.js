@@ -2,6 +2,12 @@
 import { APP_VERSION } from './version.js'
 import { dependencies } from './container.js'
 import * as controller from './application/controller.js'
+import {wakeLockServiceRequest} from "./infrastructure/controllers/visibilityChange";
+import {registerServiceWorker} from "./infrastructure/controllers/registerSW";
+
+window.addEventListener('DOMContentLoaded', () => {
+    dependencies.initDomElements().then(() => initializeApp())
+})
 
 function initializeApp () {
     const {
