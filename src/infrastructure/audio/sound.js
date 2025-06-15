@@ -1,4 +1,4 @@
-import { noteToFreq } from '../../domain/audioUtils.js'
+import { noteToFreq } from '../../core/domain/audioUtils.js'
 
 export class Sound {
     /**

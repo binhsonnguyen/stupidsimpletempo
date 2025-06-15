@@ -1,9 +1,9 @@
 // /src/container.js
 
 // Domain
-import { Metronome } from './domain/metronome.js'
-import { createUseCases } from './domain/useCases.js'
-import { createBeatSequence } from './domain/beatSequenceFactory.js'
+import { Metronome } from './core/domain/metronome.js'
+import { createUseCases } from './core/domain/useCases.js'
+import { createBeatSequence } from './core/domain/beatSequenceFactory.js'
 
 // Application
 import * as state from './application/state.js'
