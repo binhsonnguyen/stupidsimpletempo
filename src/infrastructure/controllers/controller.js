@@ -22,10 +22,6 @@ export async function handleButtonTap ({ useCases, presenter, audioService }) {
  * @param {number} angle - Góc mới do Dial cung cấp.
  */
 export function handleAngleChanged ({ useCases, presenter }, angle) {
-    // useCases.changeBpmFromAngle(newAngle)
-    let newBpmCandidate
-    const roundedAngle = Math.round(angle)
-
     const {
         ANGLE_FOR_0_BPM_MARK,
         ANGLE_FOR_MIN_SCALE_BPM_MARK,
@@ -34,9 +30,13 @@ export function handleAngleChanged ({ useCases, presenter }, angle) {
         MAX_SCALE_BPM
     } = config
 
-    if (roundedAngle % 360 === ANGLE_FOR_0_BPM_MARK) {
+    const normolizedAngle = Math.round(angle) % 360
+
+    if (normolizedAngle === ANGLE_FOR_0_BPM_MARK) {
         return
     }
+
+    let newBpmCandidate
 
     if (angle > ANGLE_FOR_0_BPM_MARK && angle < ANGLE_FOR_MIN_SCALE_BPM_MARK) {
         newBpmCandidate = MIN_SCALE_BPM
