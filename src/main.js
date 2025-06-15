@@ -47,7 +47,11 @@ function initializeApp () {
             dom.dialTrackBorderLayerElement,
             dom.arcLayerElement
         ],
-        onDialChangeToNewBpmValue: (newValue) => controller.handleDialChanged({ useCases, presenter }, newValue)
+        onDialChangeToNewBpmValue: (newValue) => {
+            unlockMobileAudioContext(audioService.getAudioContext())
+                .then(() => controller.handleDialChanged({ useCases, presenter }, newValue))
+
+        }
     })
 
     presenter.initializePresenter(dependencies)
@@ -81,7 +85,7 @@ function requestWakeLock() {
 }
 
 function unlockDesktopAudioContext(audioCtx) {
-    return new Promise(resolve => {
+    return audioCtx.state === 'suspended' ? new Promise(resolve => {
         if (device.isDesktop()) {
             logger.log('unlockDesktopAudioContext')
             unlockAudioContext(audioCtx).then(resolve);
@@ -89,11 +93,11 @@ function unlockDesktopAudioContext(audioCtx) {
             logger.log('by pass unlockDesktopAudioContext')
             resolve()
         }
-    })
+    }) : new Promise(r => r())
 }
 
 function unlockMobileAudioContext(audioCtx) {
-    return new Promise(resolve => {
+    return audioCtx.state === 'suspended' ?  new Promise(resolve => {
         if (device.isMobile()) {
             logger.log('unlockMobileAudioContext')
             unlockAudioContext(audioCtx).then(resolve);
@@ -101,11 +105,11 @@ function unlockMobileAudioContext(audioCtx) {
             logger.log('by pass unlockMobileAudioContext')
             resolve()
         }
-    })
+    }) : new Promise(r => r())
 }
 
 function unlockAudioContext (ctx) {
-    return new Promise((resolve) => {
+    return ctx.state === 'suspended' ? new Promise((resolve) => {
         const b = document.body;
         const events = ["touchstart", "touchend", "mousedown", "keydown"];
         const unlock = () => {
@@ -118,5 +122,5 @@ function unlockAudioContext (ctx) {
         };
         const clean = () => { events.forEach(e => b.removeEventListener(e, unlock));};
         events.forEach(e => b.addEventListener(e, unlock, false));
-    })
+    }) : new Promise(r => r())
 }
