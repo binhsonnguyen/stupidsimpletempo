@@ -11,7 +11,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function initializeApp () {
     const {
-        dom, components, presenter, useCases, audioService, metronome, wakeLockService
+        dom,
+        components,
+        presenter,
+        useCases,
+        audioService,
+        metronome,
+        wakeLockService
     } = dependencies
 
     audioService.initializeAudioContext();
