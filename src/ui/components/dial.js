@@ -104,21 +104,42 @@ export class Dial {
         this._isDragging = false
         this.element.style.cursor = 'grab'
 
-        const currentDisplayAngle = ((-this._currentRotation % 360) + 360) % 360;
+        // 1. Tính góc hiển thị hiện tại (0-359 độ)
+        const currentDisplayAngle = ((-this._currentRotation % 360) + 360) % 360
+        // 2. Xác định giá trị BPM tương ứng với góc hiển thị hiện tại
         const bpmAtRelease = this._angleToBpmValue(currentDisplayAngle);
-        logger.log('bpmAtRelease', bpmAtRelease)
 
-        let angleToSnapTo;
+        // 3. Xác định góc hiển thị đích (0-359 độ) mà dial sẽ snap tới
+        let targetDisplayAngle
         if (bpmAtRelease !== undefined) {
-            angleToSnapTo = -this._bpmToAngleValue(bpmAtRelease);
+            // Snap tới góc tương ứng với BPM đã làm tròn
+            targetDisplayAngle = this._bpmToAngleValue(bpmAtRelease)
         } else {
-            angleToSnapTo = config.ANGLE_FOR_0_BPM_MARK;
+            // Snap về vạch 0 BPM (hoặc điểm không xác định BPM)
+            targetDisplayAngle = config.ANGLE_FOR_0_BPM_MARK;
         }
 
-        this.setRotation(angleToSnapTo);
+        // 4. Tính toán delta (sự thay đổi) cho góc hiển thị theo đường ngắn nhất
+        let deltaDisplayAngle = targetDisplayAngle - currentDisplayAngle;
 
-        const finalBpmToEmit = this._angleToBpmValue(angleToSnapTo);
+        // Đảm bảo deltaDisplayAngle nằm trong khoảng (-180, 180] để chọn cung ngắn nhất
+        if (deltaDisplayAngle > 180) {
+            deltaDisplayAngle -= 360
+        } else if (deltaDisplayAngle < -180) {
+            deltaDisplayAngle += 360
+        }
 
+        // 5. Tính giá trị _currentRotation cuối cùng.
+        // Vì _currentRotation và displayAngle có mối quan hệ ngược dấu (display = -rotation),
+        // nên delta cho _currentRotation sẽ là -deltaDisplayAngle.
+        const finalRotationTarget = this._currentRotation - deltaDisplayAngle;
+
+        // 6. Áp dụng phép xoay mượt mà tới vị trí đích
+        this.setRotation(finalRotationTarget, true)
+
+        // 7. Emit giá trị BPM cuối cùng sau khi snap.
+        // Giá trị này nên được tính từ targetDisplayAngle để đảm bảo tính nhất quán.
+        const finalBpmToEmit = this._angleToBpmValue(targetDisplayAngle)
         this.onDialChangeToNewBpmValue(finalBpmToEmit);
     }
 
