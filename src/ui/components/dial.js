@@ -85,8 +85,9 @@ export class Dial {
         this.setRotation(newRotation)
 
         const normalizedAngle = ((-this._currentRotation % 360) + 360) % 360
-        this.onAngleChanged(normalizedAngle)
         this._previousPointerAngle = currentPointerAngle
+
+        this.onAngleChanged(normalizedAngle)
     }
 
     _handleInteractionEnd () {

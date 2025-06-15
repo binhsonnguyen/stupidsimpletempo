@@ -11,7 +11,7 @@ import * as config from "../../infrastructure/config";
  * Xử lý sự kiện khi StartButton được nhấn.
  * @param {object} dependencies - Các phụ thuộc cần thiết.
  */
-export async function handleButtonTap ({ useCases, presenter, audioService }) {
+export async function handleButtonTap ({ useCases, presenter }) {
     useCases.toggleMetronome()
     presenter.renderApp()
 }
@@ -30,9 +30,9 @@ export function handleAngleChanged ({ useCases, presenter }, angle) {
         MAX_SCALE_BPM
     } = config
 
-    const normolizedAngle = Math.round(angle) % 360
+    const normalizedAngle = Math.round(angle) % 360
 
-    if (normolizedAngle === ANGLE_FOR_0_BPM_MARK) {
+    if (normalizedAngle === ANGLE_FOR_0_BPM_MARK) {
         return
     }
 

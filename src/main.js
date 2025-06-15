@@ -34,8 +34,7 @@ function initializeApp () {
             unlockMobileAudioContext(audioService.getAudioContext())
                 .then(() => controller.handleButtonTap({
                     useCases,
-                    presenter,
-                    audioService
+                    presenter
                 }));
         }
     });
