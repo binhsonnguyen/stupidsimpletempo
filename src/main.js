@@ -17,7 +17,6 @@ const {
 
 let audioContextInprogress = false
 let activeAudioUnlockPromise = undefined
-let latestBpmDuringAudioContextUnlocking = undefined
 
 window.addEventListener('DOMContentLoaded', () => {
     dependencies.initDomElements()
@@ -89,7 +88,6 @@ function initializeApp () {
                 controller.handleDialChanged({ useCases, presenter }, newValue)
             } else if (audioCtx.state === 'suspended') {
                 logger.log(`Dial changed to ${newValue} BPM while audio suspended. Storing as latest.`)
-                latestBpmDuringAudioContextUnlocking = newValue
 
                 if (!audioContextInprogress) {
                     audioContextInprogress = true // Đánh dấu là dial đang đợi
@@ -108,7 +106,6 @@ function initializeApp () {
                         .finally(() => {
                             logger.log('Dial finished waiting for mobile audio unlock state.')
                             audioContextInprogress = false
-                            latestBpmDuringAudioContextUnlocking = null
                         })
                 } else {
                     logger.log('Mobile audio unlock already being awaited by another component. Latest BPM updated for dial.')
