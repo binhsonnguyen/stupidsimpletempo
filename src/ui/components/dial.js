@@ -90,7 +90,7 @@ export class Dial {
         const displayAngle = ((-this._currentRotation % 360) + 360) % 360;
         this._previousPointerAngle = currentPointerAngle
 
-        const newBpmValue = this._angleToBpmValue(displayAngle); // Hoặc this._angleToBpmValue(this._currentRotation)
+        const newBpmValue = this._angleToBpmValue(displayAngle);
 
         if (newBpmValue !== undefined) {
             this.onDialChangeToNewBpmValue(newBpmValue);
@@ -101,6 +101,23 @@ export class Dial {
         if (!this._isDragging) return
         this._isDragging = false
         this.element.style.cursor = 'grab'
+
+        const currentDisplayAngle = ((-this._currentRotation % 360) + 360) % 360;
+        const bpmAtRelease = this._angleToBpmValue(currentDisplayAngle);
+        logger.log('bpmAtRelease', bpmAtRelease)
+
+        let angleToSnapTo;
+        if (bpmAtRelease !== undefined) {
+            angleToSnapTo = -this._bpmToAngleValue(bpmAtRelease);
+        } else {
+            angleToSnapTo = config.ANGLE_FOR_0_BPM_MARK;
+        }
+
+        this.setRotation(angleToSnapTo);
+
+        const finalBpmToEmit = this._angleToBpmValue(angleToSnapTo);
+
+        this.onDialChangeToNewBpmValue(finalBpmToEmit);
     }
 
     _angleToBpmValue(angle) {
