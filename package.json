@@ -32,5 +32,8 @@
       "^.+\\.js$": "babel-jest"
     },
     "testEnvironment": "jsdom"
+  },
+  "dependencies": {
+    "tone": "^15.1.22"
   }
 }
