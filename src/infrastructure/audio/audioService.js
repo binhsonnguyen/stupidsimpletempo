@@ -125,10 +125,6 @@ export function initializeAudioContext () {
     })
 }
 
-export function getAudioContext () {
-    return audioContextInstance
-}
-
 export function playSequence ({ getBpm, isRunning, beatSequence }) {
     if (!audioContextInstance || audioContextInstance.state !== 'running' || !beatSequence) {
         return false

@@ -21,8 +21,7 @@ window.addEventListener('DOMContentLoaded', () => {
         .then(() => initializeApp())
         .then(() => {
             audioService.initializeAudioContext()
-            const audioCtx = audioService.getAudioContext()
-            activeAudioUnlockPromise = unlockAudioContext(audioCtx)
+            activeAudioUnlockPromise = unlockAudioContext()
             activeAudioUnlockPromise.catch(err => {
                 logger.warn('Initial audio unlock promise rejected or timed out (no user interaction?):', err)
             })
@@ -41,7 +40,7 @@ function initializeApp() {
     dependencies.startButton = new components.StartButton({
         element: dom.startStopButtonElement,
         onTap: () => {
-            const audioCtx = audioService.getAudioContext()
+            const audioCtx = Tone.getContext()
             if (audioCtx.state === 'running') {
                 controller.handleButtonTap({useCases, presenter})
             } else if (audioCtx.state === 'suspended') {
