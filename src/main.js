@@ -90,7 +90,7 @@ function initializeApp () {
                 logger.log(`Dial changed to ${newValue} BPM while audio suspended. Storing as latest.`)
 
                 if (!audioContextInprogress) {
-                    audioContextInprogress = true // Đánh dấu là dial đang đợi
+                    audioContextInprogress = true
                     logger.log('Dial is now waiting for initial mobile audio unlock.')
 
                     activeAudioUnlockPromise
