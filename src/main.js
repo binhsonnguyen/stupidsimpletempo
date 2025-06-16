@@ -20,7 +20,7 @@ window.addEventListener('DOMContentLoaded', () => {
     dependencies.initDomElements()
         .then(() => initializeApp())
         .then(() => {
-            audioService.initializeAudioContext()
+            audioService.init()
             activeAudioUnlockPromise = unlockAudioContext()
             activeAudioUnlockPromise.catch(err => {
                 logger.warn('Initial audio unlock promise rejected or timed out (no user interaction?):', err)

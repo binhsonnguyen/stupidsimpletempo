@@ -96,7 +96,7 @@ function audioScheduler () {
     schedulerTimerId = setTimeout(audioScheduler, config.SCHEDULER_RUN_INTERVAL_MS)
 }
 
-export function initializeAudioContext () {
+export function init () {
     return new Promise((resolve, reject) => {
         if (!audioContextInstance) {
             try {
