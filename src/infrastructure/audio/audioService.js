@@ -1,6 +1,7 @@
 import * as config from '../config.js'
 import { soundFactory } from './soundFactory.js'
 import {logger} from "../logger";
+import * as Tone from "tone";
 
 let audioContextInstance = null
 let schedulerTimerId = null
@@ -112,6 +113,9 @@ export function initializeAudioContext () {
                 audioContextInstance.onstatechange = () => {
                     logger.log('Trạng thái AudioContext đã thay đổi thành:', audioContextInstance.state)
                 }
+
+                // lệnh duy nhất cần giữ lại
+                Tone.setContext(audioContextInstance)
             } catch (e) {
                 logger.error('Lỗi khi tạo AudioContext:', e)
                 reject()
