@@ -11,8 +11,6 @@ const {
     presenter,
     useCases,
     audioService,
-    metronome,
-    wakeLockService
 } = dependencies
 
 let audioContextInprogress = false
