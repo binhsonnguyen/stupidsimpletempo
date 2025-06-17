@@ -1,6 +1,6 @@
 import * as Tone from 'tone';
 
-const WOODBLOCK_SOUND_PATH = new URL('../../assets/sound/woodblock.wav', import.meta.url);
+const WOODBLOCK_SOUND_PATH = new URL('/src/assets/sound/woodblock.wav', import.meta.url);
 
 
 export class WoodblockSoundLibrary {
