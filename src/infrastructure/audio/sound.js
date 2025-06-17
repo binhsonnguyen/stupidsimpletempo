@@ -1,6 +1,12 @@
 import { noteToFreq } from '../../core/domain/audioUtils.js'
 import * as Tone from 'tone';
 
+// Các hằng số định nghĩa đặc tính của envelope âm thanh
+const SOUND_DURATION = 0.05; // Tổng thời gian mong muốn cho phần attack và decay
+const ATTACK_DURATION = SOUND_DURATION / 3; // Thời gian attack
+const DECAY_DURATION = SOUND_DURATION - ATTACK_DURATION; // Thời gian decay
+const RELEASE_DURATION = 0.001; // Thời gian release rất ngắn để dừng âm thanh nhanh chóng
+
 export class Sound {
     /**
      * Khởi tạo một đối tượng âm thanh có thể tái sử dụng.
@@ -12,6 +18,19 @@ export class Sound {
         this.note = note
         this.oscillatorType = oscillatorType
         this.frequency = noteToFreq(this.note) // Tính toán và lưu lại tần số một lần duy nhất
+
+        this.synth = new Tone.Synth({
+            oscillator: {
+                type: this.oscillatorType,
+            },
+            envelope: {
+                attack: ATTACK_DURATION,
+                decay: DECAY_DURATION,
+                sustain: 0, // Âm thanh sẽ decay xuống mức 0 (im lặng)
+                release: RELEASE_DURATION, // Thời gian để âm lượng giảm từ sustain xuống 0 khi note được "nhả" ra
+            },
+            // volume: 0 // Âm lượng mặc định của synth, có thể điều chỉnh nếu cần
+        }).toDestination(); // Kết nối synth tới đầu ra âm thanh chính
     }
 
     /**
@@ -21,49 +40,24 @@ export class Sound {
      */
     play (time, gain) {
         try {
-            const osc = new Tone.Oscillator({
-                type: this.oscillatorType,
-                frequency: this.frequency,
-            }).toDestination();
+            // Đảm bảo gain là giá trị dương nhỏ nhất nếu nó là 0, vì velocity không nên là 0 tuyệt đối.
+            const velocity = Math.max(0.00001, gain);
 
-            const soundDuration = 0.05;
-            const attackDuration = soundDuration / 3;
-            const decayEndTime = time + soundDuration;
-
-            // Đảm bảo gain là giá trị dương hợp lệ để chuyển đổi sang dB
-            const targetLinearGain = Math.max(0.00001, gain);
-            const targetGainDb = Tone.gainToDb(targetLinearGain);
-
-            // Âm lượng cuối cùng rất nhỏ (gần như im lặng)
-            const endVolumeLinear = 0.0001;
-            const endVolumeDb = Tone.gainToDb(endVolumeLinear);
-
-            // Envelope đơn giản hóa: Attack -> Decay
-            // 1. Bắt đầu với âm lượng rất nhỏ (coi như im lặng) tại thời điểm 'time'.
-            const initialAttackVolumeDb = Tone.gainToDb(0.00001); // Âm lượng khởi đầu cho attack
-            osc.volume.setValueAtTime(initialAttackVolumeDb, time);
-
-            // 2. Attack: Tăng âm lượng tuyến tính lên targetGainDb.
-            //    Quá trình này diễn ra từ 'time' đến 'time + attackDuration'.
-            osc.volume.linearRampToValueAtTime(targetGainDb, time + attackDuration);
-
-            // 3. Decay: Giảm âm lượng theo hàm mũ từ targetGainDb xuống endVolumeDb.
-            //    Quá trình này diễn ra từ 'time + attackDuration' đến 'decayEndTime'.
-            osc.volume.exponentialRampToValueAtTime(endVolumeDb, decayEndTime);
-
-            // Bắt đầu và dừng oscillator
-            osc.start(time);
-            osc.stop(decayEndTime);
-
-            // Dọn dẹp oscillator sau khi nó đã phát xong để giải phóng tài nguyên
-            Tone.getDraw().schedule(() => {
-                if (osc && !osc.disposed) {
-                    osc.dispose();
-                }
-            }, decayEndTime + 0.1); // Dọn dẹp sau khi âm thanh kết thúc một chút
-
+            // Kích hoạt synth để phát nốt nhạc
+            // triggerAttackRelease(frequency, duration, time, velocity)
+            // - frequency: tần số của nốt nhạc
+            // - duration: khoảng thời gian nốt nhạc được "giữ" trước khi phase release bắt đầu.
+            //             Ở đây, chúng ta muốn attack và decay diễn ra trong SOUND_DURATION.
+            // - time: thời điểm bắt đầu phát
+            // - velocity: cường độ của nốt nhạc (0-1)
+            this.synth.triggerAttackRelease(
+                this.frequency,
+                SOUND_DURATION,
+                time,
+                velocity
+            );
         } catch (e) {
-            console.error(`Lỗi khi chơi âm thanh cho nốt ${this.note} với Tone.js:`, e);
+            console.error(`Lỗi khi chơi âm thanh cho nốt ${this.note} với Tone.Synth:`, e);
         }
     }
 }
