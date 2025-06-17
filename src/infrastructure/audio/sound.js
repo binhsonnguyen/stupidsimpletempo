@@ -2,35 +2,48 @@ import { noteToFreq } from '../../core/domain/audioUtils.js'
 import * as Tone from 'tone';
 
 // Các hằng số định nghĩa đặc tính của envelope âm thanh
-const SOUND_DURATION = 0.05; // Tổng thời gian mong muốn cho phần attack và decay
-const ATTACK_DURATION = SOUND_DURATION / 3; // Thời gian attack
-const DECAY_DURATION = SOUND_DURATION - ATTACK_DURATION; // Thời gian decay
-const RELEASE_DURATION = 0.001; // Thời gian release rất ngắn để dừng âm thanh nhanh chóng
+const SOUND_DURATION = 0.05;
+const ATTACK_DURATION = SOUND_DURATION / 3;
+const DECAY_DURATION = SOUND_DURATION - ATTACK_DURATION;
+const RELEASE_DURATION = 0.001;
 
 export class Sound {
     /**
      * Khởi tạo một đối tượng âm thanh có thể tái sử dụng.
      * @param {object} options - Các tùy chọn cho âm thanh.
      * @param {string} options.note - Nốt nhạc của âm thanh.
-     * @param {string} options.oscillatorType - Dạng sóng (sine, triangle, etc.).
+     * @param {string} options.oscillatorType - Dạng sóng (ví dụ: 'sine', 'square', 'sawtooth', 'triangle', 'fatsawtooth', 'fatsquare', 'fattriangle').
      */
     constructor ({ note, oscillatorType }) {
-        this.note = note
-        this.oscillatorType = oscillatorType
-        this.frequency = noteToFreq(this.note) // Tính toán và lưu lại tần số một lần duy nhất
+        this.note = note;
+        // Mặc định sử dụng 'fatsawtooth' nếu không có oscillatorType cụ thể nào được truyền vào
+        // Hoặc bạn có thể yêu cầu người dùng luôn truyền một loại "fat"
+        this.oscillatorType = oscillatorType.startsWith('fat') ? oscillatorType : `fat${oscillatorType}`;
+        this.frequency = noteToFreq(this.note);
+
+        // Tạo hiệu ứng Chorus
+        this.chorus = new Tone.Chorus({
+            frequency: 1.5, // Tần số của LFO điều khiển chorus
+            delayTime: 2.5, // Thời gian trễ giữa các giọng chorus (ms)
+            depth: 0.5,     // Độ sâu của hiệu ứng chorus (0-1)
+            feedback: 0.1,  // Lượng tín hiệu được phản hồi lại (0-1)
+            spread: 180     // Độ rộng stereo của chorus (độ)
+        }).toDestination(); // Kết nối chorus tới đầu ra chính
 
         this.synth = new Tone.Synth({
             oscillator: {
+                // Sử dụng oscillatorType đã được cập nhật (có thể là fat oscillator)
                 type: this.oscillatorType,
+                // Bạn có thể thêm các tùy chọn cho FatOscillator ở đây nếu muốn tinh chỉnh thêm
+                // ví dụ: count: 3, spread: 20 (số lượng oscillators con và độ lệch tần số)
             },
             envelope: {
                 attack: ATTACK_DURATION,
                 decay: DECAY_DURATION,
-                sustain: 0, // Âm thanh sẽ decay xuống mức 0 (im lặng)
-                release: RELEASE_DURATION, // Thời gian để âm lượng giảm từ sustain xuống 0 khi note được "nhả" ra
+                sustain: 0,
+                release: RELEASE_DURATION,
             },
-            // volume: 0 // Âm lượng mặc định của synth, có thể điều chỉnh nếu cần
-        }).toDestination(); // Kết nối synth tới đầu ra âm thanh chính
+        }).connect(this.chorus); // Kết nối synth tới chorus thay vì trực tiếp toDestination()
     }
 
     /**
@@ -40,16 +53,7 @@ export class Sound {
      */
     play (time, gain) {
         try {
-            // Đảm bảo gain là giá trị dương nhỏ nhất nếu nó là 0, vì velocity không nên là 0 tuyệt đối.
             const velocity = Math.max(0.00001, gain);
-
-            // Kích hoạt synth để phát nốt nhạc
-            // triggerAttackRelease(frequency, duration, time, velocity)
-            // - frequency: tần số của nốt nhạc
-            // - duration: khoảng thời gian nốt nhạc được "giữ" trước khi phase release bắt đầu.
-            //             Ở đây, chúng ta muốn attack và decay diễn ra trong SOUND_DURATION.
-            // - time: thời điểm bắt đầu phát
-            // - velocity: cường độ của nốt nhạc (0-1)
             this.synth.triggerAttackRelease(
                 this.frequency,
                 SOUND_DURATION,
@@ -58,6 +62,16 @@ export class Sound {
             );
         } catch (e) {
             console.error(`Lỗi khi chơi âm thanh cho nốt ${this.note} với Tone.Synth:`, e);
+        }
+    }
+
+    // Thêm một phương thức để dọn dẹp khi không cần thiết nữa (ví dụ khi component bị unmount)
+    dispose() {
+        if (this.synth && !this.synth.disposed) {
+            this.synth.dispose();
+        }
+        if (this.chorus && !this.chorus.disposed) {
+            this.chorus.dispose();
         }
     }
 }

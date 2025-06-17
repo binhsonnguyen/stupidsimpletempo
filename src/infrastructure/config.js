@@ -12,22 +12,10 @@ export const MAX_SCALE_BPM = 200
 
 // "Code hóa" các loại oscillator và mô tả của chúng
 export const OSCILLATOR_CONFIGS = {
-    SINE: {
-        value: 'sine',
-        description: 'Giống tiếng sáo (flute like)'
-    },
-    TRIANGLE: {
-        value: 'triangle',
-        description: ' Dạng sóng mềm mại, giống tiếng sáo nhưng có chút "bụi"'
-    },
-    SQUARE: {
-        value: 'square',
-        description: 'Giống âm thanh game 8-bit (8-bit game like)'
-    },
-    SAWTOOTH: {
-        value: 'sawtooth',
-        description: 'Sắc, nhẹ, giống tiếng synth (sharp, light, synth like)'
-    }
+    SINE: 'sine', //Giống tiếng sáo (flute like)'
+    TRIANGLE: 'triangle', //Dạng sóng mềm mại, giống tiếng sáo nhưng có chút "bụi"'
+    SQUARE: 'square', //Giống âm thanh game 8-bit (8-bit game like)'
+    SAWTOOTH: 'sawtooth', //Sắc, nhẹ, giống tiếng synth (sharp, light, synth like)'
 }
 
 export const BEAT_OSCILLATOR_TYPE = OSCILLATOR_CONFIGS.TRIANGLE
