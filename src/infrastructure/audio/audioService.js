@@ -1,5 +1,5 @@
 import * as config from '../config.js'
-import { soundFactory } from './soundFactory.js'
+import {soundFactory} from './soundFactory.js'
 import {logger} from "../logger";
 import * as Tone from "tone";
 
@@ -14,8 +14,8 @@ let getBpmCallback = () => config.MIN_SCALE_BPM
 
 // === "Bộ phiên dịch" từ Beat Type sang thuộc tính âm thanh, đọc từ config ===
 const BEAT_SOUND_MAP = {
-    accent: { note: config.ACCENT_BEAT_NOTE, gain: config.ACCENT_BEAT_GAIN },
-    regular: { note: config.REGULAR_BEAT_NOTE, gain: config.REGULAR_BEAT_GAIN }
+    accent: {note: config.ACCENT_BEAT_NOTE, gain: config.ACCENT_BEAT_GAIN},
+    regular: {note: config.REGULAR_BEAT_NOTE, gain: config.REGULAR_BEAT_GAIN}
 }
 
 /**
@@ -27,12 +27,12 @@ const BEAT_SOUND_MAP = {
  * @param {number} [options.when=audioContextInstance.currentTime] - Thời điểm phát âm thanh (theo AudioContext time).
  * @returns {boolean} - Trả về true nếu âm thanh được lên lịch thành công, ngược lại là false.
  */
-export function playSingleSound ({
-                                     note,
-                                     oscillatorType = config.BEAT_OSCILLATOR_TYPE.value,
-                                     gain = config.REGULAR_BEAT_GAIN,
-                                     when
-                                 }) {
+export function playSingleSound({
+                                    note,
+                                    oscillatorType = config.BEAT_OSCILLATOR_TYPE.value,
+                                    gain = config.REGULAR_BEAT_GAIN,
+                                    when
+                                }) {
     if (!audioContextInstance || audioContextInstance.state !== 'running') {
         logger.warn('playSingleSound: AudioContext không sẵn sàng.');
         return false;
@@ -43,7 +43,7 @@ export function playSingleSound ({
         return false;
     }
 
-    const sound = soundFactory.getSound({ note, oscillatorType });
+    const sound = soundFactory.getSound({note, oscillatorType});
 
     if (sound) {
         const playTime = when !== undefined ? when : audioContextInstance.currentTime;
@@ -52,6 +52,28 @@ export function playSingleSound ({
         return true;
     } else {
         logger.error(`playSingleSound: Không thể lấy hoặc tạo âm thanh cho note ${note}`);
+        return false;
+    }
+}
+
+export function playAccentSound({
+                                    gain = 1.0,
+                                    when
+                                }) {
+    if (!audioContextInstance || audioContextInstance.state !== 'running') {
+        logger.warn('playSingleSound: AudioContext không sẵn sàng.');
+        return false;
+    }
+
+    const soundLib = soundFactory.getSoundLib();
+
+    if (!!soundLib) {
+        const playTime = when !== undefined ? when : audioContextInstance.currentTime;
+        soundLib.play(playTime, gain);
+        logger.log(`playAccentSound: Lên lịch phát âm thanh tại ${playTime} với gain ${gain}`);
+        return true;
+    } else {
+        logger.error(`playAccentSound: Không thể lấy hoặc tạo thư viện âm thanh`);
         return false;
     }
 }
@@ -74,11 +96,9 @@ function audioScheduler () {
         const soundProps = BEAT_SOUND_MAP[currentBeat.type] || BEAT_SOUND_MAP.regular
 
         // 2. Sử dụng playSingleSound để lên lịch phát âm thanh
-        playSingleSound({
-            note: soundProps.note,
+        playAccentSound({
             gain: soundProps.gain,
-            when: nextNoteTimestamp,
-            oscillatorType: config.BEAT_OSCILLATOR_TYPE
+            when: nextNoteTimestamp
         })
 
         // 3. Tính toán và di chuyển đến beat tiếp theo
@@ -96,7 +116,7 @@ function audioScheduler () {
     schedulerTimerId = setTimeout(audioScheduler, config.SCHEDULER_RUN_INTERVAL_MS)
 }
 
-export function init () {
+export function init() {
     return new Promise((resolve, reject) => {
         if (!audioContextInstance) {
             try {
@@ -108,7 +128,7 @@ export function init () {
 
                 logger.log('initializeAudioContext', audioContextInstance.state)
 
-                soundFactory.init({ audioContext: audioContextInstance })
+                soundFactory.init({audioContext: audioContextInstance})
 
                 audioContextInstance.onstatechange = () => {
                     logger.log('Trạng thái AudioContext đã thay đổi thành:', audioContextInstance.state)
@@ -125,7 +145,7 @@ export function init () {
     })
 }
 
-export function playSequence ({ getBpm, isRunning, beatSequence }) {
+export function playSequence({getBpm, isRunning, beatSequence}) {
     if (!audioContextInstance || audioContextInstance.state !== 'running' || !beatSequence) {
         return false
     }
@@ -138,7 +158,7 @@ export function playSequence ({ getBpm, isRunning, beatSequence }) {
     return true
 }
 
-export function stop () {
+export function stop() {
     clearTimeout(schedulerTimerId)
     schedulerTimerId = null
 }
