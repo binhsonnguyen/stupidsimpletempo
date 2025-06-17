@@ -27,39 +27,28 @@ export class Sound {
             }).toDestination();
 
             const soundDuration = 0.05;
-            const curveDuration = soundDuration / 3;
+            const attackDuration = soundDuration / 3;
             const decayEndTime = time + soundDuration;
+
+            // Đảm bảo gain là giá trị dương hợp lệ để chuyển đổi sang dB
+            const targetLinearGain = Math.max(0.00001, gain);
+            const targetGainDb = Tone.gainToDb(targetLinearGain);
 
             // Âm lượng cuối cùng rất nhỏ (gần như im lặng)
             const endVolumeLinear = 0.0001;
-
-            // Logic envelope "độc đáo"
-            const sustainPoints = 10;
-            const randomAmplitude = 0.05; // Biên độ ngẫu nhiên cho envelope
-
-            const randomLinearValues = new Float32Array(sustainPoints);
-            for (let i = 0; i < sustainPoints; i++) {
-                const randomFactor = (Math.random() - 0.5) * 2; // Từ -1 đến 1
-                let currentLinearGain = gain + (randomFactor * randomAmplitude);
-                randomLinearValues[i] = Math.max(0.00001, currentLinearGain); // Đảm bảo giá trị dương cho việc chuyển đổi sang dB
-            }
-            // Đảm bảo điểm cuối của phần curve là giá trị 'gain' (đã được làm sạch)
-            randomLinearValues[sustainPoints - 1] = Math.max(0.00001, gain);
-
-            // Chuyển đổi giá trị âm lượng tuyến tính sang Decibels cho Tone.js
-            const randomValuesDb = new Float32Array(sustainPoints);
-            for (let i = 0; i < sustainPoints; i++) {
-                randomValuesDb[i] = Tone.gainToDb(randomLinearValues[i]);
-            }
             const endVolumeDb = Tone.gainToDb(endVolumeLinear);
 
-            // Áp dụng envelope cho volume của oscillator
-            // Phần curve ngẫu nhiên
-            osc.volume.setValueCurveAtTime(randomValuesDb, time, curveDuration);
+            // Envelope đơn giản hóa: Attack -> Decay
+            // 1. Bắt đầu với âm lượng rất nhỏ (coi như im lặng) tại thời điểm 'time'.
+            const initialAttackVolumeDb = Tone.gainToDb(0.00001); // Âm lượng khởi đầu cho attack
+            osc.volume.setValueAtTime(initialAttackVolumeDb, time);
 
-            // Phần decay xuống âm lượng cuối cùng
-            // exponentialRampToValueAtTime bắt đầu từ giá trị cuối cùng của sự kiện trước đó
-            // tại thời điểm kết thúc của sự kiện đó (time + curveDuration)
+            // 2. Attack: Tăng âm lượng tuyến tính lên targetGainDb.
+            //    Quá trình này diễn ra từ 'time' đến 'time + attackDuration'.
+            osc.volume.linearRampToValueAtTime(targetGainDb, time + attackDuration);
+
+            // 3. Decay: Giảm âm lượng theo hàm mũ từ targetGainDb xuống endVolumeDb.
+            //    Quá trình này diễn ra từ 'time + attackDuration' đến 'decayEndTime'.
             osc.volume.exponentialRampToValueAtTime(endVolumeDb, decayEndTime);
 
             // Bắt đầu và dừng oscillator
@@ -67,9 +56,6 @@ export class Sound {
             osc.stop(decayEndTime);
 
             // Dọn dẹp oscillator sau khi nó đã phát xong để giải phóng tài nguyên
-            // Sử dụng `Tone.Transport` nếu bạn muốn đồng bộ hóa với transport,
-            // ở đây giả định `time` là thời gian tuyệt đối hoặc tương đối với `Tone.now()`
-            // và không cần `osc.sync()`
             Tone.getDraw().schedule(() => {
                 if (osc && !osc.disposed) {
                     osc.dispose();
