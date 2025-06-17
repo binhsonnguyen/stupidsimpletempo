@@ -25,7 +25,7 @@ function getSound ({ note, oscillatorType }) {
 
     // 2. Nếu không có, tạo mới, lưu vào cache và trả về
     try {
-        const newSound = new Sound(audioContext, { note, oscillatorType })
+        const newSound = new Sound({ note, oscillatorType })
         soundCache.set(cacheKey, newSound)
         return newSound
     } catch (e) {

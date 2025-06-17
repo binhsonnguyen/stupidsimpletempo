@@ -1,18 +1,14 @@
 import { noteToFreq } from '../../core/domain/audioUtils.js'
+import * as Tone from 'tone';
 
 export class Sound {
     /**
      * Khởi tạo một đối tượng âm thanh có thể tái sử dụng.
-     * @param {AudioContext} audioContext - Đối tượng AudioContext toàn cục.
      * @param {object} options - Các tùy chọn cho âm thanh.
      * @param {string} options.note - Nốt nhạc của âm thanh.
      * @param {string} options.oscillatorType - Dạng sóng (sine, triangle, etc.).
      */
-    constructor (audioContext, { note, oscillatorType }) {
-        if (!audioContext) {
-            throw new Error('Sound class requires an audioContext.')
-        }
-        this.audioContext = audioContext
+    constructor ({ note, oscillatorType }) {
         this.note = note
         this.oscillatorType = oscillatorType
         this.frequency = noteToFreq(this.note) // Tính toán và lưu lại tần số một lần duy nhất
