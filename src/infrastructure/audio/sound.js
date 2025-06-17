@@ -15,9 +15,9 @@ export class Sound {
     }
 
     /**
-     * Chơi âm thanh tại một thời điểm với một cường độ nhất định.
-     * @param {number} time - Thời điểm để chơi (giây, theo audioContext.currentTime).
-     * @param {number} gain - Cường độ (âm lượng) của âm thanh.
+     * Chơi âm thanh tại một thời điểm với một cường độ nhất định sử dụng Tone.js.
+     * @param {number} time - Thời điểm để chơi (giây, theo Tone.now() hoặc thời gian tuyệt đối).
+     * @param {number} gain - Cường độ (âm lượng tuyến tính, 0-1) của âm thanh.
      */
     play (time, gain) {
         if (this.audioContext.state !== 'running') return
