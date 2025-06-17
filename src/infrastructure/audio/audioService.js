@@ -78,7 +78,7 @@ function audioScheduler () {
             note: soundProps.note,
             gain: soundProps.gain,
             when: nextNoteTimestamp,
-            oscillatorType: config.BEAT_OSCILLATOR_TYPE.value
+            oscillatorType: config.BEAT_OSCILLATOR_TYPE
         })
 
         // 3. Tính toán và di chuyển đến beat tiếp theo
