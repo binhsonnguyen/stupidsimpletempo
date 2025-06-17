@@ -1,7 +1,9 @@
 import { Sound } from './sound.js'
+import {WoodblockSoundLibrary} from "./woodblockSoundLibrary";
 
 let audioContext = null
 const soundCache = new Map()
+const soundLib = new WoodblockSoundLibrary();
 
 /**
  * Lấy một đối tượng Sound từ cache hoặc tạo mới nếu chưa có.
@@ -34,6 +36,10 @@ function getSound ({ note, oscillatorType }) {
     }
 }
 
+function getSoundLib() {
+    return soundLib
+}
+
 function init (options) {
     if (!options.audioContext) {
         console.error('SoundFactory.init thất bại: thiếu audioContext.')
@@ -44,5 +50,6 @@ function init (options) {
 
 export const soundFactory = {
     init,
-    getSound
+    getSound,
+    getSoundLib
 }

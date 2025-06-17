@@ -79,7 +79,7 @@ export function playAccentSound({
 }
 
 // === Bộ định thời đã được nâng cấp để diễn giải Beat Type ===
-function audioScheduler () {
+function audioScheduler() {
     if (!isRunningCallback()) {
         stop()
         return
