@@ -11,7 +11,7 @@ import * as presenter from './application/presenter.js'
 
 // Infrastructure
 import * as config from './infrastructure/config.js'
-import { dom, initDomElements } from './ui/domElements.js'
+import { dom, initDomElements } from './ui/domElements.ts'
 import * as audioService from './infrastructure/audio/audioService.js'
 import { wakeLockService } from './infrastructure/services/wakeLockService.js'
 

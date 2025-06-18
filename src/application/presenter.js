@@ -1,5 +1,5 @@
 import { logger } from '../infrastructure/logger.ts'
-import { dom } from '../ui/domElements.js'
+import { dom } from '../ui/domElements.ts'
 
 let metronome = null
 let startButton = null
