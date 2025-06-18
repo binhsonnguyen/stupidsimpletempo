@@ -1,4 +1,4 @@
-import { createBeatSequence } from './beatSequenceFactory.js'
+import { createBeatSequence } from './beatSequenceFactory.ts'
 import { Beat } from './beat.ts'
 
 describe('Beat Sequence Factory (Refactored)', () => {

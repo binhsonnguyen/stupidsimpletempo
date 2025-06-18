@@ -1,3 +1,13 @@
+export enum BeatType {
+    Accent = 'accent',
+    Regular = 'regular',
+}
+
+export interface BeatConstructorParams {
+    type?: BeatType;
+    durationFactor?: number
+}
+
 export class Beat {
     get nextBeat(): Nullable<Beat> {
         return this._nextBeat;
@@ -29,9 +39,14 @@ export class Beat {
      * @param {string} [options.type='regular'] - Kiểu của beat ('accent' hoặc 'regular').
      * @param {number} [options.durationFactor=1.0] - Hệ số trường độ.
      */
-    constructor ({ type = 'regular', durationFactor = 1.0 } = {}) {
+    constructor ({ type = BeatType.Regular, durationFactor = 1.0 }: BeatConstructorParams) {
         this._type = type
         this._durationFactor = durationFactor
         this._nextBeat = null
+    }
+
+    setNext(next: Beat) {
+        this.nextBeat = next
+        return next
     }
 }
