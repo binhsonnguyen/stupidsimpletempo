@@ -29,7 +29,7 @@ export function createBeatSequence (signature = 'basic') {
         case 'basic':
         default: {
             const beat = new Beat({ type: 'accent' }) // Phách cơ bản là một phách mạnh lặp lại
-            beat.setNext(beat)
+            beat.nextBeat = beat
             return beat
         }
     }
