@@ -1,4 +1,4 @@
-import { Beat } from './beat.js'
+import { Beat } from './beat.ts'
 
 /**
  * Tạo một chuỗi beat (danh sách liên kết vòng) dựa trên một mẫu nhịp.

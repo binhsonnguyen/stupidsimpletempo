@@ -1,5 +1,5 @@
 import { createBeatSequence } from './beatSequenceFactory.js'
-import { Beat } from './beat.js'
+import { Beat } from './beat.ts'
 
 describe('Beat Sequence Factory (Refactored)', () => {
     test("phải tạo ra một chuỗi 'basic' với một node duy nhất có type 'accent'", () => {

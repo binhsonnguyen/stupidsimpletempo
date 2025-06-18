@@ -1,4 +1,4 @@
-import { Beat } from './beat.js'
+import { Beat } from './beat.ts'
 
 describe('Beat Entity (Refactored)', () => {
     test('phải khởi tạo đúng với type và durationFactor được cung cấp', () => {
