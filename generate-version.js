@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const packageJson = require('./package.json');
-const {logger} = require("./src/infrastructure/logger");
+const {logger} = require("./src/infrastructure/logger.ts");
 
 const version = packageJson.version;
 const content = `export const APP_VERSION = "${version}";\n`;
