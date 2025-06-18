@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "es2017", // Hoặc phiên bản ECMAScript bạn muốn target
+    "module": "esnext",  // Sử dụng module ES cho Parcel
+    "lib": ["dom", "esnext"], // Thư viện chuẩn cần thiết (DOM cho browser)
+    "jsx": "preserve",    // Nếu bạn dùng JSX (ví dụ với React)
+    "strict": true,       // Bật tất cả các kiểm tra kiểu nghiêm ngặt (khuyến nghị)
+    "esModuleInterop": true, // Cho phép tương tác tốt hơn với các module CommonJS
+    "skipLibCheck": true,  // Bỏ qua kiểm tra kiểu của các tệp .d.ts
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node", // Cách TypeScript tìm module
+    "resolveJsonModule": true, // Cho phép import file .json
+    "isolatedModules": true,   // Đảm bảo các tệp có thể được biên dịch riêng lẻ (Parcel cần)
+    "noEmit": true,        // Parcel sẽ xử lý việc tạo output, TypeScript chỉ kiểm tra kiểu
+    "baseUrl": "./",       // Thư mục gốc cho các đường dẫn không tương đối
+    "paths": {             // Cấu hình alias đường dẫn nếu cần (ví dụ: src/*)
+      "@/*": ["src/*"]
+    }
+  },
+  "include": [
+    "src/**/*.ts", // Các tệp TypeScript cần biên dịch
+    "src/**/*.tsx" // Nếu có tệp TSX
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

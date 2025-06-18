@@ -1,4 +1,4 @@
-import { noteToFreq } from './audioUtils.js'
+import { noteToFreq } from './audioUtils.ts'
 
 describe('Audio Utilities', () => {
     describe('noteToFreq', () => {

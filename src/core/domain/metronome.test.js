@@ -1,4 +1,4 @@
-import { Metronome } from './metronome.js'
+import { Metronome } from './metronome.ts'
 
 // describe: Nhóm các test case cho cùng một đối tượng/module
 describe('Metronome Entity', () => {
