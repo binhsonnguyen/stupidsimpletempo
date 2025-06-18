@@ -4,8 +4,8 @@
  * @param {string} note - Tên nốt nhạc.
  * @returns {number} - Tần số Hz.
  */
-export function noteToFreq (note) {
-    const noteMap = { C: -9, D: -7, E: -5, F: -4, G: -2, A: 0, B: 2 }
+export function noteToFreq (note: string) {
+    const noteMap = {C: -9,D: -7,E: -5,F: -4,G: -2,A: 0,B: 2 }
     const referenceOctave = 4
     const referenceFreq = 440
 

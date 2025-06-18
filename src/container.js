@@ -1,7 +1,7 @@
 // /src/container.js
 
 // Domain
-import { Metronome } from './core/domain/metronome.js'
+import { Metronome } from './core/domain/metronome.ts'
 import { createUseCases } from './core/application/use-cases/useCases.js'
 import { createBeatSequence } from './core/domain/beatSequenceFactory.js'
 
