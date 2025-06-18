@@ -1,22 +1,20 @@
 import * as Tone from 'tone';
-
-const WOODBLOCK_SOUND_PATH = new URL('/src/assets/sound/woodblock.wav', import.meta.url);
-
+import woodblockSoundURL from 'url:../../assets/sound/woodblock.wav';
 
 export class WoodblockSoundLibrary {
     /**
-     * Khởi tạo SoundLibrary và tải trước file âm thanh accent.
+     * Khởi tạo SoundLibrary và tải trước file âm thanh accent..
      */
     constructor() {
         this.accentPlayer = new Tone.Player({
+            url: woodblockSoundURL,
             onload: () => {
-                console.log(`SoundLibrary: File âm thanh '${WOODBLOCK_SOUND_PATH}' đã được tải.`);
+                console.log(`SoundLibrary: File âm thanh '${woodblockSoundURL}' đã được tải.`);
             },
             onerror: (error) => {
-                console.error(`SoundLibrary: Lỗi khi tải file âm thanh '${WOODBLOCK_SOUND_PATH}':`, error);
+                console.error(`SoundLibrary: Lỗi khi tải file âm thanh '${woodblockSoundURL}':`, error);
             }
         }).toDestination(); // Kết nối player tới đầu ra âm thanh chính
-        this.accentPlayer.load(WOODBLOCK_SOUND_PATH);
     }
 
     /**
@@ -32,7 +30,7 @@ export class WoodblockSoundLibrary {
         }
 
         if (!this.accentPlayer.loaded) {
-            console.warn(`SoundLibrary: File accent '${WOODBLOCK_SOUND_PATH}' chưa tải xong. Âm thanh sẽ phát sau khi tải.`);
+            console.warn(`SoundLibrary: File accent '${woodblockSoundURL}' chưa tải xong. Âm thanh sẽ phát sau khi tải.`);
             // Tone.Player.start() sẽ tự động đợi file tải xong nếu chưa.
         }
 
