@@ -6,7 +6,7 @@
     "dev": "NODE_ENV=development npm run generate-version && npm run parcel:dev",
     "test": "jest",
     "patch": "npm version patch && npm run generate-version",
-    "build": "npm run parcel:build",
+    "build": "npm run parcel:build --no-cache",
     "deploy:dev": "NODE_ENV=development npm run build && firebase deploy --only hosting -P dev --config firebase.dev.json",
     "deploy:prod": "npm run build && firebase deploy --only hosting",
     "parcel:dev": "parcel src/index.html --dist-dir dev_dist",
