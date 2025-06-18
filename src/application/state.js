@@ -1,4 +1,4 @@
-import * as config from '../infrastructure/config.js';
+import * as config from '../infrastructure/config.ts';
 import { logger } from "../infrastructure/logger.ts";
 
 /**

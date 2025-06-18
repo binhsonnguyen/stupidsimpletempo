@@ -10,9 +10,9 @@ import * as state from './application/state.js'
 import * as presenter from './application/presenter.js'
 
 // Infrastructure
-import * as config from './infrastructure/config.js'
+import * as config from './infrastructure/config.ts'
 import { dom, initDomElements } from './ui/domElements.ts'
-import * as audioService from './infrastructure/audio/audioService.js'
+import * as audioService from './infrastructure/audio/audioService.ts'
 import { wakeLockService } from './infrastructure/services/wakeLockService.js'
 
 // UI Components

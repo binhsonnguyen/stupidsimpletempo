@@ -25,14 +25,14 @@ export class Beat {
         this._durationFactor = value;
     }
     private _durationFactor: number;
-    get type(): string {
+    get type(): BeatType {
         return this._type;
     }
 
-    set type(value: string) {
+    set type(value: BeatType) {
         this._type = value;
     }
-    private _type: string;
+    private _type: BeatType;
     /**
      * Khởi tạo một đối tượng Beat.
      * @param {object} [options={}] - Các thuộc tính của beat.
