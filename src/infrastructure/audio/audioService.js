@@ -1,5 +1,5 @@
 import * as config from '../config.js'
-import {soundFactory} from './soundFactory.js'
+import {soundFactory} from './soundFactory.ts'
 import {logger} from "../logger";
 import * as Tone from "tone";
 
