@@ -1,4 +1,4 @@
-import { logger } from '../infrastructure/logger.js'
+import { logger } from '../infrastructure/logger.ts'
 import { dom } from '../ui/domElements.js'
 
 let metronome = null

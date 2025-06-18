@@ -1,6 +1,5 @@
-// infrastructure/config.js và infrastructure/logger.js giữ nguyên
 import * as config from '../infrastructure/config.js';
-import { logger } from "../infrastructure/logger.js";
+import { logger } from "../infrastructure/logger.ts";
 
 /**
  * @typedef {import('screen-wake-lock').WakeLockSentinel} WakeLockSentinel
