@@ -18,44 +18,6 @@ const BEAT_SOUND_MAP = {
     regular: {note: config.REGULAR_BEAT_NOTE, gain: config.REGULAR_BEAT_GAIN}
 }
 
-/**
- * Phát một âm thanh đơn lẻ ngay lập tức hoặc vào một thời điểm cụ thể.
- * @param {object} options - Các tùy chọn cho âm thanh.
- * @param {string} options.note - Nốt nhạc (ví dụ: 'C4', 'A#5').
- * @param {string} [options.oscillatorType=config.BEAT_OSCILLATOR_TYPE.value] - Dạng sóng (ví dụ: 'sine', 'square').
- * @param {number} [options.gain=config.REGULAR_BEAT_GAIN] - Cường độ âm thanh (0.0 đến 1.0).
- * @param {number} [options.when=audioContextInstance.currentTime] - Thời điểm phát âm thanh (theo AudioContext time).
- * @returns {boolean} - Trả về true nếu âm thanh được lên lịch thành công, ngược lại là false.
- */
-export function playSingleSound({
-                                    note,
-                                    oscillatorType = config.BEAT_OSCILLATOR_TYPE.value,
-                                    gain = config.REGULAR_BEAT_GAIN,
-                                    when
-                                }) {
-    if (!audioContextInstance || audioContextInstance.state !== 'running') {
-        logger.warn('playSingleSound: AudioContext không sẵn sàng.');
-        return false;
-    }
-
-    if (!note) {
-        logger.warn('playSingleSound: Thiếu thông tin "note".');
-        return false;
-    }
-
-    const sound = soundFactory.getSound({note, oscillatorType});
-
-    if (sound) {
-        const playTime = when !== undefined ? when : audioContextInstance.currentTime;
-        sound.play(playTime, gain);
-        logger.log(`playSingleSound: Lên lịch phát âm thanh ${note} tại ${playTime} với gain ${gain}`);
-        return true;
-    } else {
-        logger.error(`playSingleSound: Không thể lấy hoặc tạo âm thanh cho note ${note}`);
-        return false;
-    }
-}
-
 export function playAccentSound({
                                     gain = 1.0,
                                     when
