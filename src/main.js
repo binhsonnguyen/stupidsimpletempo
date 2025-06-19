@@ -1,6 +1,6 @@
 // /src/main.js
 import {APP_VERSION} from './version.js'
-import {dependencies} from './container.js'
+import {dependencies} from './container.ts'
 import * as controller from './ui/controllers/controller.ts'
 import {logger} from "./infrastructure/logger"
 import * as Tone from 'tone'
