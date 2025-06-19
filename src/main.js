@@ -1,7 +1,7 @@
 // /src/main.js
 import {APP_VERSION} from './version.js'
 import {dependencies} from './container.js'
-import * as controller from './ui/controllers/controller.js'
+import * as controller from './ui/controllers/controller.ts'
 import {logger} from "./infrastructure/logger"
 import * as Tone from 'tone'
 
@@ -92,7 +92,7 @@ function registerServiceWorker() {
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker
-                    .register(new URL('./infrastructure/services/sw.js', import.meta.url))
+                    .register(new URL('./infrastructure/services/sw.ts', import.meta.url))
                     .then(() => {
                         logger.log('Service worker has been registered.')
                         resolve()

@@ -13,11 +13,11 @@ import * as presenter from './application/presenter.js'
 import * as config from './infrastructure/config.ts'
 import { dom, initDomElements } from './ui/domElements.ts'
 import * as audioService from './infrastructure/audio/audioService.ts'
-import { wakeLockService } from './infrastructure/services/wakeLockService.js'
+import { wakeLockService } from './infrastructure/services/wakeLockService.ts'
 
 // UI Components
-import { StartButton } from './ui/components/StartButton.js'
-import { Dial } from './ui/components/Dial.js'
+import { StartButton } from './ui/components/startButton.ts'
+import { Dial } from './ui/components/dial.ts'
 
 const metronome = new Metronome({
     initialBpm: config.MIN_SCALE_BPM,
