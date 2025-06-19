@@ -27,8 +27,8 @@ interface StateModule {
     [key: string]: any; // Thay thế bằng các thuộc tính/phương thức thực tế của state
 }
 
-// Interface cho module presenter - Dựa trên cách sử dụng trong main.js và giả định các export khác
-// Interface này cần bao gồm cả các thuộc tính mà main.js thêm vào đối tượng dependencies
+// Interface cho module presenter - Dựa trên cách sử dụng trong main.ts và giả định các export khác
+// Interface này cần bao gồm cả các thuộc tính mà main.ts thêm vào đối tượng dependencies
 // trước khi truyền cho các phương thức của presenter.
 interface PresenterModule {
     initializePresenter: (deps: DependenciesWithUIComponents) => void; // Sử dụng interface mở rộng
@@ -57,7 +57,7 @@ interface ConfigModule {
     // Thêm bất kỳ export nào khác từ config.ts
 }
 
-// Interface cho object dom - Dựa trên cách sử dụng trong main.js và giả định các export khác
+// Interface cho object dom - Dựa trên cách sử dụng trong main.ts và giả định các export khác
 interface DomElements {
     startStopButtonElement: HTMLElement;
     rotaryDialContainerElement: HTMLElement;
@@ -107,11 +107,11 @@ export interface Dependencies {
     };
 }
 
-// --- Định nghĩa một interface mở rộng cho Dependencies, bao gồm các thuộc tính được thêm vào trong main.js ---
-// Interface này được sử dụng bởi các thành phần (như Presenter) nhận đối tượng dependencies sau khi main.js đã thêm các component UI vào.
+// --- Định nghĩa một interface mở rộng cho Dependencies, bao gồm các thuộc tính được thêm vào trong main.ts ---
+// Interface này được sử dụng bởi các thành phần (như Presenter) nhận đối tượng dependencies sau khi main.ts đã thêm các component UI vào.
 interface DependenciesWithUIComponents extends Dependencies {
-    startButton?: StartButton; // Instance của StartButton, được thêm vào trong main.js
-    dial?: Dial; // Instance của Dial, được thêm vào trong main.js
+    startButton?: StartButton; // Instance của StartButton, được thêm vào trong main.ts
+    dial?: Dial; // Instance của Dial, được thêm vào trong main.ts
 }
 
 
@@ -157,6 +157,6 @@ export const dependencies: Dependencies = {
         Dial
     }
     // Các thuộc tính startButton và dial không được thêm vào đối tượng dependencies tại đây,
-    // chúng được thêm vào sau trong main.js. Chúng được đánh dấu là tùy chọn (?)
+    // chúng được thêm vào sau trong main.ts. Chúng được đánh dấu là tùy chọn (?)
     // trong interface DependenciesWithUIComponents.
 };
