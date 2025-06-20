@@ -1,6 +1,6 @@
 {
   "name": "stupidsimpletempo",
-  "version": "1.2.10",
+  "version": "1.2.11",
   "scripts": {
     "generate-version": "node generate-version.js",
     "type-check": "tsc --noEmit",
