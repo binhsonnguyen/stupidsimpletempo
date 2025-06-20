@@ -81,7 +81,7 @@ function initializeApp(): void {
     // Tạo instance StartButton và gán vào dependencies (mở rộng)
     // dependencies.startButton sẽ có kiểu StartButton | undefined
     (dependencies as DependenciesWithUIComponents).startButton = new components.StartButton({
-        element: dom.startStopButtonElement, // dom.startStopButtonElement nên là HTMLElement
+        element: dom.startStopButtonElement,
         onTap: () => {
             const audioCtx = Tone.getContext(); // Tone.getContext() trả về Tone.Context | null
             if (!audioCtx) {
