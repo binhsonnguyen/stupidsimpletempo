@@ -12,10 +12,12 @@ import {
     PresenterModule, // Import interface cho presenter
 } from './container'; // container.ts đã được chuyển đổi
 import * as controller from './ui/controllers/controller'; // controller.ts đã được chuyển đổi
-import { logger } from "./infrastructure/logger"; // Giả định logger.ts export logger với kiểu phù hợp
+import { logger, setUiLogElement } from "./infrastructure/logger";
 import * as Tone from 'tone'; // Tone.js có typings riêng (@types/tone)
 import { StartButton } from './ui/components/startButton'; // StartButton.ts đã được chuyển đổi
 import { Dial } from './ui/components/dial'; // Dial.ts đã được chuyển đổi
+
+const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 // Destructure dependencies với kiểu rõ ràng
 const {
@@ -32,6 +34,23 @@ let activeAudioUnlockPromise: Promise<void> | undefined = undefined;
 
 // Lắng nghe sự kiện DOMContentLoaded để khởi tạo ứng dụng
 window.addEventListener('DOMContentLoaded', () => {
+    const uiLogElement = document.getElementById('log-output');
+
+    // Nếu ở chế độ dev VÀ tìm thấy phần tử log
+    if (IS_DEVELOPMENT && uiLogElement instanceof HTMLElement) {
+        // Thiết lập logger để ghi log ra UI
+        setUiLogElement(uiLogElement, true);
+        // Hiển thị phần tử log
+        uiLogElement.style.display = 'block';
+        logger.log('Development mode detected. UI logging enabled.'); // Dòng log này sẽ xuất hiện trên cả console và UI
+    } else {
+        // Đảm bảo UI logging bị tắt nếu không ở chế độ dev hoặc không tìm thấy phần tử
+        setUiLogElement(null, false);
+        if (uiLogElement instanceof HTMLElement) {
+            uiLogElement.style.display = 'none'; // Đảm bảo nó bị ẩn
+        }
+    }
+
     // Chuỗi Promise để khởi tạo tuần tự
     dependencies.initDomElements() // initDomElements trả về Promise<void>
         .then(() => initializeApp()) // initializeApp trả về void (hoặc Promise<void>)
