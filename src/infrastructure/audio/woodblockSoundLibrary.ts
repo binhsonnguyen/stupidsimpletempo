@@ -1,6 +1,6 @@
 // /src/infrastructure/audio/woodblockSoundLibrary.ts
 import * as Tone from 'tone';
-import woodblockSoundURL from 'url:../../assets/sound/woodblock.wav';
+import woodblockSoundURL from 'url:../../assets/sound/woodblock.mp3';
 
 export class WoodblockSoundLibrary {
     private accentPlayer: Tone.Player;
