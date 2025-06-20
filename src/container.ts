@@ -59,12 +59,12 @@ interface ConfigModule {
 
 // Interface cho object dom - Dựa trên cách sử dụng trong main.ts và giả định các export khác
 interface DomElements {
-    startStopButtonElement: HTMLElement;
-    rotaryDialContainerElement: HTMLElement;
-    labelLayerElement: HTMLElement;
-    tickMarkLayerElement: HTMLElement;
-    dialTrackBorderLayerElement: HTMLElement;
-    arcLayerElement: HTMLElement;
+    startStopButtonElement: Nullable<HTMLElement>;
+    rotaryDialContainerElement: Nullable<HTMLElement>;
+    labelLayerElement: Nullable<HTMLElement>;
+    tickMarkLayerElement: Nullable<HTMLElement>;
+    dialTrackBorderLayerElement: Nullable<HTMLElement>;
+    arcLayerElement: Nullable<HTMLElement>;
     [key: string]: any; // Thay thế bằng các export thực tế của domElements.ts
 }
 
