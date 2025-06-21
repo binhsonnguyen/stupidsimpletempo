@@ -1,9 +1,23 @@
-.idea
-*.iml
 node_modules
-firebase-debug.log
-dev_dist
-public
-.parcel-cache
-.firebase
-src/version.js
+
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
