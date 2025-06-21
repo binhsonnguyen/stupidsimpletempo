@@ -1,0 +1,15 @@
+// src/styles/theme.scss
+
+// Import các file variables và functions của Bootstrap trước
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+
+// GHI ĐÈ CÁC BIẾN MẶC ĐỊNH CỦA BOOTSTRAP
+// Đây là cách "chính thống" để thay đổi giao diện của Bootstrap.
+// Có thể tìm thấy tất cả các biến trong file `node_modules/bootstrap/scss/_variables.scss`.
+$body-bg: $dark;      // Đặt màu nền mặc định cho body
+$body-color: $light;   // Đặt màu chữ mặc định cho body
+
+// IMPORT BOOTSTRAP
+// Bootstrap sẽ sử dụng các biến bạn đã định nghĩa ở trên để tạo ra CSS cuối cùng.
+@import 'bootstrap/scss/bootstrap';
