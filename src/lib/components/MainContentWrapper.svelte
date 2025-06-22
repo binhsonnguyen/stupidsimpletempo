@@ -1,8 +1,7 @@
-<script>
-</script>
-
 <!-- src/lib/components/MainContentWrapper.svelte -->
 
+<script>
+</script>
 
 <div class="container text-center">
     <slot />
