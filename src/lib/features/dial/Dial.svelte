@@ -1,11 +1,11 @@
-<!-- src/lib/components/Dial.svelte -->
+<!-- src/lib/features/dial/Dial.svelte -->
 
 <script>
-    import Drum from '../drum/Drum.svelte';
-    import DialLabels from '$lib/features/dial/DialLabels.svelte';
-    import DialTickMark from '$lib/features/dial/DialTickMark.svelte';
-    import DialTrackBorder from '$lib/features/dial/DialTrackBorder.svelte';
-    import DialKnob from '$lib/features/dial/DialKnob.svelte';
+    import Drum from '$lib/features/drum/Drum.svelte';
+    import DialLabels from './DialLabels.svelte';
+    import DialTickMark from './DialTickMark.svelte';
+    import DialTrackBorder from './DialTrackBorder.svelte';
+    import DialKnob from './DialKnob.svelte';
 
     let isRunning = false;
     let rotationAngle = 0;
@@ -19,6 +19,9 @@
         isRunning = !isRunning;
     }
 
+    /**
+     * @param {MouseEvent | TouchEvent} event - Sự kiện chuột hoặc cảm ứng.
+     */
     function handleDragStart(event) {
         console.log('Drag started on Dial');
     }
