@@ -1,4 +1,4 @@
-<!-- src/lib/components/MetronomeDial.svelte -->
+<!-- src/lib/components/Dial.svelte -->
 <script>
     import Drum from './Drum.svelte';
 

@@ -3,7 +3,7 @@
     import Header from '$lib/components/Header.svelte';
     import Footer from '$lib/components/Footer.svelte';
     import MainContentWrapper from "$lib/components/MainContentWrapper.svelte";
-    import MetronomeDial from "$lib/components/MetronomeDial.svelte";
+    import Dial from "$lib/components/Dial.svelte";
 </script>
 
 <Header />
@@ -13,7 +13,7 @@
 <!--justify-content-center: Căn giữa các phần tử con của main theo chiều ngang (main-axis).-->
 <main class="flex-grow-1 d-flex align-items-center justify-content-center">
     <MainContentWrapper>
-        <MetronomeDial/>
+        <Dial/>
     </MainContentWrapper>
 </main>
 
