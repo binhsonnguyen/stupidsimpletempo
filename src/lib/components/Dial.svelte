@@ -1,25 +1,45 @@
 <!-- src/lib/components/Dial.svelte -->
+
 <script>
     import Drum from './Drum.svelte';
+    import DialLabels from "$lib/components/DialLabels.svelte";
+    import DialTickMark from "$lib/components/DialTickMark.svelte";
+    import DialTrackBorder from "$lib/components/DialTrackBorder.svelte";
 
-    let isRunning = false
+    // --- STATE (Trạng thái do Dial quản lý) ---
+
+    let isRunning = false;
+    /**
+     * Góc xoay của các layer, tính bằng độ.
+     * Đây là state quan trọng nhất điều khiển giao diện.
+     */
+    let rotationAngle = 0;
+
+    // --- LOGIC (Các hàm xử lý sự kiện) ---
 
     function handleToggle() {
         console.log('Metronome on toggle');
         isRunning = !isRunning;
     }
+
+    // Các hàm xử lý kéo-thả sẽ được phát triển ở đây.
+    // Chúng sẽ tính toán và cập nhật giá trị `rotationAngle`.
+    function handleDragStart(event) {
+        console.log('Drag started on Dial');
+        // TODO: Logic để bắt đầu theo dõi thao tác kéo
+    }
 </script>
 
-<div class="dial-area-wrapper">
+<div
+        class="dial-area-wrapper"
+        on:mousedown={handleDragStart}
+        on:touchstart={handleDragStart}
+>
     <div class="dial-container-outer">
         <div id="rotaryDialContainer" class="rotary-dial-container">
-            <!-- Mặt tròn -->
-            <div id="labelLayer" class="dial-layer"></div>
-            <div id="tickMarkLayer" class="dial-layer"></div>
-            <div id="dialTrackBorderLayer" class="dial-layer"></div>
-
-            <!-- Núm xoay để nhìn BPM -->
-            <div id="rotaryKnob" class="rotary-knob"></div>
+            <DialLabels rotationAngle="{rotationAngle}"/>
+            <DialTickMark rotationAngle="{rotationAngle}"/>
+            <DialTrackBorder/>
 
             <!-- Mặt trống -->
             <Drum {isRunning} onToggle={handleToggle} />
@@ -29,13 +49,20 @@
 
 <style>
     .dial-area-wrapper {
-        flex-grow: 1; /* Luôn lấp đầy không gian còn lại */
-        min-height: 0; /* Cho phép co lại nhỏ hơn nội dung, rất quan trọng cho flexbox */
+        flex-grow: 1;
+        min-height: 0;
         display: flex;
         justify-content: center;
         align-items: center;
         cursor: grab;
         transition: min-height 0.35s ease-in-out;
+        /* Quan trọng: Ngăn các hành vi mặc định của trình duyệt khi kéo */
+        touch-action: none;
+        user-select: none;
+    }
+
+    .dial-area-wrapper:active {
+        cursor: grabbing;
     }
 
     .dial-container-outer {
@@ -51,52 +78,6 @@
         position: relative;
         width: 250px;
         height: 250px;
-        cursor: grab;
         border-radius: 50%;
-    }
-
-    .dial-layer {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        border-radius: 50%;
-        pointer-events: none;
-    }
-
-    #labelLayer {
-        z-index: 1;
-        background-image: url('/svg/bpm-labels.svg');
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: center;
-    }
-
-    #tickMarkLayer {
-        z-index: 2;
-        background-image: url('/svg/bpm-markers.svg');
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: center;
-    }
-
-    #dialTrackBorderLayer {
-        z-index: 3;
-        border: 5px solid #495057;
-        box-sizing: border-box;
-    }
-
-    .rotary-knob {
-        position: absolute;
-        width: 0;
-        height: 0;
-        border-left: 7.5px solid transparent;
-        border-right: 7.5px solid transparent;
-        border-top: 13px solid #FF0000;
-        top: -7px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 4;
     }
 </style>
