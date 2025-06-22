@@ -3,7 +3,7 @@
     import Header from '$lib/components/Header.svelte';
     import Footer from '$lib/components/Footer.svelte';
     import MainContentWrapper from "$lib/components/MainContentWrapper.svelte";
-    import Dial from "$lib/components/Dial.svelte";
+    import Dial from "$lib/features/dial/Dial.svelte";
 </script>
 
 <Header />

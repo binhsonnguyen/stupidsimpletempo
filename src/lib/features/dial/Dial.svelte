@@ -1,11 +1,11 @@
 <!-- src/lib/components/Dial.svelte -->
 
 <script>
-    import Drum from './Drum.svelte';
-    import DialLabels from '$lib/components/DialLabels.svelte';
-    import DialTickMark from '$lib/components/DialTickMark.svelte';
-    import DialTrackBorder from '$lib/components/DialTrackBorder.svelte';
-    import DialKnob from '$lib/components/DialKnob.svelte';
+    import Drum from '../drum/Drum.svelte';
+    import DialLabels from '$lib/features/dial/DialLabels.svelte';
+    import DialTickMark from '$lib/features/dial/DialTickMark.svelte';
+    import DialTrackBorder from '$lib/features/dial/DialTrackBorder.svelte';
+    import DialKnob from '$lib/features/dial/DialKnob.svelte';
 
     let isRunning = false;
     let rotationAngle = 0;

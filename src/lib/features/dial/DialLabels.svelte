@@ -9,7 +9,7 @@
 ></div>
 
 <style>
-    @import '../styles/_dial-layer-base.scss';
+    @import 'styles/_dial-layer-base.scss';
 
     #labelLayer {
         z-index: 1;
