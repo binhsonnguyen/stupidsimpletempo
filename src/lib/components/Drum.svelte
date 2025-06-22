@@ -13,6 +13,7 @@
         class:on={isRunning && !isLoading}
         class:off={!isRunning && !isLoading}
         aria-label={isRunning ? 'Stop metronome' : 'Start metronome'}
+        tabindex="-1"
 >
 </button>
 
@@ -46,5 +47,9 @@
 
     .start-stop-button.on {
         box-shadow: 0 0 15px rgba(220, 53, 69, 0.7);
+    }
+
+    .start-stop-button:focus-visible {
+        outline: none;
     }
 </style>
