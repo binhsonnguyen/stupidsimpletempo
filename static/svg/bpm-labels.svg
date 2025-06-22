@@ -1,0 +1,43 @@
+<svg width="250" height="250" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg">
+    <g
+            id="labels-layer-centered"
+            font-family="system-ui, -apple-system, sans-serif"
+            font-size="11"
+            fill="#dee2e6"
+            text-anchor="middle"
+    >
+        <g transform="rotate(0 125 125)">
+            <text x="125" y="31">0</text>
+        </g>
+
+        <g transform="rotate(12 125 125)">
+            <text x="125" y="31">40</text>
+        </g>
+
+        <g transform="rotate(50.5 125 125)">
+            <text x="125" y="31">60</text>
+        </g>
+
+        <g transform="rotate(89 125 125)">
+            <text x="125" y="31">80</text>
+        </g>
+        <g transform="rotate(127.5 125 125)">
+            <text x="125" y="31">100</text>
+        </g>
+        <g transform="rotate(166 125 125)">
+            <text x="125" y="31">120</text>
+        </g>
+        <g transform="rotate(204.5 125 125)">
+            <text x="125" y="31">140</text>
+        </g>
+        <g transform="rotate(243 125 125)">
+            <text x="125" y="31">160</text>
+        </g>
+        <g transform="rotate(281.5 125 125)">
+            <text x="125" y="31">180</text>
+        </g>
+        <g transform="rotate(320 125 125)">
+            <text x="125" y="31">200</text>
+        </g>
+    </g>
+</svg>

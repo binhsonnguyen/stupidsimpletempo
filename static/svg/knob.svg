@@ -1,0 +1,8 @@
+<svg width="250" height="250" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg">
+    <g id="rotary-knob-group" transform="rotate(0 125 125)">
+        <polygon
+                points="117.5,10 132.5,10 125,23"
+                fill="#FF0000"
+        />
+    </g>
+</svg>
