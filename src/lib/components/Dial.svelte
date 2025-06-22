@@ -5,6 +5,7 @@
     import DialLabels from '$lib/components/DialLabels.svelte';
     import DialTickMark from '$lib/components/DialTickMark.svelte';
     import DialTrackBorder from '$lib/components/DialTrackBorder.svelte';
+    import DialKnob from '$lib/components/DialKnob.svelte';
 
     let isRunning = false;
     let rotationAngle = 0;
@@ -39,6 +40,7 @@
             <DialLabels {rotationAngle} />
             <DialTickMark {rotationAngle} />
             <DialTrackBorder />
+            <DialKnob />
             <Drum {isRunning} onToggle={handleToggle} />
         </div>
     </div>
@@ -59,10 +61,6 @@
 
     .dial-area-wrapper:active {
         cursor: grabbing;
-    }
-
-    .dial-area-wrapper:focus-visible {
-        outline: none;
     }
 
     .dial-container-outer {
