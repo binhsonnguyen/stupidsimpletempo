@@ -27,34 +27,35 @@
 	let currentBpm = dialSettings.minBpm;
 	let isRunning = false;
 
-	$: derivedBpm = (() => {
-		const knobAngle = -rotationAngle;
-		const effectiveAngle = ((knobAngle % 360) + 360) % 360;
-
-		const usableAngleRange = dialSettings.maxBpmAngle - dialSettings.minBpmAngle;
-		const bpmRange = dialSettings.maxBpm - dialSettings.minBpm;
-
-		let calculatedBpm: number;
-
-		if (effectiveAngle >= dialSettings.minBpmAngle && effectiveAngle <= dialSettings.maxBpmAngle) {
-			const angleWithinUsableRange = effectiveAngle - dialSettings.minBpmAngle;
-			const percentage = angleWithinUsableRange / usableAngleRange;
-			calculatedBpm = dialSettings.minBpm + percentage * bpmRange;
-		} else if (effectiveAngle < dialSettings.minBpmAngle) {
-			calculatedBpm = dialSettings.minBpm;
-		} else {
-			calculatedBpm = dialSettings.maxBpm;
-		}
-
-		return Math.round(calculatedBpm);
-	})();
-
-	$: currentBpm = derivedBpm;
+	$: currentBpm = Math.round(calculateBpmFromAngle(rotationAngle, dialSettings));
 
 	$: {
 		logger.log(`BPM updated to: ${currentBpm}`);
 	}
 
+	/*
+	 * Kẹp một giá trị luôn trong một khoảng min-max
+	 */
+	function clamp(value: number, min: number, max: number): number {
+		return Math.max(min, Math.min(value, max));
+	}
+
+	/*
+	 * Tính bpm từ góc quay của dial
+	 */
+	function calculateBpmFromAngle(): number {
+		const knobAngle = -rotationAngle;
+		const effectiveAngle = ((knobAngle % 360) + 360) % 360;
+
+		const clampedAngle = clamp(effectiveAngle, dialSettings.minBpmAngle, dialSettings.maxBpmAngle);
+
+		const usableAngleRange = dialSettings.maxBpmAngle - dialSettings.minBpmAngle;
+		const angleWithinUsableRange = clampedAngle - dialSettings.minBpmAngle;
+		const percentage = usableAngleRange > 0 ? angleWithinUsableRange / usableAngleRange : 0;
+
+		const bpmRange = dialSettings.maxBpm - dialSettings.minBpm;
+		return dialSettings.minBpm + percentage * bpmRange;
+	}
 	/**
 	 * Trả về tọa độ (x, y) từ MouseEvent hoặc TouchEvent.
 	 */
