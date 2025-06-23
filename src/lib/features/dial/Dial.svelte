@@ -23,19 +23,11 @@
 	let isRunning = false;
 
 	$: {
-		const knobAngle = -rotationAngle
-
-		// `rotationAngle` có thể là số âm hoặc lớn hơn 360, nên cần chuẩn hóa.
-		// Công thức `(n % m + m) % m` đảm bảo kết quả luôn dương.
+		const knobAngle = -rotationAngle;
 		const effectiveAngle = ((knobAngle % 360) + 360) % 360;
-
-		// Ánh xạ góc xoay sang giá trị BPM
 		const bpmRange = dialSettings.maxBpm - dialSettings.minBpm;
 		const calculatedBpm = (effectiveAngle / 360) * bpmRange + dialSettings.minBpm;
-
-		// Cập nhật giá trị BPM hiện tại
 		currentBpm = Math.round(calculatedBpm);
-
 		logger.log(`Angle: ${rotationAngle.toFixed(1)} -> Normalized: ${effectiveAngle.toFixed(1)} -> BPM: ${currentBpm}`);
 	}
 
