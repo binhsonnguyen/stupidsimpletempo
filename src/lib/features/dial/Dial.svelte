@@ -27,7 +27,11 @@
 	let currentBpm = dialSettings.minBpm;
 	let isRunning = false;
 
-	$: {
+	/**
+	 * Đây là một "biến dẫn xuất" (derived variable).
+	 * Nó sẽ tự động tính toán lại mỗi khi `rotationAngle` thay đổi.
+	 */
+	$: derivedBpm = (() => {
 		const knobAngle = -rotationAngle;
 		const effectiveAngle = ((knobAngle % 360) + 360) % 360;
 
@@ -39,15 +43,20 @@
 		if (effectiveAngle >= dialSettings.minBpmAngle && effectiveAngle <= dialSettings.maxBpmAngle) {
 			const angleWithinUsableRange = effectiveAngle - dialSettings.minBpmAngle;
 			const percentage = angleWithinUsableRange / usableAngleRange;
-			calculatedBpm = dialSettings.minBpm + (percentage * bpmRange);
+			calculatedBpm = dialSettings.minBpm + percentage * bpmRange;
 		} else if (effectiveAngle < dialSettings.minBpmAngle) {
 			calculatedBpm = dialSettings.minBpm;
 		} else {
 			calculatedBpm = dialSettings.maxBpm;
 		}
 
-		currentBpm = Math.round(calculatedBpm);
-		logger.log(`Angle: ${rotationAngle.toFixed(1)} -> Effective: ${effectiveAngle.toFixed(1)} -> BPM: ${currentBpm}`);
+		return Math.round(calculatedBpm);
+	})();
+
+	$: currentBpm = derivedBpm;
+
+	$: {
+		logger.log(`BPM updated to: ${currentBpm}`);
 	}
 
 	/**
