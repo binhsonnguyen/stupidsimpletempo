@@ -30,10 +30,24 @@
 	$: {
 		const knobAngle = -rotationAngle;
 		const effectiveAngle = ((knobAngle % 360) + 360) % 360;
+
+		const usableAngleRange = dialSettings.maxBpmAngle - dialSettings.minBpmAngle;
 		const bpmRange = dialSettings.maxBpm - dialSettings.minBpm;
-		const calculatedBpm = (effectiveAngle / 360) * bpmRange + dialSettings.minBpm;
+
+		let calculatedBpm: number;
+
+		if (effectiveAngle >= dialSettings.minBpmAngle && effectiveAngle <= dialSettings.maxBpmAngle) {
+			const angleWithinUsableRange = effectiveAngle - dialSettings.minBpmAngle;
+			const percentage = angleWithinUsableRange / usableAngleRange;
+			calculatedBpm = dialSettings.minBpm + (percentage * bpmRange);
+		} else if (effectiveAngle < dialSettings.minBpmAngle) {
+			calculatedBpm = dialSettings.minBpm;
+		} else {
+			calculatedBpm = dialSettings.maxBpm;
+		}
+
 		currentBpm = Math.round(calculatedBpm);
-		logger.log(`Angle: ${rotationAngle.toFixed(1)} -> Normalized: ${effectiveAngle.toFixed(1)} -> BPM: ${currentBpm}`);
+		logger.log(`Angle: ${rotationAngle.toFixed(1)} -> Effective: ${effectiveAngle.toFixed(1)} -> BPM: ${currentBpm}`);
 	}
 
 	/**
@@ -57,7 +71,6 @@
 		const dy = clientY - centerY;
 		return ((Math.atan2(dy, dx) * 180) / Math.PI + 90 + 360) % 360;
 	}
-
 
 	function handleToggle() {
 		isRunning = !isRunning;
