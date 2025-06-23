@@ -13,7 +13,12 @@
 		startRotationAngle: number;
 	};
 
-	const dialSettings = { maxBpm: 200, minBpm: 40 };
+	const dialSettings = {
+		maxBpm: 200,
+		minBpm: 40,
+		minBpmAngle: 12,
+		maxBpmAngle: 320
+	};
 
 	let dialElement: HTMLElement | undefined;
 	let dragState: DragState | null = null;
