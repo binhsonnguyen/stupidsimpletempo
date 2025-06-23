@@ -58,8 +58,8 @@
         align-items: center;
         cursor: grab;
         transition: min-height 0.35s ease-in-out;
-        touch-action: none;
-        user-select: none;
+        touch-action: none; /* Prevents default touch behaviors */
+        user-select: none; /* Prevents text selection during drag */
     }
 
     .dial-area-wrapper:active {
