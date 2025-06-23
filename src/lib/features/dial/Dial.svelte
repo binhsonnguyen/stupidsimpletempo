@@ -20,10 +20,23 @@
 
 	let currentBpm = dialSettings.minBpm;
 	let isRunning = false;
-	let rotationAngle = 0;
 
-	let metronomeSettings: MetronomeSettings = { currentBpm: 40, maxBpm: 200, minBpm: 40 };
-	let dragState: DragState | null = null;
+	$: {
+		const knobAngle = -rotationAngle
+
+		// `rotationAngle` có thể là số âm hoặc lớn hơn 360, nên cần chuẩn hóa.
+		// Công thức `(n % m + m) % m` đảm bảo kết quả luôn dương.
+		const effectiveAngle = ((knobAngle % 360) + 360) % 360;
+
+		// Ánh xạ góc xoay sang giá trị BPM
+		const bpmRange = dialSettings.maxBpm - dialSettings.minBpm;
+		const calculatedBpm = (effectiveAngle / 360) * bpmRange + dialSettings.minBpm;
+
+		// Cập nhật giá trị BPM hiện tại
+		currentBpm = Math.round(calculatedBpm);
+
+		logger.log(`Angle: ${rotationAngle.toFixed(1)} -> Normalized: ${effectiveAngle.toFixed(1)} -> BPM: ${currentBpm}`);
+	}
 
 	function handleToggle() {
 		console.log('Metronome on toggle');
@@ -35,10 +48,8 @@
 	 */
 	function getEventCoordinates(event: MouseEvent | TouchEvent): { x: number; y: number } {
 		if ('touches' in event) {
-			// Đây là TouchEvent
 			return { x: event.touches[0].clientX, y: event.touches[0].clientY };
 		}
-		// Đây là MouseEvent
 		return { x: event.clientX, y: event.clientY };
 	}
 
@@ -70,8 +81,6 @@
 			startRotationAngle: rotationAngle,
 			startAngle: getAngle(dialElement, x, y)
 		};
-
-		logger.log('Dial drag start with state: ', dragState);
 
 		window.addEventListener('mousemove', handleDragMove);
 		window.addEventListener('mouseup', handleDragEnd);
@@ -106,7 +115,6 @@
 	 */
 	function handleDragEnd() {
 		if (dragState) {
-			logger.log('Dial drag end, rotationAngle: ', rotationAngle);
 			dragState = null;
 		}
 		window.removeEventListener('mousemove', handleDragMove);
@@ -122,9 +130,9 @@
 	class="dial-area-wrapper"
 	role="slider"
 	aria-label="Metronome tempo"
-	aria-valuemin={metronomeSettings.minBpm}
-	aria-valuemax={metronomeSettings.maxBpm}
-	aria-valuenow={metronomeSettings.currentBpm}
+	aria-valuemin={dialSettings.minBpm}
+	aria-valuemax={dialSettings.maxBpm}
+	aria-valuenow={currentBpm}
 	tabindex="-1"
 	on:mousedown={handleDragStart}
 	on:touchstart={handleDragStart}
