@@ -33,17 +33,26 @@
 	}
 
 	/**
-	 * Calculates the angle of a point relative to the center of an element.
+	 * Trả về tọa độ (x, y) từ MouseEvent hoặc TouchEvent.
+	 */
+	function getEventCoordinates(event: MouseEvent | TouchEvent): { x: number; y: number } {
+		if ('touches' in event) {
+			// Đây là TouchEvent
+			return { x: event.touches[0].clientX, y: event.touches[0].clientY };
+		}
+		// Đây là MouseEvent
+		return { x: event.clientX, y: event.clientY };
+	}
+
+	/**
+	 * Tính góc của một điểm so với tâm của một phần tử
 	 */
 	function getAngle(element: HTMLElement, clientX: number, clientY: number): number {
 		const rect = element.getBoundingClientRect();
 		const centerX = rect.left + rect.width / 2;
 		const centerY = rect.top + rect.height / 2;
-
 		const dx = clientX - centerX;
 		const dy = clientY - centerY;
-
-		// Converts radians to degrees and adjusts so 0 is at the 12 o'clock position.
 		return ((Math.atan2(dy, dx) * 180) / Math.PI + 90 + 360) % 360;
 	}
 
@@ -52,24 +61,20 @@
 	 */
 	function handleDragStart(event: MouseEvent | TouchEvent) {
 		if (!dialElement) return;
-
 		event.preventDefault();
-
 		if ((event.target as Element).closest('.start-stop-button')) {
 			return;
 		}
 
-		const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
-		const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+		const { x, y } = getEventCoordinates(event);
 
 		dragState = {
 			startRotationAngle: rotationAngle,
-			startAngle: getAngle(dialElement, clientX, clientY)
+			startAngle: getAngle(dialElement, x, y)
 		};
 
 		logger.log('Dial drag start with state: ', dragState);
 
-		// Add global event listeners to track the drag
 		window.addEventListener('mousemove', handleDragMove);
 		window.addEventListener('mouseup', handleDragEnd);
 		window.addEventListener('touchmove', handleDragMove, { passive: false });
@@ -82,13 +87,10 @@
 	 */
 	function handleDragMove(event: MouseEvent | TouchEvent) {
 		if (!dragState || !dialElement) return;
-
 		event.preventDefault();
 
-		const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
-		const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
-
-		const currentAngle = getAngle(dialElement, clientX, clientY);
+		const { x, y } = getEventCoordinates(event);
+		const currentAngle = getAngle(dialElement, x, y);
 
 		let deltaAngle = currentAngle - dragState.startAngle;
 
@@ -109,8 +111,6 @@
 			logger.log('Dial drag end, rotationAngle: ', rotationAngle);
 			dragState = null;
 		}
-
-		// Clean up global listeners
 		window.removeEventListener('mousemove', handleDragMove);
 		window.removeEventListener('mouseup', handleDragEnd);
 		window.removeEventListener('touchmove', handleDragMove);
