@@ -14,10 +14,11 @@
 	};
 
 	const dialSettings = { maxBpm: 200, minBpm: 40 };
-	let dragState: DragState | null = null;
-	let dialElement: HTMLElement | undefined;
-	let rotationAngle = 0;
 
+	let dialElement: HTMLElement | undefined;
+	let dragState: DragState | null = null;
+
+	let rotationAngle = 0;
 	let currentBpm = dialSettings.minBpm;
 	let isRunning = false;
 
