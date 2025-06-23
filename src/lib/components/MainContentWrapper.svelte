@@ -4,7 +4,7 @@
 </script>
 
 <div class="container text-center">
-    <slot />
+	<slot />
 </div>
 
 <style>
