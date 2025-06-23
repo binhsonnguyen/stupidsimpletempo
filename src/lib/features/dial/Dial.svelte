@@ -15,17 +15,101 @@
 	const maxBpm = 200;
 	let currentBpm = 40;
 
+	let isDragging = false;
+	let startAngle = 0;
+	let startRotationAngle = 0;
+	let dialElement: HTMLElement | undefined;
+
 	function handleToggle() {
 		console.log('Metronome on toggle');
 		isRunning = !isRunning;
 	}
 
-    /**
-     * @param {MouseEvent | TouchEvent} event - Sự kiện chuột hoặc cảm ứng.
-     */
-    function handleDragStart(event) {
-        console.log('Drag started on Dial');
-    }
+	/**
+	 * Calculates the angle of a point relative to the center of an element.
+	 */
+	function getAngle(element: HTMLElement, clientX: number, clientY: number): number {
+		const rect = element.getBoundingClientRect();
+		const centerX = rect.left + rect.width / 2;
+		const centerY = rect.top + rect.height / 2;
+
+		const dx = clientX - centerX;
+		const dy = clientY - centerY;
+
+		// Converts radians to degrees and adjusts so 0 is at the 12 o'clock position.
+		return ((Math.atan2(dy, dx) * 180) / Math.PI + 90 + 360) % 360;
+	}
+
+	/**
+	 * Starts the drag interaction when the user clicks or touches the dial.
+	 */
+	function handleDragStart(event: MouseEvent | TouchEvent) {
+		if (!dialElement) return;
+
+		event.preventDefault();
+
+		if ((event.target as Element).closest('.start-stop-button')) {
+			return;
+		}
+
+		isDragging = true;
+		startRotationAngle = rotationAngle;
+
+		const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+		const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+
+		// No need for a type assertion here because of the guard clause above.
+		startAngle = getAngle(dialElement, clientX, clientY);
+
+		logger.log('Dial drag start with startAngle ', startAngle)
+
+		// Add global event listeners to track the drag
+		window.addEventListener('mousemove', handleDragMove);
+		window.addEventListener('mouseup', handleDragEnd);
+		window.addEventListener('touchmove', handleDragMove, { passive: false });
+		window.addEventListener('touchend', handleDragEnd);
+		window.addEventListener('touchcancel', handleDragEnd);
+	}
+
+	/**
+	 * Handles the movement during a drag interaction.
+	 */
+	function handleDragMove(event: MouseEvent | TouchEvent) {
+		if (!isDragging || !dialElement) return;
+
+		event.preventDefault();
+
+		const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+		const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+
+		const currentAngle = getAngle(dialElement, clientX, clientY);
+		let deltaAngle = currentAngle - startAngle;
+
+		// Handle the 0/360 degree crossover for smoother rotation
+		if (deltaAngle > 180) {
+			deltaAngle -= 360;
+		} else if (deltaAngle < -180) {
+			deltaAngle += 360;
+		}
+
+		rotationAngle = startRotationAngle + deltaAngle;
+
+		logger.log('Dial drag moving ', rotationAngle)
+	}
+
+	/**
+	 * Ends the drag interaction.
+	 */
+	function handleDragEnd() {
+		isDragging = false;
+
+		// Clean up global listeners
+		window.removeEventListener('mousemove', handleDragMove);
+		window.removeEventListener('mouseup', handleDragEnd);
+		window.removeEventListener('touchmove', handleDragMove);
+		window.removeEventListener('touchend', handleDragEnd);
+		window.removeEventListener('touchcancel', handleDragEnd);
+	}
 </script>
 
 <div
