@@ -38,11 +38,6 @@
 		logger.log(`Angle: ${rotationAngle.toFixed(1)} -> Normalized: ${effectiveAngle.toFixed(1)} -> BPM: ${currentBpm}`);
 	}
 
-	function handleToggle() {
-		console.log('Metronome on toggle');
-		isRunning = !isRunning;
-	}
-
 	/**
 	 * Trả về tọa độ (x, y) từ MouseEvent hoặc TouchEvent.
 	 */
@@ -65,9 +60,11 @@
 		return ((Math.atan2(dy, dx) * 180) / Math.PI + 90 + 360) % 360;
 	}
 
-	/**
-	 * Starts the drag interaction when the user clicks or touches the dial.
-	 */
+
+	function handleToggle() {
+		isRunning = !isRunning;
+	}
+
 	function handleDragStart(event: MouseEvent | TouchEvent) {
 		if (!dialElement) return;
 		event.preventDefault();
@@ -76,7 +73,6 @@
 		}
 
 		const { x, y } = getEventCoordinates(event);
-
 		dragState = {
 			startRotationAngle: rotationAngle,
 			startAngle: getAngle(dialElement, x, y)
@@ -89,39 +85,29 @@
 		window.addEventListener('touchcancel', handleDragEnd);
 	}
 
-	/**
-	 * Handles the movement during a drag interaction.
-	 */
 	function handleDragMove(event: MouseEvent | TouchEvent) {
 		if (!dragState || !dialElement) return;
 		event.preventDefault();
 
 		const { x, y } = getEventCoordinates(event);
 		const currentAngle = getAngle(dialElement, x, y);
-
 		let deltaAngle = currentAngle - dragState.startAngle;
 
-		if (deltaAngle > 180) {
-			deltaAngle -= 360;
-		} else if (deltaAngle < -180) {
-			deltaAngle += 360;
-		}
+		if (deltaAngle > 180) deltaAngle -= 360;
+		else if (deltaAngle < -180) deltaAngle += 360;
 
 		rotationAngle = dragState.startRotationAngle + deltaAngle;
 	}
 
-	/**
-	 * Ends the drag interaction.
-	 */
 	function handleDragEnd() {
 		if (dragState) {
 			dragState = null;
+			window.removeEventListener('mousemove', handleDragMove);
+			window.removeEventListener('mouseup', handleDragEnd);
+			window.removeEventListener('touchmove', handleDragMove);
+			window.removeEventListener('touchend', handleDragEnd);
+			window.removeEventListener('touchcancel', handleDragEnd);
 		}
-		window.removeEventListener('mousemove', handleDragMove);
-		window.removeEventListener('mouseup', handleDragEnd);
-		window.removeEventListener('touchmove', handleDragMove);
-		window.removeEventListener('touchend', handleDragEnd);
-		window.removeEventListener('touchcancel', handleDragEnd);
 	}
 </script>
 
