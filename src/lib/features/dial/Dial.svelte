@@ -1,17 +1,6 @@
 <!-- src/lib/features/dial/Dial.svelte -->
 
 <script lang="ts">
-	type MetronomeSettings = {
-		minBpm: number;
-		maxBpm: number;
-		currentBpm: number;
-	};
-
-	type DragState = {
-		startAngle: number;
-		startRotationAngle: number;
-	};
-
 	import Drum from '$lib/features/drum/Drum.svelte';
 	import DialLabels from './DialLabels.svelte';
 	import DialTickMark from './DialTickMark.svelte';
@@ -19,8 +8,17 @@
 	import DialKnob from './DialKnob.svelte';
 	import { logger } from '$lib/services/logger';
 
-	let dialElement: HTMLElement | undefined;
+	type DragState = {
+		startAngle: number;
+		startRotationAngle: number;
+	};
 
+	const dialSettings = { maxBpm: 200, minBpm: 40 };
+	let dragState: DragState | null = null;
+	let dialElement: HTMLElement | undefined;
+	let rotationAngle = 0;
+
+	let currentBpm = dialSettings.minBpm;
 	let isRunning = false;
 	let rotationAngle = 0;
 
