@@ -27,10 +27,6 @@
 	let currentBpm = dialSettings.minBpm;
 	let isRunning = false;
 
-	/**
-	 * Đây là một "biến dẫn xuất" (derived variable).
-	 * Nó sẽ tự động tính toán lại mỗi khi `rotationAngle` thay đổi.
-	 */
 	$: derivedBpm = (() => {
 		const knobAngle = -rotationAngle;
 		const effectiveAngle = ((knobAngle % 360) + 360) % 360;
