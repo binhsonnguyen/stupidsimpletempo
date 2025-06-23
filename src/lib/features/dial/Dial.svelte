@@ -29,25 +29,26 @@
 </script>
 
 <div
-        class="dial-area-wrapper"
-        role="slider"
-        aria-label="Metronome tempo"
-        aria-valuemin={minBpm}
-        aria-valuemax={maxBpm}
-        aria-valuenow={currentBpm}
-        tabindex="-1"
-        on:mousedown={handleDragStart}
-        on:touchstart={handleDragStart}
+	bind:this={dialElement}
+	class="dial-area-wrapper"
+	role="slider"
+	aria-label="Metronome tempo"
+	aria-valuemin={minBpm}
+	aria-valuemax={maxBpm}
+	aria-valuenow={currentBpm}
+	tabindex="-1"
+	on:mousedown={handleDragStart}
+	on:touchstart={handleDragStart}
 >
-    <div class="dial-container-outer">
-        <div id="rotaryDialContainer" class="rotary-dial-container">
-            <DialLabels {rotationAngle} />
-            <DialTickMark {rotationAngle} />
-            <DialTrackBorder />
-            <DialKnob />
-            <Drum {isRunning} onToggle={handleToggle} />
-        </div>
-    </div>
+	<div class="dial-container-outer">
+		<div id="rotaryDialContainer" class="rotary-dial-container">
+			<DialLabels {rotationAngle} />
+			<DialTickMark {rotationAngle} />
+			<DialTrackBorder />
+			<DialKnob />
+			<Drum {isRunning} onToggle={handleToggle} />
+		</div>
+	</div>
 </div>
 
 <style>
