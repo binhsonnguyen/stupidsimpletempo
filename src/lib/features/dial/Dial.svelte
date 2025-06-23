@@ -1,6 +1,17 @@
 <!-- src/lib/features/dial/Dial.svelte -->
 
 <script lang="ts">
+	type MetronomeSettings = {
+		minBpm: number;
+		maxBpm: number;
+		currentBpm: number;
+	};
+
+	type DragState = {
+		startAngle: number;
+		startRotationAngle: number;
+	};
+
 	import Drum from '$lib/features/drum/Drum.svelte';
 	import DialLabels from './DialLabels.svelte';
 	import DialTickMark from './DialTickMark.svelte';
@@ -8,17 +19,13 @@
 	import DialKnob from './DialKnob.svelte';
 	import { logger } from '$lib/services/logger';
 
+	let dialElement: HTMLElement | undefined;
+
 	let isRunning = false;
 	let rotationAngle = 0;
 
-	const minBpm = 40;
-	const maxBpm = 200;
-	let currentBpm = 40;
-
-	let isDragging = false;
-	let startAngle = 0;
-	let startRotationAngle = 0;
-	let dialElement: HTMLElement | undefined;
+	let metronomeSettings: MetronomeSettings = { currentBpm: 40, maxBpm: 200, minBpm: 40 };
+	let dragState: DragState | null = null;
 
 	function handleToggle() {
 		console.log('Metronome on toggle');
@@ -52,16 +59,15 @@
 			return;
 		}
 
-		isDragging = true;
-		startRotationAngle = rotationAngle;
-
 		const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
 		const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
 
-		// No need for a type assertion here because of the guard clause above.
-		startAngle = getAngle(dialElement, clientX, clientY);
+		dragState = {
+			startRotationAngle: rotationAngle,
+			startAngle: getAngle(dialElement, clientX, clientY)
+		};
 
-		logger.log('Dial drag start with startAngle ', startAngle)
+		logger.log('Dial drag start with state: ', dragState);
 
 		// Add global event listeners to track the drag
 		window.addEventListener('mousemove', handleDragMove);
@@ -75,7 +81,7 @@
 	 * Handles the movement during a drag interaction.
 	 */
 	function handleDragMove(event: MouseEvent | TouchEvent) {
-		if (!isDragging || !dialElement) return;
+		if (!dragState || !dialElement) return;
 
 		event.preventDefault();
 
@@ -83,25 +89,26 @@
 		const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
 
 		const currentAngle = getAngle(dialElement, clientX, clientY);
-		let deltaAngle = currentAngle - startAngle;
 
-		// Handle the 0/360 degree crossover for smoother rotation
+		let deltaAngle = currentAngle - dragState.startAngle;
+
 		if (deltaAngle > 180) {
 			deltaAngle -= 360;
 		} else if (deltaAngle < -180) {
 			deltaAngle += 360;
 		}
 
-		rotationAngle = startRotationAngle + deltaAngle;
-
-		logger.log('Dial drag moving ', rotationAngle)
+		rotationAngle = dragState.startRotationAngle + deltaAngle;
 	}
 
 	/**
 	 * Ends the drag interaction.
 	 */
 	function handleDragEnd() {
-		isDragging = false;
+		if (dragState) {
+			logger.log('Dial drag end, rotationAngle: ', rotationAngle);
+			dragState = null;
+		}
 
 		// Clean up global listeners
 		window.removeEventListener('mousemove', handleDragMove);
@@ -117,9 +124,9 @@
 	class="dial-area-wrapper"
 	role="slider"
 	aria-label="Metronome tempo"
-	aria-valuemin={minBpm}
-	aria-valuemax={maxBpm}
-	aria-valuenow={currentBpm}
+	aria-valuemin={metronomeSettings.minBpm}
+	aria-valuemax={metronomeSettings.maxBpm}
+	aria-valuenow={metronomeSettings.currentBpm}
 	tabindex="-1"
 	on:mousedown={handleDragStart}
 	on:touchstart={handleDragStart}
