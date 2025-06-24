@@ -7,12 +7,16 @@
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import { isAudioLoading } from '$lib/state/audioLoadingStore';
 	import { beatSequenceStore } from '$lib/state/beatSequenceStore';
+	import { volumeStore } from '$lib/state/volumeStore';
 
 	onMount(() => {
 		const sequence = get(beatSequenceStore);
 		if (sequence.head) {
 			Sound.registerForPreload(sequence.head.sound);
 		}
+
+		volumeStore.setVolume(100);
+		volumeStore.setBoostFactor(1.2)
 	});
 
 	function handleDrumClick() {
