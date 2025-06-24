@@ -43,18 +43,18 @@
 	/*
 	 * Tính bpm từ góc quay của dial
 	 */
-	function calculateBpmFromAngle(): number {
-		const knobAngle = -rotationAngle;
+	function calculateBpmFromAngle(angle: number, dialProps: typeof dialSettings): number {
+		const knobAngle = -angle;
 		const effectiveAngle = ((knobAngle % 360) + 360) % 360;
 
-		const clampedAngle = clamp(effectiveAngle, dialSettings.minBpmAngle, dialSettings.maxBpmAngle);
+		const clampedAngle = clamp(effectiveAngle, dialProps.minBpmAngle, dialProps.maxBpmAngle);
 
-		const usableAngleRange = dialSettings.maxBpmAngle - dialSettings.minBpmAngle;
-		const angleWithinUsableRange = clampedAngle - dialSettings.minBpmAngle;
+		const usableAngleRange = dialProps.maxBpmAngle - dialProps.minBpmAngle;
+		const angleWithinUsableRange = clampedAngle - dialProps.minBpmAngle;
 		const percentage = usableAngleRange > 0 ? angleWithinUsableRange / usableAngleRange : 0;
 
-		const bpmRange = dialSettings.maxBpm - dialSettings.minBpm;
-		return dialSettings.minBpm + percentage * bpmRange;
+		const bpmRange = dialProps.maxBpm - dialProps.minBpm;
+		return dialProps.minBpm + percentage * bpmRange;
 	}
 	/**
 	 * Trả về tọa độ (x, y) từ MouseEvent hoặc TouchEvent.
