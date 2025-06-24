@@ -46,11 +46,11 @@ export class Sound {
 		}
 	}
 
-	public play(): void {
+	public play(time?: number): void {
 		if (Tone.getContext().state !== 'running') {
 			Tone.start();
 		}
-		this.player?.start();
+		this.player?.start(time);
 	}
 
 	public dispose(): void {
