@@ -3,7 +3,7 @@
 import * as Tone from 'tone';
 import { browser } from '$app/environment';
 
-export class BeatPlayer {
+export class Sound {
 	private player: Tone.Player | null = null;
 	private readonly ready: Promise<void>;
 
@@ -17,17 +17,17 @@ export class BeatPlayer {
 		}
 	}
 
-	public static readonly CAJON_BASS = new BeatPlayer('cajon-bass.mp3');
-	public static readonly CAJON_SNARE = new BeatPlayer('cajon-snare.mp3');
-	public static readonly CLAP = new BeatPlayer('clap.mp3');
-	public static readonly CLAPS = new BeatPlayer('claps.mp3');
-	public static readonly SHAKER = new BeatPlayer('shaker.mp3');
-	public static readonly SLEIGH_BELLS = new BeatPlayer('sleigh-bells.mp3');
-	public static readonly STOMP = new BeatPlayer('stomp.mp3');
-	public static readonly WOODBLOCK = new BeatPlayer('woodblock.mp3');
-	public static readonly WOODBLOCK_HIGH = new BeatPlayer('woodblock-high.mp3');
+	public static readonly CAJON_BASS = new Sound('cajon-bass.mp3');
+	public static readonly CAJON_SNARE = new Sound('cajon-snare.mp3');
+	public static readonly CLAP = new Sound('clap.mp3');
+	public static readonly CLAPS = new Sound('claps.mp3');
+	public static readonly SHAKER = new Sound('shaker.mp3');
+	public static readonly SLEIGH_BELLS = new Sound('sleigh-bells.mp3');
+	public static readonly STOMP = new Sound('stomp.mp3');
+	public static readonly WOODBLOCK = new Sound('woodblock.mp3');
+	public static readonly WOODBLOCK_HIGH = new Sound('woodblock-high.mp3');
 
-	public static readonly ALL_SOUNDS: BeatPlayer[] = [
+	public static readonly ALL_SOUNDS: Sound[] = [
 		this.CAJON_BASS,
 		this.CAJON_SNARE,
 		this.CLAP,
@@ -38,15 +38,15 @@ export class BeatPlayer {
 		this.WOODBLOCK,
 		this.WOODBLOCK_HIGH
 	];
-	private static readonly soundsToPreload = new Set<BeatPlayer>();
+	private static readonly soundsToPreload = new Set<Sound>();
 
-	public static registerForPreload(player: BeatPlayer): void {
+	public static registerForPreload(sound: Sound): void {
 		if (browser) {
-			this.soundsToPreload.add(player);
+			this.soundsToPreload.add(sound);
 		}
 	}
 
-	public playBeat(): void {
+	public play(): void {
 		if (Tone.getContext().state !== 'running') {
 			Tone.start();
 		}
@@ -70,7 +70,7 @@ export class BeatPlayer {
 
 	public static disposeAll(): void {
 		if (browser) {
-			BeatPlayer.ALL_SOUNDS.forEach((sound) => sound.dispose());
+			Sound.ALL_SOUNDS.forEach((sound) => sound.dispose());
 			console.log('All static BeatPlayers disposed.');
 		}
 	}

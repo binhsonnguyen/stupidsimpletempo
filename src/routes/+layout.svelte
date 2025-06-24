@@ -3,7 +3,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { tick } from 'svelte'; // 1. Import tick
-	import { BeatPlayer } from '$lib/audio/BeatPlayer';
+	import { Sound } from '$lib/audio/Sound';
 	import { isAudioLoading } from '$lib/state/audioLoadingStore';
 	import '../styles/theme.scss';
 
@@ -12,13 +12,13 @@
 		// và đã đăng ký xong âm thanh của chúng.
 		await tick();
 
-		await BeatPlayer.preloadRegisteredSounds();
+		await Sound.preloadRegisteredSounds();
 
 		isAudioLoading.set(false);
 	});
 
 	onDestroy(() => {
-		BeatPlayer.disposeAll();
+		Sound.disposeAll();
 	});
 </script>
 

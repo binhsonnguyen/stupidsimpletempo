@@ -2,18 +2,18 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { BeatPlayer } from '$lib/audio/BeatPlayer';
+	import { Sound } from '$lib/audio/Sound';
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import { isAudioLoading } from '$lib/state/audioLoadingStore';
 
-	const beatPlayer = BeatPlayer.WOODBLOCK;
+	const beatPlayer = Sound.WOODBLOCK;
 
 	onMount(() => {
-		BeatPlayer.registerForPreload(beatPlayer);
+		Sound.registerForPreload(beatPlayer);
 	});
 
 	function handleDrumClick() {
-		beatPlayer.playBeat();
+		beatPlayer.play();
 		metronomeStore.toggle();
 	}
 </script>
