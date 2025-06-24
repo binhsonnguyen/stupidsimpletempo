@@ -1,4 +1,4 @@
-// src/lib/audio/BeatPlayer.ts
+// src/lib/audio/Sound.ts
 
 import * as Tone from 'tone';
 import { browser } from '$app/environment';
@@ -71,7 +71,7 @@ export class Sound {
 	public static disposeAll(): void {
 		if (browser) {
 			Sound.ALL_SOUNDS.forEach((sound) => sound.dispose());
-			console.log('All static BeatPlayers disposed.');
+			console.log('All static Sounds disposed.');
 		}
 	}
 }

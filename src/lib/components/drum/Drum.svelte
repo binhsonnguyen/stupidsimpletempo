@@ -6,14 +6,14 @@
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import { isAudioLoading } from '$lib/state/audioLoadingStore';
 
-	const beatPlayer = Sound.WOODBLOCK;
+	const sound = Sound.WOODBLOCK;
 
 	onMount(() => {
-		Sound.registerForPreload(beatPlayer);
+		Sound.registerForPreload(sound);
 	});
 
 	function handleDrumClick() {
-		beatPlayer.play();
+		sound.play();
 		metronomeStore.toggle();
 	}
 </script>
