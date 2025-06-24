@@ -1,4 +1,4 @@
-// src/lib/actions/rotatable.ts
+// src/lib/components/dial/actions/rotatable.ts
 
 type RotatableOptions = {
 	rotation: number;
@@ -48,11 +48,9 @@ export function rotatable(node: HTMLElement, options: RotatableOptions) {
 		const currentAngle = getAngle(x, y);
 		let deltaAngle = currentAngle - startAngle;
 
-		// Xử lý việc xoay qua mốc 0/360 độ
 		if (deltaAngle > 180) deltaAngle -= 360;
 		else if (deltaAngle < -180) deltaAngle += 360;
 
-		// Phát ra sự kiện 'rotate' với giá trị góc quay mới
 		node.dispatchEvent(new CustomEvent('rotate', { detail: startRotation + deltaAngle }));
 	}
 
@@ -62,21 +60,20 @@ export function rotatable(node: HTMLElement, options: RotatableOptions) {
 		window.removeEventListener('touchmove', handleDragMove);
 		window.removeEventListener('touchend', handleDragEnd);
 		window.removeEventListener('touchcancel', handleDragEnd);
+
+		node.dispatchEvent(new CustomEvent('dragend'));
 	}
 
 	node.addEventListener('mousedown', handleDragStart);
 	node.addEventListener('touchstart', handleDragStart);
 
 	return {
-		// Được gọi khi tham số truyền vào action thay đổi
 		update(newOptions: RotatableOptions) {
 			rotation = newOptions.rotation;
 		},
-		// Được gọi khi component bị hủy, tự động dọn dẹp
 		destroy() {
 			node.removeEventListener('mousedown', handleDragStart);
 			node.removeEventListener('touchstart', handleDragStart);
-			// Đảm bảo dọn dẹp listener trên window nếu component bị hủy giữa chừng
 			handleDragEnd();
 		}
 	};
