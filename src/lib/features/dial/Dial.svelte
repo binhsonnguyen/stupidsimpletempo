@@ -1,12 +1,18 @@
 <!-- src/lib/features/dial/Dial.svelte -->
 
 <script lang="ts">
+	import { get } from 'svelte/store';
 	import Drum from '$lib/features/drum/Drum.svelte';
 	import DialLabels from './DialLabels.svelte';
 	import DialTickMark from './DialTickMark.svelte';
 	import DialTrackBorder from './DialTrackBorder.svelte';
 	import DialKnob from './DialKnob.svelte';
 	import { logger } from '$lib/services/logger';
+	import { metronomeStore } from '$lib/state/metronomeStore';
+	import { SetTempoUseCase } from '$lib/core/usecases/SetTempoUseCase';
+	import type { ISetTempoUseCase } from '$lib/core/ports/ISetTempoUseCase';
+
+	const setTempoUseCase: ISetTempoUseCase = new SetTempoUseCase();
 
 	type DragState = {
 		startAngle: number;
