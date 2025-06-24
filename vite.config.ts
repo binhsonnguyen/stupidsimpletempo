@@ -31,5 +31,13 @@ export default defineConfig({
 				}
 			}
 		]
+	},
+	css: {
+		preprocessorOptions: {
+			scss: {
+				// Tắt tất cả các cảnh báo deprecation đến từ các file Sass trong node_modules.
+				quietDeps: true
+			}
+		}
 	}
 });
