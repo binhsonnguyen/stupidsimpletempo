@@ -1,22 +1,13 @@
 <!-- src/lib/components/drum/Drum.svelte -->
 
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
 	import { BeatPlayer } from '$lib/audio/BeatPlayer';
 	import { metronomeStore } from '$lib/state/metronomeStore';
 
-	let beatPlayer: BeatPlayer | null = null;
-
-	onMount(() => {
-		beatPlayer = new BeatPlayer('/sound/woodblock.mp3');
-	});
-
-	onDestroy(() => {
-		beatPlayer?.dispose();
-	});
+	const beatPlayer = BeatPlayer.WOODBLOCK;
 
 	function handleDrumClick() {
-		beatPlayer?.playBeat();
+		beatPlayer.playBeat();
 		metronomeStore.toggle();
 	}
 </script>
