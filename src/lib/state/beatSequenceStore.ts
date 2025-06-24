@@ -14,7 +14,6 @@ export type BeatSequenceState = {
 	nextBeat: BeatNode | null;
 };
 
-
 const simpleBeat: BeatNode = {
 	sound: Sound.WOODBLOCK,
 	durationInBeats: 1,
