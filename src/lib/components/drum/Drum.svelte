@@ -16,7 +16,7 @@
 		});
 
 		function handleDrumClick() {
-			if (Tone.context.state !== 'running') {
+			if (Tone.getContext().state !== 'running') {
 				Tone.start();
 			}
 
