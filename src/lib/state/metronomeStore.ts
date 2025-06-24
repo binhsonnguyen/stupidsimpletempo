@@ -35,12 +35,12 @@ function createMetronomeStore(): MetronomeStore {
 		});
 	}
 
-	const loop = () => {
+	const loop = (time: number) => {
 		const sequenceState = get(beatSequenceStore);
 		const currentBeat = sequenceState.nextBeat;
 
 		if (currentBeat) {
-			currentBeat.sound.play();
+			currentBeat.sound.play(time);
 			beatSequenceStore.advance();
 		}
 	};
