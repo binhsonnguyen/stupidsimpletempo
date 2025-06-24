@@ -9,14 +9,8 @@
 	import DialKnob from './DialKnob.svelte';
 	import { logger } from '$lib/services/logger';
 	import { metronomeStore } from '$lib/state/metronomeStore';
+	import { rotatable } from '$lib/actions/rotatable';
 
-	type DragState = {
-		startAngle: number;
-		startRotationAngle: number;
-	};
-
-	let dialElement: HTMLElement | undefined;
-	let dragState: DragState | null = null;
 	let rotationAngle = 0;
 
 	const { minBpm, maxBpm, minBpmAngle, maxBpmAngle } = {
@@ -33,22 +27,14 @@
 		}
 	}
 
-	$: {
-		logger.log(`BPM updated to: ${$metronomeStore.bpm}`);
-	}
+	$: logger.log(`BPM updated to: ${$metronomeStore.bpm}`);
 
-	/*
-	 * Kẹp một giá trị luôn trong một khoảng min-max
-	 */
 	function clamp(value: number, min: number, max: number): number {
 		return Math.max(min, Math.min(value, max));
 	}
 
-	/*
-	 * Tính bpm từ góc quay của dial
-	 */
-	function calculateBpmFromAngle(currentRotationAngle: number): number {
-		const knobAngle = -currentRotationAngle;
+	function calculateBpmFromAngle(angle: number): number {
+		const knobAngle = -angle;
 		const effectiveAngle = ((knobAngle % 360) + 360) % 360;
 		const clampedAngle = clamp(effectiveAngle, minBpmAngle, maxBpmAngle);
 
@@ -60,77 +46,16 @@
 		return minBpm + percentage * bpmRange;
 	}
 
-	function getEventCoordinates(event: MouseEvent | TouchEvent): { x: number; y: number } {
-		if ('touches' in event) {
-			return { x: event.touches[0].clientX, y: event.touches[0].clientY };
-		}
-		return { x: event.clientX, y: event.clientY };
-	}
-
-	/**
-	 * Tính góc của một điểm so với tâm của một phần tử
-	 */
-	function getAngle(element: HTMLElement, clientX: number, clientY: number): number {
-		const rect = element.getBoundingClientRect();
-		const centerX = rect.left + rect.width / 2;
-		const centerY = rect.top + rect.height / 2;
-		const dx = clientX - centerX;
-		const dy = clientY - centerY;
-		return ((Math.atan2(dy, dx) * 180) / Math.PI + 90 + 360) % 360;
+	function handleRotate(event: CustomEvent<number>) {
+		rotationAngle = event.detail;
 	}
 
 	function handleToggle() {
 		metronomeStore.toggle();
 	}
-
-	function handleDragStart(event: MouseEvent | TouchEvent) {
-		if (!dialElement) return;
-		event.preventDefault();
-		if ((event.target as Element).closest('.start-stop-button')) {
-			return;
-		}
-
-		const { x, y } = getEventCoordinates(event);
-		dragState = {
-			startRotationAngle: rotationAngle,
-			startAngle: getAngle(dialElement, x, y)
-		};
-
-		window.addEventListener('mousemove', handleDragMove);
-		window.addEventListener('mouseup', handleDragEnd);
-		window.addEventListener('touchmove', handleDragMove, { passive: false });
-		window.addEventListener('touchend', handleDragEnd);
-		window.addEventListener('touchcancel', handleDragEnd);
-	}
-
-	function handleDragMove(event: MouseEvent | TouchEvent) {
-		if (!dragState || !dialElement) return;
-		event.preventDefault();
-
-		const { x, y } = getEventCoordinates(event);
-		const currentAngle = getAngle(dialElement, x, y);
-		let deltaAngle = currentAngle - dragState.startAngle;
-
-		if (deltaAngle > 180) deltaAngle -= 360;
-		else if (deltaAngle < -180) deltaAngle += 360;
-
-		rotationAngle = dragState.startRotationAngle + deltaAngle;
-	}
-
-	function handleDragEnd() {
-		if (dragState) {
-			dragState = null;
-			window.removeEventListener('mousemove', handleDragMove);
-			window.removeEventListener('mouseup', handleDragEnd);
-			window.removeEventListener('touchmove', handleDragMove);
-			window.removeEventListener('touchend', handleDragEnd);
-			window.removeEventListener('touchcancel', handleDragEnd);
-		}
-	}
 </script>
 
 <div
-	bind:this={dialElement}
 	class="dial-area-wrapper"
 	role="slider"
 	aria-label="Metronome tempo"
@@ -138,8 +63,8 @@
 	aria-valuemax={maxBpm}
 	aria-valuenow={$metronomeStore.bpm}
 	tabindex="-1"
-	on:mousedown={handleDragStart}
-	on:touchstart={handleDragStart}
+	use:rotatable={{ rotation: rotationAngle }}
+	on:rotate={handleRotate}
 >
 	<div class="dial-container-outer">
 		<div id="rotaryDialContainer" class="rotary-dial-container">
