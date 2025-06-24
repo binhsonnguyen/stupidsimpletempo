@@ -3,7 +3,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import * as Tone from 'tone';
-	import { metronomeStore } from '$lib/state/metronomeStore'; // 1. Import the store
+	import { metronomeStore } from '$lib/state/metronomeStore';
 
 	let player: Tone.Player | null = null;
 
