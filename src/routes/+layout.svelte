@@ -22,4 +22,7 @@
 	});
 </script>
 
+
+<svelte:body class:audio-loading={$isAudioLoading} />
+
 <slot />
