@@ -2,18 +2,20 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
 	import { Sound } from '$lib/audio/Sound';
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import { isAudioLoading } from '$lib/state/audioLoadingStore';
-
-	const sound = Sound.WOODBLOCK;
+	import { beatSequenceStore } from '$lib/state/beatSequenceStore';
 
 	onMount(() => {
-		Sound.registerForPreload(sound);
+		const sequence = get(beatSequenceStore);
+		if (sequence.head) {
+			Sound.registerForPreload(sequence.head.sound);
+		}
 	});
 
 	function handleDrumClick() {
-		sound.play();
 		metronomeStore.toggle();
 	}
 </script>
