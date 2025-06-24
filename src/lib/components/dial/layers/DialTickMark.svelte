@@ -9,7 +9,7 @@
 ></div>
 
 <style>
-    @import '../styles/_dial-layer-base.scss';
+    @import '../_dial-layer-base.scss';
 
     #tickMarkLayer {
         z-index: 2;
