@@ -14,8 +14,8 @@ declare global {
 	namespace svelteHTML {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		interface HTMLAttributes<T> {
-			'on:rotate'?: (event: CustomEvent<number>) => void;
-			'on:dragend'?: (event: CustomEvent<void>) => void;
+			'onrotate'?: (event: CustomEvent<number>) => void;
+			'ondragend'?: (event: CustomEvent<void>) => void;
 		}
 	}
 }
