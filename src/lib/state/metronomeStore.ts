@@ -1,9 +1,8 @@
 // src/lib/state/metronomeStore.ts
-import { type Writable, writable } from 'svelte/store';
+import { type Subscriber, writable } from 'svelte/store';
+import type { ISetTempoUseCase } from '$lib/core/ports/ISetTempoUseCase';
+import type { IToggleUseCase } from '$lib/core/ports/IToggleUseCase';
 
-type Subscriber<T> = Writable<T>['subscribe'];
-
-// Định nghĩa cấu trúc state
 export type MetronomeState = {
 	bpm: number;
 	isRunning: boolean;
@@ -11,7 +10,6 @@ export type MetronomeState = {
 	maxBpm: number;
 };
 
-// Khởi tạo giá trị ban đầu
 const initialState: MetronomeState = {
 	bpm: 40,
 	isRunning: false,
@@ -21,23 +19,25 @@ const initialState: MetronomeState = {
 
 export type MetronomeStore = {
 	subscribe: Subscriber<MetronomeState>;
-	setBpm: (newBpm: number) => void;
-	toggle: () => void;
-	reset: () => void;
-};
+	setTempo: ISetTempoUseCase;
+	toggle: IToggleUseCase;
+}
 
-function createMetronomeStore(): MetronomeStore {
+function createMetronomeStore() {
 	const { subscribe, update, set } = writable<MetronomeState>(initialState);
 
 	return {
 		subscribe,
-		setBpm: (newBpm: number) => {
+
+		setTempo: (newBpm: number) => {
+			const roundedBpm = Math.round(newBpm);
+
 			update((state) => {
-				// Đảm bảo BPM luôn nằm trong khoảng min-max
-				const clampedBpm = Math.max(state.minBpm, Math.min(newBpm, state.maxBpm));
+				const clampedBpm = Math.max(state.minBpm, Math.min(roundedBpm, state.maxBpm));
 				return { ...state, bpm: clampedBpm };
 			});
 		},
+
 		toggle: () => {
 			update((state) => ({ ...state, isRunning: !state.isRunning }));
 		},

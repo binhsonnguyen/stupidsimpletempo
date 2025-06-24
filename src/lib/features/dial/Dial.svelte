@@ -9,10 +9,6 @@
 	import DialKnob from './DialKnob.svelte';
 	import { logger } from '$lib/services/logger';
 	import { metronomeStore } from '$lib/state/metronomeStore';
-	import { SetTempoUseCase } from '$lib/core/usecases/SetTempoUseCase';
-	import type { ISetTempoUseCase } from '$lib/core/ports/ISetTempoUseCase';
-
-	const setTempoUseCase: ISetTempoUseCase = new SetTempoUseCase();
 
 	type DragState = {
 		startAngle: number;
@@ -33,7 +29,7 @@
 	$: {
 		const newBpm = calculateBpmFromAngle(rotationAngle);
 		if (Math.round(newBpm) !== $metronomeStore.bpm) {
-			setTempoUseCase.execute(newBpm);
+			metronomeStore.setTempo(newBpm);
 		}
 	}
 
