@@ -6,16 +6,18 @@ import * as Tone from 'tone';
 
 /**
  * Chuyển đổi giá trị âm lượng tuyến tính (0-100) sang decibel (dB).
- * Điều này làm cho thanh trượt âm lượng cho cảm giác tự nhiên hơn.
+ * Áp dụng một yếu tố khuếch đại (boostFactor) nếu có.
  * @param linearVolume - Giá trị từ 0 đến 100.
+ * @param boostFactor - Yếu tố khuếch đại, 1.0 cho không khuếch đại, >1.0 cho khuếch đại.
  * @returns Giá trị tương ứng bằng decibel.
  */
-function linearToDecibel(linearVolume: number): number {
+function linearToDecibel(linearVolume: number, boostFactor: number): number {
 	if (linearVolume <= 0) {
 		return -Infinity; // Hoàn toàn im lặng
 	}
-	// Công thức chuyển đổi từ gain (0-1) sang dB
-	return 20 * Math.log10(linearVolume / 100);
+	const gain = linearVolume / 100;
+	const boostedGain = gain * boostFactor;
+	return 20 * Math.log10(boostedGain);
 }
 
 export type VolumeState = {
@@ -24,6 +26,7 @@ export type VolumeState = {
 	minVolume: number;
 	maxVolume: number;
 	lastVolumeBeforeMute: number;
+	boostFactor: number;
 };
 
 const initialState: VolumeState = {
@@ -31,13 +34,15 @@ const initialState: VolumeState = {
 	isMuted: false,
 	minVolume: 0,
 	maxVolume: 100,
-	lastVolumeBeforeMute: 100
+	lastVolumeBeforeMute: 100,
+	boostFactor: 1.0
 };
 
 export type VolumeStore = {
 	subscribe: Writable<VolumeState>['subscribe'];
 	setVolume: (newVolume: number) => void;
 	toggleMute: () => void;
+	setBoostFactor: (factor: number) => void;
 };
 
 function createVolumeStore(): VolumeStore {
@@ -50,7 +55,7 @@ function createVolumeStore(): VolumeStore {
 			if (state.isMuted) {
 				Tone.getDestination().volume.value = -Infinity;
 			} else {
-				Tone.getDestination().volume.value = linearToDecibel(state.volume);
+				Tone.getDestination().volume.value = linearToDecibel(state.volume, state.boostFactor);
 			}
 		});
 	}
@@ -60,8 +65,8 @@ function createVolumeStore(): VolumeStore {
 
 		setVolume: (newVolume: number) => {
 			update((state) => {
-				// Khi người dùng đổi volume, tự động bỏ tắt tiếng.
-				return { ...state, volume: newVolume, isMuted: false };
+				const clampedVolume = Math.max(state.minVolume, Math.min(newVolume, state.maxVolume));
+				return { ...state, volume: clampedVolume, isMuted: false };
 			});
 		},
 
@@ -77,6 +82,10 @@ function createVolumeStore(): VolumeStore {
 					};
 				}
 			});
+		},
+
+		setBoostFactor: (factor: number) => {
+			update((state) => ({ ...state, boostFactor: factor }));
 		}
 	};
 }
