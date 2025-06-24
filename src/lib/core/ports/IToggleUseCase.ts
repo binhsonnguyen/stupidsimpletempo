@@ -1,12 +1,8 @@
-// src/lib/core/ports/ISetTempoUseCase.ts
+// src/lib/core/ports/IToggleUseCase.ts
 
 /**
- * Interface cho use case thiết lập tempo của metronome.
+ * Interface cho use case bật tắt metronome.
  */
 export interface IToggleUseCase {
-	/**
-	 * Thực thi việc thiết lập một giá trị BPM mới.
-	 * @param bpm - Giá trị Beats Per Minute mới.
-	 */
 	execute(): void;
 }
