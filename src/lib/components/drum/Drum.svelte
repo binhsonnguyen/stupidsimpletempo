@@ -1,10 +1,16 @@
 <!-- src/lib/components/drum/Drum.svelte -->
 
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { BeatPlayer } from '$lib/audio/BeatPlayer';
 	import { metronomeStore } from '$lib/state/metronomeStore';
+	import { isAudioLoading } from '$lib/state/audioLoadingStore';
 
 	const beatPlayer = BeatPlayer.WOODBLOCK;
+
+	onMount(() => {
+		BeatPlayer.registerForPreload(beatPlayer);
+	});
 
 	function handleDrumClick() {
 		beatPlayer.playBeat();
@@ -15,9 +21,15 @@
 <button
 	on:click={handleDrumClick}
 	class="start-stop-button"
-	class:on={$metronomeStore.isRunning}
-	class:off={!$metronomeStore.isRunning}
-	aria-label={$metronomeStore.isRunning ? 'Stop metronome' : 'Start metronome'}
+	class:on={$metronomeStore.isRunning && !$isAudioLoading}
+	class:off={!$metronomeStore.isRunning && !$isAudioLoading}
+	class:loading={$isAudioLoading}
+	aria-label={$isAudioLoading
+		? 'Loading sounds...'
+		: $metronomeStore.isRunning
+		? 'Stop metronome'
+		: 'Start metronome'}
+	disabled={$isAudioLoading}
 	tabindex="-1"
 ></button>
 
