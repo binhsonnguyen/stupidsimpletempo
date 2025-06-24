@@ -2,7 +2,7 @@
 
 <script lang="ts">
 	import { get } from 'svelte/store';
-	import { tweened } from 'svelte/motion';
+	import { Tween } from 'svelte/motion';
 	import { quintOut } from 'svelte/easing';
 
 	import Drum from '$lib/components/drum/Drum.svelte';
@@ -14,10 +14,12 @@
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import { rotatable } from '$lib/components/dial/actions/rotatable';
 
-	const rotationAngle = tweened(0, {
+	const rotationAngle = new Tween(0, {
 		duration: 250,
 		easing: quintOut
 	});
+
+	let currentAngle = $derived(rotationAngle.current);
 
 	const { minBpm, maxBpm, minBpmAngle, maxBpmAngle } = {
 		minBpm: get(metronomeStore).minBpm,
@@ -26,14 +28,16 @@
 		maxBpmAngle: 320
 	};
 
-	$: {
-		const newBpm = calculateBpmFromAngle($rotationAngle);
+	$effect(() => {
+		const newBpm = calculateBpmFromAngle(currentAngle);
 		if (Math.round(newBpm) !== $metronomeStore.bpm) {
 			metronomeStore.setTempo(newBpm);
 		}
-	}
+	});
 
-	$: logger.log(`BPM updated to: ${$metronomeStore.bpm}`);
+	$effect(() => {
+		logger.log(`BPM updated to: ${$metronomeStore.bpm}`);
+	});
 
 	function clamp(value: number, min: number, max: number): number {
 		return Math.max(min, Math.min(value, max));
@@ -83,14 +87,14 @@
 	aria-valuemax={maxBpm}
 	aria-valuenow={$metronomeStore.bpm}
 	tabindex="-1"
-	use:rotatable={{ rotation: $rotationAngle }}
-	on:rotate={handleRotate}
-	on:dragend={handleDragEnd}
+	use:rotatable={{ rotation: currentAngle }}
+	onrotate={handleRotate}
+	ondragend={handleDragEnd}
 >
 	<div class="dial-container-outer">
 		<div id="rotaryDialContainer" class="rotary-dial-container">
-			<DialLabels rotationAngle={$rotationAngle} />
-			<DialTickMark rotationAngle={$rotationAngle} />
+			<DialLabels rotationAngle={currentAngle} />
+			<DialTickMark rotationAngle={currentAngle} />
 			<DialTrackBorder />
 			<DialKnob />
 			<Drum />
