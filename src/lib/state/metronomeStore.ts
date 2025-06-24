@@ -1,7 +1,5 @@
 // src/lib/state/metronomeStore.ts
-import { type Subscriber, writable } from 'svelte/store';
-import type { ISetTempoUseCase } from '$lib/core/ports/ISetTempoUseCase';
-import type { IToggleUseCase } from '$lib/core/ports/IToggleUseCase';
+import { writable, type Writable } from 'svelte/store';
 
 export type MetronomeState = {
 	bpm: number;
@@ -18,12 +16,13 @@ const initialState: MetronomeState = {
 };
 
 export type MetronomeStore = {
-	subscribe: Subscriber<MetronomeState>;
-	setTempo: ISetTempoUseCase;
-	toggle: IToggleUseCase;
-}
+	subscribe: Writable<MetronomeState>['subscribe'];
+	setTempo: (newBpm: number) => void;
+	toggle: () => void;
+	reset: () => void;
+};
 
-function createMetronomeStore() {
+function createMetronomeStore(): MetronomeStore {
 	const { subscribe, update, set } = writable<MetronomeState>(initialState);
 
 	return {
@@ -41,8 +40,9 @@ function createMetronomeStore() {
 		toggle: () => {
 			update((state) => ({ ...state, isRunning: !state.isRunning }));
 		},
+
 		reset: () => set(initialState)
 	};
 }
 
-export const metronomeStore = createMetronomeStore();
+export const metronomeStore: MetronomeStore = createMetronomeStore();
