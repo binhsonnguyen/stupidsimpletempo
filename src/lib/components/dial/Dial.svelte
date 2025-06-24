@@ -71,8 +71,18 @@
 	}
 
 	function handleDragEnd() {
+		const current = rotationAngle.current;
+
 		const finalBpm = $metronomeStore.bpm;
-		const targetAngle = calculateAngleFromBpm(finalBpm);
+		let targetAngle = calculateAngleFromBpm(finalBpm);
+
+		const delta = targetAngle - current;
+		if (delta > 180) {
+			targetAngle -= 360;
+		} else if (delta < -180) {
+			targetAngle += 360;
+		}
+
 		rotationAngle.set(targetAngle);
 	}
 
