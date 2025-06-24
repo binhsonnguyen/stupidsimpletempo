@@ -9,7 +9,7 @@
 	import DialKnob from './layers/DialKnob.svelte';
 	import { logger } from '$lib/services/logger';
 	import { metronomeStore } from '$lib/state/metronomeStore';
-	import { rotatable } from '$lib/features/dial/actions/rotatable';
+	import { rotatable } from '$lib/components/dial/actions/rotatable';
 
 	let rotationAngle = 0;
 
