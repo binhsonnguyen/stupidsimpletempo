@@ -16,7 +16,7 @@
 		}
 
 		volumeStore.setVolume(100);
-		volumeStore.setBoostFactor(1.2)
+		volumeStore.setBoostFactor(1.1)
 	});
 
 	function handleDrumClick() {
