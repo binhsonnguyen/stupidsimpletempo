@@ -85,8 +85,6 @@
 
 		rotationAngle.set(targetAngle);
 	}
-
-	rotationAngle.set(calculateAngleFromBpm($metronomeStore.bpm), { duration: 0 });
 </script>
 
 <div
