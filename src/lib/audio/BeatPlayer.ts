@@ -5,10 +5,11 @@ import { browser } from '$app/environment';
 
 export class BeatPlayer {
 	private player: Tone.Player | null = null;
-	private ready: Promise<void>;
+	private readonly ready: Promise<void>;
 
-	private constructor(soundUrl: string) {
+	private constructor(filename: string) {
 		if (browser) {
+			const soundUrl = `/sound/${filename}`;
 			this.player = new Tone.Player(soundUrl).toDestination();
 			this.ready = this.player.load(soundUrl).then(() => {});
 		} else {
@@ -16,15 +17,15 @@ export class BeatPlayer {
 		}
 	}
 
-	public static readonly CAJON_BASS = new BeatPlayer('/sound/cajon-bass.mp3');
-	public static readonly CAJON_SNARE = new BeatPlayer('/sound/cajon-snare.mp3');
-	public static readonly CLAP = new BeatPlayer('/sound/clap.mp3');
-	public static readonly CLAPS = new BeatPlayer('/sound/claps.mp3');
-	public static readonly SHAKER = new BeatPlayer('/sound/shaker.mp3');
-	public static readonly SLEIGH_BELLS = new BeatPlayer('/sound/sleigh-bells.mp3');
-	public static readonly STOMP = new BeatPlayer('/sound/stomp.mp3');
-	public static readonly WOODBLOCK = new BeatPlayer('/sound/woodblock.mp3');
-	public static readonly WOODBLOCK_HIGH = new BeatPlayer('/sound/woodblock-high.mp3');
+	public static readonly CAJON_BASS = new BeatPlayer('cajon-bass.mp3');
+	public static readonly CAJON_SNARE = new BeatPlayer('cajon-snare.mp3');
+	public static readonly CLAP = new BeatPlayer('clap.mp3');
+	public static readonly CLAPS = new BeatPlayer('claps.mp3');
+	public static readonly SHAKER = new BeatPlayer('shaker.mp3');
+	public static readonly SLEIGH_BELLS = new BeatPlayer('sleigh-bells.mp3');
+	public static readonly STOMP = new BeatPlayer('stomp.mp3');
+	public static readonly WOODBLOCK = new BeatPlayer('woodblock.mp3');
+	public static readonly WOODBLOCK_HIGH = new BeatPlayer('woodblock-high.mp3');
 
 	public static readonly ALL_SOUNDS: BeatPlayer[] = [
 		this.CAJON_BASS,
@@ -37,6 +38,13 @@ export class BeatPlayer {
 		this.WOODBLOCK,
 		this.WOODBLOCK_HIGH
 	];
+	private static readonly soundsToPreload = new Set<BeatPlayer>();
+
+	public static registerForPreload(player: BeatPlayer): void {
+		if (browser) {
+			this.soundsToPreload.add(player);
+		}
+	}
 
 	public playBeat(): void {
 		if (Tone.getContext().state !== 'running') {
@@ -49,17 +57,20 @@ export class BeatPlayer {
 		this.player?.dispose();
 	}
 
-	public static async preloadAll(): Promise<void> {
-		if (browser) {
-			console.log('Preloading all sounds...');
-			await Promise.all(BeatPlayer.ALL_SOUNDS);
-			console.log('All sounds preloaded.');
+	public static async preloadRegisteredSounds(): Promise<void> {
+		if (browser && this.soundsToPreload.size > 0) {
+			console.log(`Preloading ${this.soundsToPreload.size} registered sounds...`);
+
+			const preloadPromises = Array.from(this.soundsToPreload).map((player) => player.ready);
+
+			await Promise.all(preloadPromises);
+			console.log('Registered sounds preloaded.');
 		}
 	}
 
 	public static disposeAll(): void {
 		if (browser) {
-			BeatPlayer.ALL_SOUNDS.forEach(sound => sound.dispose());
+			BeatPlayer.ALL_SOUNDS.forEach((sound) => sound.dispose());
 			console.log('All static BeatPlayers disposed.');
 		}
 	}
