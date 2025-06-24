@@ -2,26 +2,21 @@
 
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import * as Tone from 'tone';
+	import { BeatPlayer } from '$lib/audio/BeatPlayer';
 	import { metronomeStore } from '$lib/state/metronomeStore';
 
-	let player: Tone.Player | null = null;
+	let beatPlayer: BeatPlayer | null = null;
 
 	onMount(() => {
-		player = new Tone.Player('/sound/woodblock.mp3').toDestination();
+		beatPlayer = new BeatPlayer('/sound/woodblock.mp3');
 	});
 
 	onDestroy(() => {
-		player?.dispose();
+		beatPlayer?.dispose();
 	});
 
 	function handleDrumClick() {
-		if (Tone.getContext().state !== 'running') {
-			Tone.start();
-		}
-
-		player?.start();
-
+		beatPlayer?.playBeat();
 		metronomeStore.toggle();
 	}
 </script>
