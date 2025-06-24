@@ -2,7 +2,7 @@
 
 <script lang="ts">
 	import { get } from 'svelte/store';
-	import Drum from '$lib/features/drum/Drum.svelte';
+	import Drum from '$lib/components/drum/Drum.svelte';
 	import DialLabels from './layers/DialLabels.svelte';
 	import DialTickMark from './layers/DialTickMark.svelte';
 	import DialTrackBorder from './layers/DialTrackBorder.svelte';
