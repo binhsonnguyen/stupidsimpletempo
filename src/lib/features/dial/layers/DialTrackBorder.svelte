@@ -3,7 +3,7 @@
 <div id="dialTrackBorderLayer" class="dial-layer"></div>
 
 <style>
-    @import 'styles/_dial-layer-base.scss';
+    @import '../styles/_dial-layer-base.scss';
 
     #dialTrackBorderLayer {
         z-index: 3;

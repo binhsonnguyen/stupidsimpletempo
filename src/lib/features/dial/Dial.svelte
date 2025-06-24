@@ -3,13 +3,13 @@
 <script lang="ts">
 	import { get } from 'svelte/store';
 	import Drum from '$lib/features/drum/Drum.svelte';
-	import DialLabels from './DialLabels.svelte';
-	import DialTickMark from './DialTickMark.svelte';
-	import DialTrackBorder from './DialTrackBorder.svelte';
-	import DialKnob from './DialKnob.svelte';
+	import DialLabels from './layers/DialLabels.svelte';
+	import DialTickMark from './layers/DialTickMark.svelte';
+	import DialTrackBorder from './layers/DialTrackBorder.svelte';
+	import DialKnob from './layers/DialKnob.svelte';
 	import { logger } from '$lib/services/logger';
 	import { metronomeStore } from '$lib/state/metronomeStore';
-	import { rotatable } from '$lib/actions/rotatable';
+	import { rotatable } from '$lib/features/dial/actions/rotatable';
 
 	let rotationAngle = 0;
 
