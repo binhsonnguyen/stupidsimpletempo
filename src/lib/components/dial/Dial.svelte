@@ -1,7 +1,10 @@
-<!-- src/lib/features/dial/Dial.svelte -->
+<!-- src/lib/components/dial/Dial.svelte -->
 
 <script lang="ts">
 	import { get } from 'svelte/store';
+	import { tweened } from 'svelte/motion';
+	import { quintOut } from 'svelte/easing';
+
 	import Drum from '$lib/components/drum/Drum.svelte';
 	import DialLabels from './layers/DialLabels.svelte';
 	import DialTickMark from './layers/DialTickMark.svelte';
@@ -11,7 +14,10 @@
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import { rotatable } from '$lib/components/dial/actions/rotatable';
 
-	let rotationAngle = 0;
+	const rotationAngle = tweened(0, {
+		duration: 250,
+		easing: quintOut
+	});
 
 	const { minBpm, maxBpm, minBpmAngle, maxBpmAngle } = {
 		minBpm: get(metronomeStore).minBpm,
@@ -21,7 +27,7 @@
 	};
 
 	$: {
-		const newBpm = calculateBpmFromAngle(rotationAngle);
+		const newBpm = calculateBpmFromAngle($rotationAngle);
 		if (Math.round(newBpm) !== $metronomeStore.bpm) {
 			metronomeStore.setTempo(newBpm);
 		}
@@ -46,13 +52,27 @@
 		return minBpm + percentage * bpmRange;
 	}
 
-	function handleRotate(event: CustomEvent<number>) {
-		rotationAngle = event.detail;
+	function calculateAngleFromBpm(bpm: number): number {
+		const bpmRange = maxBpm - minBpm;
+		const percentage = bpmRange > 0 ? (bpm - minBpm) / bpmRange : 0;
+
+		const usableAngleRange = maxBpmAngle - minBpmAngle;
+		const angle = minBpmAngle + percentage * usableAngleRange;
+
+		return -angle;
 	}
 
-	function handleToggle() {
-		metronomeStore.toggle();
+	function handleRotate(event: CustomEvent<number>) {
+		rotationAngle.set(event.detail, { duration: 0 });
 	}
+
+	function handleDragEnd() {
+		const finalBpm = $metronomeStore.bpm;
+		const targetAngle = calculateAngleFromBpm(finalBpm);
+		rotationAngle.set(targetAngle);
+	}
+
+	rotationAngle.set(calculateAngleFromBpm($metronomeStore.bpm), { duration: 0 });
 </script>
 
 <div
@@ -63,16 +83,17 @@
 	aria-valuemax={maxBpm}
 	aria-valuenow={$metronomeStore.bpm}
 	tabindex="-1"
-	use:rotatable={{ rotation: rotationAngle }}
+	use:rotatable={{ rotation: $rotationAngle }}
 	on:rotate={handleRotate}
+	on:dragend={handleDragEnd}
 >
 	<div class="dial-container-outer">
 		<div id="rotaryDialContainer" class="rotary-dial-container">
-			<DialLabels {rotationAngle} />
-			<DialTickMark {rotationAngle} />
+			<DialLabels rotationAngle={$rotationAngle} />
+			<DialTickMark rotationAngle={$rotationAngle} />
 			<DialTrackBorder />
 			<DialKnob />
-			<Drum isRunning={$metronomeStore.isRunning} onToggle={handleToggle} />
+			<Drum />
 		</div>
 	</div>
 </div>
