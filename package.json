@@ -43,6 +43,7 @@
 	},
 	"dependencies": {
 		"bootstrap": "^5.3.7",
-		"sass": "^1.89.2"
+		"sass": "^1.89.2",
+		"tone": "^15.1.22"
 	}
 }
