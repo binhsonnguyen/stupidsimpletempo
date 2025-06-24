@@ -19,24 +19,26 @@
 		startRotationAngle: number;
 	};
 
-	const dialSettings = {
-		maxBpm: 200,
-		minBpm: 40,
+	let dialElement: HTMLElement | undefined;
+	let dragState: DragState | null = null;
+	let rotationAngle = 0;
+
+	const { minBpm, maxBpm, minBpmAngle, maxBpmAngle } = {
+		minBpm: get(metronomeStore).minBpm,
+		maxBpm: get(metronomeStore).maxBpm,
 		minBpmAngle: 12,
 		maxBpmAngle: 320
 	};
 
-	let dialElement: HTMLElement | undefined;
-	let dragState: DragState | null = null;
-
-	let rotationAngle = 0;
-	let currentBpm = dialSettings.minBpm;
-	let isRunning = false;
-
-	$: currentBpm = Math.round(calculateBpmFromAngle(rotationAngle, dialSettings));
+	$: {
+		const newBpm = calculateBpmFromAngle(rotationAngle);
+		if (Math.round(newBpm) !== $metronomeStore.bpm) {
+			setTempoUseCase.execute(newBpm);
+		}
+	}
 
 	$: {
-		logger.log(`BPM updated to: ${currentBpm}`);
+		logger.log(`BPM updated to: ${$metronomeStore.bpm}`);
 	}
 
 	/*
@@ -49,22 +51,19 @@
 	/*
 	 * Tính bpm từ góc quay của dial
 	 */
-	function calculateBpmFromAngle(angle: number, dialProps: typeof dialSettings): number {
-		const knobAngle = -angle;
+	function calculateBpmFromAngle(currentRotationAngle: number): number {
+		const knobAngle = -currentRotationAngle;
 		const effectiveAngle = ((knobAngle % 360) + 360) % 360;
+		const clampedAngle = clamp(effectiveAngle, minBpmAngle, maxBpmAngle);
 
-		const clampedAngle = clamp(effectiveAngle, dialProps.minBpmAngle, dialProps.maxBpmAngle);
-
-		const usableAngleRange = dialProps.maxBpmAngle - dialProps.minBpmAngle;
-		const angleWithinUsableRange = clampedAngle - dialProps.minBpmAngle;
+		const usableAngleRange = maxBpmAngle - minBpmAngle;
+		const angleWithinUsableRange = clampedAngle - minBpmAngle;
 		const percentage = usableAngleRange > 0 ? angleWithinUsableRange / usableAngleRange : 0;
 
-		const bpmRange = dialProps.maxBpm - dialProps.minBpm;
-		return dialProps.minBpm + percentage * bpmRange;
+		const bpmRange = maxBpm - minBpm;
+		return minBpm + percentage * bpmRange;
 	}
-	/**
-	 * Trả về tọa độ (x, y) từ MouseEvent hoặc TouchEvent.
-	 */
+
 	function getEventCoordinates(event: MouseEvent | TouchEvent): { x: number; y: number } {
 		if ('touches' in event) {
 			return { x: event.touches[0].clientX, y: event.touches[0].clientY };
@@ -85,7 +84,7 @@
 	}
 
 	function handleToggle() {
-		isRunning = !isRunning;
+		metronomeStore.toggle();
 	}
 
 	function handleDragStart(event: MouseEvent | TouchEvent) {
@@ -139,9 +138,9 @@
 	class="dial-area-wrapper"
 	role="slider"
 	aria-label="Metronome tempo"
-	aria-valuemin={dialSettings.minBpm}
-	aria-valuemax={dialSettings.maxBpm}
-	aria-valuenow={currentBpm}
+	aria-valuemin={minBpm}
+	aria-valuemax={maxBpm}
+	aria-valuenow={$metronomeStore.bpm}
 	tabindex="-1"
 	on:mousedown={handleDragStart}
 	on:touchstart={handleDragStart}
@@ -152,7 +151,7 @@
 			<DialTickMark {rotationAngle} />
 			<DialTrackBorder />
 			<DialKnob />
-			<Drum {isRunning} onToggle={handleToggle} />
+			<Drum isRunning={$metronomeStore.isRunning} onToggle={handleToggle} />
 		</div>
 	</div>
 </div>
@@ -166,8 +165,8 @@
         align-items: center;
         cursor: grab;
         transition: min-height 0.35s ease-in-out;
-        touch-action: none; /* Prevents default touch behaviors */
-        user-select: none; /* Prevents text selection during drag */
+        touch-action: none;
+        user-select: none;
     }
 
     .dial-area-wrapper:active {
