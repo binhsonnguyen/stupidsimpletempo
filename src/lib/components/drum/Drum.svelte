@@ -1,17 +1,34 @@
 <!-- src/lib/components/Drum.svelte -->
-<script>
-    export let isRunning = false;
-    export let isLoading = false;
-    export let onToggle = () => {
-    };
+<script lang="ts">
+		import { onMount, onDestroy } from 'svelte';
+		import * as Tone from 'tone';
+
+		export let isRunning = false;
+
+		let player: Tone.Player | null = null;
+
+		onMount(() => {
+			player = new Tone.Player('/sound/woodblock.mp3').toDestination();
+		});
+
+		onDestroy(() => {
+			player?.dispose();
+		});
+
+		function handleDrumClick() {
+			if (Tone.context.state !== 'running') {
+				Tone.start();
+			}
+
+			player?.start();
+		}
 </script>
 
 <button
-        on:click={onToggle}
+        on:click={handleDrumClick}
         class="start-stop-button"
-        class:loading={isLoading}
-        class:on={isRunning && !isLoading}
-        class:off={!isRunning && !isLoading}
+        class:on={isRunning}
+        class:off={!isRunning}
         aria-label={isRunning ? 'Stop metronome' : 'Start metronome'}
         tabindex="-1"
 >
