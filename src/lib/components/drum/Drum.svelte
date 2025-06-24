@@ -1,38 +1,39 @@
-<!-- src/lib/components/Drum.svelte -->
+<!-- src/lib/components/drum/Drum.svelte -->
+
 <script lang="ts">
-		import { onMount, onDestroy } from 'svelte';
-		import * as Tone from 'tone';
+	import { onMount, onDestroy } from 'svelte';
+	import * as Tone from 'tone';
+	import { metronomeStore } from '$lib/state/metronomeStore'; // 1. Import the store
 
-		export let isRunning = false;
+	let player: Tone.Player | null = null;
 
-		let player: Tone.Player | null = null;
+	onMount(() => {
+		player = new Tone.Player('/sound/woodblock.mp3').toDestination();
+	});
 
-		onMount(() => {
-			player = new Tone.Player('/sound/woodblock.mp3').toDestination();
-		});
+	onDestroy(() => {
+		player?.dispose();
+	});
 
-		onDestroy(() => {
-			player?.dispose();
-		});
-
-		function handleDrumClick() {
-			if (Tone.getContext().state !== 'running') {
-				Tone.start();
-			}
-
-			player?.start();
+	function handleDrumClick() {
+		if (Tone.getContext().state !== 'running') {
+			Tone.start();
 		}
+
+		player?.start();
+
+		metronomeStore.toggle();
+	}
 </script>
 
 <button
-        on:click={handleDrumClick}
-        class="start-stop-button"
-        class:on={isRunning}
-        class:off={!isRunning}
-        aria-label={isRunning ? 'Stop metronome' : 'Start metronome'}
-        tabindex="-1"
->
-</button>
+	on:click={handleDrumClick}
+	class="start-stop-button"
+	class:on={$metronomeStore.isRunning}
+	class:off={!$metronomeStore.isRunning}
+	aria-label={$metronomeStore.isRunning ? 'Stop metronome' : 'Start metronome'}
+	tabindex="-1"
+></button>
 
 <style>
     .start-stop-button {
