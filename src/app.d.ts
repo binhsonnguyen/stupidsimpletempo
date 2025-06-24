@@ -15,6 +15,7 @@ declare global {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		interface HTMLAttributes<T> {
 			'on:rotate'?: (event: CustomEvent<number>) => void;
+			'on:dragend'?: (event: CustomEvent<void>) => void;
 		}
 	}
 }
