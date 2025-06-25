@@ -1,20 +1,17 @@
 <!-- src/lib/components/time-notation-selector/TimeNotationSelector.svelte -->
 <script lang="ts">
-	import { metronomeStore, type BeatInterval, VALID_BEAT_INTERVALS } from '$lib/state/metronomeStore';
+	import { metronomeStore, type BeatInterval } from '$lib/state/metronomeStore';
 
-	const BEAT_INTERVALS = {
-		WHOLE_NOTE: { label: '1m', value: VALID_BEAT_INTERVALS[0], description: 'Whole Note (Nốt tròn)' },
-		HALF_NOTE: { label: '2', value: VALID_BEAT_INTERVALS[1], description: 'Half Note (Nốt trắng)' },
-		QUARTER_NOTE: { label: '4', value: VALID_BEAT_INTERVALS[2], description: 'Quarter Note (Nốt đen)' },
-		EIGHTH_NOTE: { label: '8', value: VALID_BEAT_INTERVALS[3], description: 'Eighth Note (Nốt móc đơn)' },
-		SIXTEENTH_NOTE: { label: '16', value: VALID_BEAT_INTERVALS[4], description: 'Sixteenth Note (Nốt móc kép)' },
-		EIGHTH_TRIPLET: { label: '8t', value: VALID_BEAT_INTERVALS[5], description: 'Eighth Triplet (Chùm ba nốt móc đơn)' }
+	type BeatIntervalOption = {
+		label: string;
+		value: BeatInterval;
+		description: string;
 	};
 
-	const BEAT_INTERVAL_OPTIONS = [
-		BEAT_INTERVALS.HALF_NOTE,
-		BEAT_INTERVALS.QUARTER_NOTE,
-		BEAT_INTERVALS.EIGHTH_NOTE
+	const BEAT_INTERVAL_OPTIONS: BeatIntervalOption[] = [
+		{ label: '2', value: '2n', description: 'Half Note (Nốt trắng)' },
+		{ label: '4', value: '4n', description: 'Quarter Note (Nốt đen)' },
+		{ label: '8', value: '8n', description: 'Eighth Note (Nốt móc đơn)' }
 	];
 
 	function handleSelect(value: BeatInterval) {
