@@ -4,7 +4,7 @@ type RotatableOptions = {
 	rotation: number;
 };
 
-const DRAG_THRESHOLD = 2;
+const DRAG_THRESHOLD = 1;
 
 class DragStateManager {
 	private _startX: number = 0;
