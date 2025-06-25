@@ -32,9 +32,9 @@
 	}
 
 	function handleSwipe(direction: 'up' | 'down' | 'left' | 'right') {
-		if (direction === 'up' || direction === 'right' ) {
+		if (direction === 'up' || direction === 'right') {
 			logger.log('⬆️ Swipe Up Detected!');
-			beatsPerMeasureAdvance(1)
+			beatsPerMeasureAdvance(1);
 		} else {
 			logger.log('⬇️ Swipe Down Detected!');
 			beatsPerMeasureAdvance(-1);
@@ -69,7 +69,7 @@
 	<div class="division-lines-container">
 		{#if divisions > 1}
 			{#each Array(divisions) as _, i (i)}
-				{@const angleOffset = divisions === 3 ? -90 : 0}
+				{@const angleOffset = -90}
 				{@const angle = (i / divisions) * 360 + angleOffset}
 				<div
 					class="division-line"
