@@ -2,25 +2,21 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { get } from 'svelte/store';
 	import { fade } from 'svelte/transition';
-	import { Sound } from '$lib/audio/Sound';
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import { isAudioLoading } from '$lib/state/audioLoadingStore';
-	import { beatSequenceStore } from '$lib/state/beatSequenceStore';
 	import { volumeStore } from '$lib/state/volumeStore';
 	import { swipeable } from '$lib/components/actions/swipeable';
 
 	const divisionOptions = [1, 2, 3, 4, 6, 8];
-	let currentDivisionIndex = 0;
+	let currentDivisionIndex = 3;
+	const divisions = $derived(divisionOptions[currentDivisionIndex]);
 
-	$: divisions = divisionOptions[currentDivisionIndex];
+	$effect(() => {
+		metronomeStore.setBeatsPerMeasure(divisions);
+	});
 
 	onMount(() => {
-		const sequence = get(beatSequenceStore);
-		if (sequence.head) {
-			Sound.registerForPreload(sequence.head.sound);
-		}
 		volumeStore.setVolume(100);
 		volumeStore.setBoostFactor(1.1);
 	});
@@ -64,8 +60,8 @@
 	class:divisions-6={divisions === 6}
 	class:divisions-8={divisions === 8}
 	aria-label={$isAudioLoading
-	? 'Loading sounds...'
-	: $metronomeStore.isRunning
+		? 'Loading sounds...'
+		: $metronomeStore.isRunning
 		? 'Stop metronome'
 		: 'Start metronome'}
 	disabled={$isAudioLoading}
