@@ -5,7 +5,7 @@ import { Sound } from '$lib/audio/Sound';
 
 export type BeatNode = {
 	sound: Sound;
-	durationInBeats: number; // Ví dụ: 1 cho nốt đen, 0.5 cho nốt móc đơn
+	durationInBeats: number;
 	next: BeatNode | null;
 };
 
@@ -14,33 +14,52 @@ export type BeatSequenceState = {
 	nextBeat: BeatNode | null;
 };
 
-const simpleBeat: BeatNode = {
-	sound: Sound.WOODBLOCK,
-	durationInBeats: 1,
-	next: null
-};
-
-simpleBeat.next = simpleBeat
-
 const initialState: BeatSequenceState = {
-	head: simpleBeat,
-	nextBeat: simpleBeat,
+	head: null,
+	nextBeat: null
 };
 
 export type BeatSequenceStore = {
 	subscribe: Writable<BeatSequenceState>['subscribe'];
 	advance: () => void;
 	reset: () => void;
-	setSequence: (newHead: BeatNode) => void;
+	setSequence: (beatsPerMeasure: number) => void;
 };
 
 function createBeatSequenceStore(): BeatSequenceStore {
 	const { subscribe, update } = writable<BeatSequenceState>(initialState);
 
+	const setSequence = (beatsPerMeasure: number) => {
+		const accentSound = Sound.WOODBLOCK_HIGH;
+		const tickSound = Sound.WOODBLOCK;
+
+		Sound.registerForPreload(accentSound);
+		Sound.registerForPreload(tickSound);
+
+		if (beatsPerMeasure <= 0) {
+			update(() => ({ head: null, nextBeat: null }));
+			return;
+		}
+
+		const head: BeatNode = { sound: accentSound, durationInBeats: 1, next: null };
+		let currentNode = head;
+
+		for (let i = 1; i < beatsPerMeasure; i++) {
+			const nextNode: BeatNode = { sound: tickSound, durationInBeats: 1, next: null };
+			currentNode.next = nextNode;
+			currentNode = nextNode;
+		}
+
+		currentNode.next = head;
+
+		update(() => ({
+			head: head,
+			nextBeat: head
+		}));
+	};
+
 	return {
 		subscribe,
-
-		// qua beat tiếp
 		advance: () => {
 			update((state) => {
 				if (!state.nextBeat) return state;
@@ -48,19 +67,10 @@ function createBeatSequenceStore(): BeatSequenceStore {
 				return { ...state, nextBeat: next };
 			});
 		},
-
-		// về head
 		reset: () => {
 			update((state) => ({ ...state, nextBeat: state.head }));
 		},
-
-		// đổi chuỗi
-		setSequence: (newHead: BeatNode) => {
-			update(() => ({
-				head: newHead,
-				nextBeat: newHead
-			}));
-		}
+		setSequence
 	};
 }
 
