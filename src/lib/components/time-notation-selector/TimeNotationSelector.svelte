@@ -1,6 +1,6 @@
 <!-- src/lib/components/time-notation-selector/TimeNotationSelector.svelte -->
 <script lang="ts">
-	const BEAT_UNITS = {
+	const BEAT_INTERVALS = {
 		WHOLE_NOTE: { label: '1m', value: '1m', description: 'Whole Note (Nốt tròn)' },
 		HALF_NOTE: { label: '2', value: '2n', description: 'Half Note (Nốt trắng)' },
 		QUARTER_NOTE: { label: '4', value: '4n', description: 'Quarter Note (Nốt đen)' },
@@ -9,13 +9,13 @@
 		EIGHTH_TRIPLET: { label: '8t', value: '8t', description: 'Eighth Triplet (Chùm ba nốt móc đơn)' }
 	};
 
-	const BEAT_UNIT_OPTIONS = [BEAT_UNITS.HALF_NOTE, BEAT_UNITS.QUARTER_NOTE, BEAT_UNITS.EIGHTH_NOTE];
+	const BEAT_INTERVAL_OPTIONS = [BEAT_INTERVALS.HALF_NOTE, BEAT_INTERVALS.QUARTER_NOTE, BEAT_INTERVALS.EIGHTH_NOTE];
 </script>
 
 <div class="notation-wrapper">
 	<div class="division-line"></div>
 	<div class="time-notation-selector-container">
-		{#each BEAT_UNIT_OPTIONS as bu (bu.value)}
+		{#each BEAT_INTERVAL_OPTIONS as bu (bu.value)}
 			<span class="note-symbol" title={bu.description}>
 				{bu.label}
 			</span>
