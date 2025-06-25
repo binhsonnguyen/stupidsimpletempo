@@ -29,7 +29,6 @@
 		metronomeStore.toggle();
 	}
 
-	// Cập nhật hàm vuốt để xoay vòng qua các chế độ
 	function cycleDivisions(direction: 'up' | 'down') {
 		if (direction === 'up') {
 			currentDivisionIndex = (currentDivisionIndex + 1) % divisionOptions.length;
@@ -59,26 +58,32 @@
 	class:on={$metronomeStore.isRunning && !$isAudioLoading}
 	class:off={!$metronomeStore.isRunning && !$isAudioLoading}
 	class:loading={$isAudioLoading}
-	aria-label={$isAudioLoading
-		? 'Loading sounds...'
-		: $metronomeStore.isRunning
+class:divisions-2={divisions === 2}
+class:divisions-3={divisions === 3}
+class:divisions-4={divisions === 4}
+class:divisions-6={divisions === 6}
+class:divisions-8={divisions === 8}
+aria-label={$isAudioLoading
+	? 'Loading sounds...'
+	: $metronomeStore.isRunning
 		? 'Stop metronome'
 		: 'Start metronome'}
-	disabled={$isAudioLoading}
-	tabindex="-1"
+disabled={$isAudioLoading}
+tabindex="-1"
 >
-	<div class="division-lines-container">
-		{#if divisions > 1}
-			{#each Array(divisions) as _, i (i)}
-				{@const angle = (i / divisions) * 360}
-				<div
-					class="division-line"
-					style="--rotation-angle: {angle}deg;"
-					transition:fade={{ duration: 150 }}
-				></div>
-			{/each}
-		{/if}
-	</div>
+<div class="division-lines-container">
+	{#if divisions > 1}
+		{#each Array(divisions) as _, i (i)}
+			{@const angleOffset = divisions === 3 ? -90 : 0}
+			{@const angle = (i / divisions) * 360 + angleOffset}
+			<div
+				class="division-line"
+				style="--rotation-angle: {angle}deg;"
+				transition:fade={{ duration: 150 }}
+			></div>
+		{/each}
+	{/if}
+</div>
 </button>
 
 <style>
@@ -126,7 +131,7 @@
 
     .division-line {
         position: absolute;
-        width: 40%;
+        width: 25%;
         height: 1px;
         background-color: rgba(248, 249, 250, 0.5);
         top: 50%;
