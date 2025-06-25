@@ -136,7 +136,7 @@
 
   .division-line {
     position: absolute;
-    width: 40%;
+    width: 75%;
     height: 1px;
     top: 50%;
     left: 50%;
