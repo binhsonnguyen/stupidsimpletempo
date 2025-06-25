@@ -1,8 +1,15 @@
 import devtoolsJson from 'vite-plugin-devtools-json';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
+import fs from 'fs';
+
+const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
 export default defineConfig({
+	define: {
+		__APP_VERSION__: JSON.stringify(pkg.version),
+		__APP_AUTHOR__: JSON.stringify(pkg.author)
+	},
 	plugins: [sveltekit(), devtoolsJson()],
 	test: {
 		projects: [
