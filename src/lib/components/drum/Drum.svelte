@@ -31,6 +31,14 @@
 	function handleSwipeDown() {
 		console.log('✅ Swipe Down Detected!');
 	}
+
+	function handleSwipeLeft() {
+		console.log('⬅️ Swipe Left Detected!');
+	}
+
+	function handleSwipeRight() {
+		console.log('➡️ Swipe Right Detected!');
+	}
 </script>
 
 <button
@@ -38,6 +46,8 @@
 	use:swipeable
 	onswipeup={handleSwipeUp}
 	onswipedown={handleSwipeDown}
+	onswipeleft={handleSwipeLeft}
+	onswiperight={handleSwipeRight}
 	class="start-stop-button"
 	class:on={$metronomeStore.isRunning && !$isAudioLoading}
 	class:off={!$metronomeStore.isRunning && !$isAudioLoading}
