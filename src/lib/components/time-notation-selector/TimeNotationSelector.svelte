@@ -1,6 +1,10 @@
 <!-- src/lib/components/time-notation-selector/TimeNotationSelector.svelte -->
 <script lang="ts">
 	import { metronomeStore, type BeatInterval } from '$lib/state/metronomeStore';
+	import { swipeable } from '$lib/components/actions/swipeable';
+	import { slide } from 'svelte/transition';
+
+	let isVisible = true;
 
 	type BeatIntervalOption = {
 		label: string;
@@ -23,29 +27,50 @@
 			handleSelect(value);
 		}
 	}
+
+	function toggleVisibility() {
+		isVisible = !isVisible;
+	}
 </script>
 
-<div class="notation-wrapper">
-	<div class="division-line" />
-	<div class="time-notation-selector-container">
-		{#each BEAT_INTERVAL_OPTIONS as bu (bu.value)}
-			<span
-				class="note-symbol"
-				class:active={$metronomeStore.beatInterval === bu.value}
-				on:click={() => handleSelect(bu.value)}
-				on:keypress={(e) => handleKeyPress(e, bu.value)}
-				role="button"
-				tabindex="0"
-				title={bu.description}
-			>
-				{bu.label}
-			</span>
-		{/each}
-	</div>
+<div
+	class="notation-wrapper"
+	use:swipeable
+	onswipeup={toggleVisibility}
+	onswipedown={toggleVisibility}
+>
+	{#if isVisible}
+		<div class="selector-content" transition:slide|local={{ duration: 250 }}>
+			<div class="division-line" />
+			<div class="time-notation-selector-container">
+				{#each BEAT_INTERVAL_OPTIONS as bu (bu.value)}
+					<span
+						class="note-symbol"
+						class:active={$metronomeStore.beatInterval === bu.value}
+						onclick={() => handleSelect(bu.value)}
+						onkeypress={(e) => handleKeyPress(e, bu.value)}
+						role="button"
+						tabindex="0"
+						title={bu.description}
+					>
+						{bu.label}
+					</span>
+				{/each}
+			</div>
+		</div>
+	{/if}
 </div>
 
 <style>
     .notation-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px 0;
+        min-height: 30px;
+    }
+
+    .selector-content {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -70,8 +95,7 @@
         font-weight: bold;
         cursor: pointer;
         color: #6c757d;
-        transition: color 0.2s ease,
-        transform 0.2s ease;
+        transition: color 0.2s ease, transform 0.2s ease;
     }
 
     .note-symbol:hover {
