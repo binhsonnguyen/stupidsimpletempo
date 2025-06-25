@@ -7,6 +7,7 @@
 	import { isAudioLoading } from '$lib/state/audioLoadingStore';
 	import { volumeStore } from '$lib/state/volumeStore';
 	import { swipeable } from '$lib/components/actions/swipeable';
+	import { logger } from '$lib/services/logger';
 
 	const divisionOptions = [1, 2, 3, 4, 6, 8];
 	let currentDivisionIndex = $state(0);
@@ -21,37 +22,33 @@
 		volumeStore.setBoostFactor(1.1);
 	});
 
+	function beatsPerMeasureAdvance(level: number = 1) {
+		const numOptions = divisionOptions.length;
+		currentDivisionIndex = (currentDivisionIndex + level + numOptions) % numOptions;
+	}
+
 	function handleDrumClick() {
 		metronomeStore.toggle();
 	}
 
-	function cycleDivisions(direction: 'up' | 'down') {
-		if (direction === 'up') {
-			console.log('⬆️ Swipe Up Detected!');
-			currentDivisionIndex = (currentDivisionIndex + 1) % divisionOptions.length;
+	function handleSwipe(direction: 'up' | 'down' | 'left' | 'right') {
+		if (direction === 'up' || direction === 'right' ) {
+			logger.log('⬆️ Swipe Up Detected!');
+			beatsPerMeasureAdvance(1)
 		} else {
-			console.log('⬇️ Swipe Down Detected!');
-			currentDivisionIndex =
-				(currentDivisionIndex - 1 + divisionOptions.length) % divisionOptions.length;
+			logger.log('⬇️ Swipe Down Detected!');
+			beatsPerMeasureAdvance(-1);
 		}
-	}
-
-	function handleSwipeLeft() {
-		console.log('⬅️ Swipe Left Detected!');
-	}
-
-	function handleSwipeRight() {
-		console.log('➡️ Swipe Right Detected!');
 	}
 </script>
 
 <button
 	onclick={handleDrumClick}
 	use:swipeable
-	onswipeup={() => cycleDivisions('up')}
-	onswipedown={() => cycleDivisions('down')}
-	onswipeleft={handleSwipeLeft}
-	onswiperight={handleSwipeRight}
+	onswipeup={() => handleSwipe('up')}
+	onswipedown={() => handleSwipe('down')}
+	onswipeleft={() => handleSwipe('left')}
+	onswiperight={() => handleSwipe('right')}
 	class="start-stop-button"
 	class:on={$metronomeStore.isRunning && !$isAudioLoading}
 	class:off={!$metronomeStore.isRunning && !$isAudioLoading}
