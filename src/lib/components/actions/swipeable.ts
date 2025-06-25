@@ -35,7 +35,7 @@ export function swipeable(node: HTMLElement, options?: SwipeableOptions) {
 		const duration = endTime - startTime;
 
 		if (duration > maxDuration) {
-			return;
+			return; // Vuốt quá chậm
 		}
 
 		if (Math.abs(deltaY) > minDistance && Math.abs(deltaY) > Math.abs(deltaX)) {
@@ -43,6 +43,12 @@ export function swipeable(node: HTMLElement, options?: SwipeableOptions) {
 				node.dispatchEvent(new CustomEvent('swipeup'));
 			} else {
 				node.dispatchEvent(new CustomEvent('swipedown'));
+			}
+		} else if (Math.abs(deltaX) > minDistance && Math.abs(deltaX) > Math.abs(deltaY)) {
+			if (deltaX < 0) {
+				node.dispatchEvent(new CustomEvent('swipeleft'));
+			} else {
+				node.dispatchEvent(new CustomEvent('swiperight'));
 			}
 		}
 	}
