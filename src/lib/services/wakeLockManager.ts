@@ -2,8 +2,50 @@
 
 import { browser } from '$app/environment';
 import { metronomeStore } from '$lib/state/metronomeStore';
-import { wakeLockService } from './wakeLockService';
 import { logger } from './logger';
+
+let wakeLock: WakeLockSentinel | null = null;
+
+/**
+ * Yêu cầu khóa màn hình.
+ */
+const request = async () => {
+	if (!browser || !('wakeLock' in navigator)) {
+		logger.warn('WakeLock API not supported.');
+		return;
+	}
+	if (wakeLock) {
+		logger.log('Wake Lock already active, request ignored.');
+		return;
+	}
+
+	try {
+		wakeLock = await navigator.wakeLock.request('screen');
+		logger.log('Wake Lock has been successfully acquired.');
+
+		wakeLock.addEventListener('release', () => {
+			logger.log('Wake Lock was released by the browser.');
+			wakeLock = null;
+		});
+	} catch (err: any) {
+		logger.error(`Wake Lock request failed: ${err.name}`, err);
+	}
+};
+
+/**
+ * Chủ động giải phóng khóa màn hình.
+ */
+const release = async () => {
+	if (!wakeLock) return;
+	try {
+		const lockToRelease = wakeLock;
+		wakeLock = null;
+		await lockToRelease.release();
+		logger.log('Wake Lock released manually.');
+	} catch (err: any) {
+		logger.error(`Wake Lock release failed: ${err.name}`, err);
+	}
+};
 
 let isMetronomeRunning = false;
 let isTabVisible = true;
@@ -12,15 +54,14 @@ let unsubscribeFromMetronome: (() => void) | null = null;
 
 /**
  * Hàm trung tâm ra quyết định.
- * Dựa trên trạng thái hiện tại, nó sẽ yêu cầu hoặc giải phóng khóa.
  */
 function updateWakeLockState() {
 	if (isMetronomeRunning && isTabVisible) {
 		logger.log('Manager: Conditions met, requesting wake lock.');
-		wakeLockService.request();
+		request();
 	} else {
 		logger.log('Manager: Conditions not met, releasing wake lock.');
-		wakeLockService.release();
+		release();
 	}
 }
 
@@ -35,7 +76,6 @@ function handleVisibilityChange() {
 
 /**
  * Khởi tạo manager.
- * Hàm này nên được gọi một lần duy nhất khi ứng dụng bắt đầu.
  */
 function initialize() {
 	if (!browser) return;
@@ -54,7 +94,6 @@ function initialize() {
 
 /**
  * Dọn dẹp các listener khi ứng dụng bị hủy.
- * Rất quan trọng để tránh rò rỉ bộ nhớ.
  */
 function destroy() {
 	if (!browser) return;
@@ -66,7 +105,7 @@ function destroy() {
 		unsubscribeFromMetronome();
 	}
 
-	wakeLockService.release();
+	release();
 }
 
 export const wakeLockManager = {
