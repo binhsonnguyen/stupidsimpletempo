@@ -1,10 +1,14 @@
 <!-- src/lib/components/Footer.svelte -->
-<script>
+
+<script lang="ts">
+	const version = __APP_VERSION__;
+	const author = __APP_AUTHOR__;
+
 	const currentYear = new Date().getFullYear();
 </script>
 
 <footer class="mt-auto text-center bg-black bg-opacity-10 app-footer">
-	Stupid Simple Tempo ©{currentYear} Nguyen Binh Son
+		v{version} ©{currentYear} {author}
 </footer>
 
 <style>
