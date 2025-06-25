@@ -16,13 +16,6 @@
 
 	$: divisions = divisionOptions[currentDivisionIndex];
 
-	// tương tự màu transform, nhưng đậm hơn
-	$: lineColor = $isAudioLoading
-		? 'rgba(108, 117, 125, 0.7)'
-		: $metronomeStore.isRunning
-			? 'rgba(220, 53, 69, 0.85)'
-			: 'rgba(40, 167, 69, 0.85)';
-
 	onMount(() => {
 		const sequence = get(beatSequenceStore);
 		if (sequence.head) {
@@ -70,10 +63,9 @@
 	class:divisions-4={divisions === 4}
 	class:divisions-6={divisions === 6}
 	class:divisions-8={divisions === 8}
-	style="--line-color: {lineColor};"
 	aria-label={$isAudioLoading
-		? 'Loading sounds...'
-		: $metronomeStore.isRunning
+	? 'Loading sounds...'
+	: $metronomeStore.isRunning
 		? 'Stop metronome'
 		: 'Start metronome'}
 	disabled={$isAudioLoading}
@@ -94,58 +86,63 @@
 	</div>
 </button>
 
-<style>
-    .start-stop-button {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 5;
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        border: none;
-        cursor: pointer;
-        background-color: transparent;
-        transition: box-shadow 0.3s ease;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+<style lang="scss">
+  $color-red: rgb(220, 53, 69);
+  $color-green: rgb(40, 167, 69);
+  $color-gray: rgb(108, 117, 125);
+
+  .start-stop-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+    transition: box-shadow 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    --drum-glow-color: #{rgba($color-green, 0.7)};
+    --line-glow-color: #{rgba($color-green, 0.85)};
+
+    &.on {
+      --drum-glow-color: #{rgba($color-red, 0.7)};
+      --line-glow-color: #{rgba($color-red, 0.85)};
     }
 
-    .start-stop-button.loading {
-        box-shadow: 0 0 15px rgba(108, 117, 125, 0.5);
-        cursor: wait;
+    &.loading {
+      --drum-glow-color: #{rgba($color-gray, 0.5)};
+      --line-glow-color: #{rgba($color-gray, 0.7)};
     }
 
-    .start-stop-button.off {
-        box-shadow: 0 0 15px rgba(40, 167, 69, 0.7);
-    }
+    box-shadow: 0 0 15px var(--drum-glow-color, transparent);
+  }
 
-    .start-stop-button.on {
-        box-shadow: 0 0 15px rgba(220, 53, 69, 0.7);
-    }
+  .start-stop-button:focus-visible {
+    outline: none;
+  }
 
-    .start-stop-button:focus-visible {
-        outline: none;
-    }
+  .division-lines-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
 
-    .division-lines-container {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-    }
-
-    .division-line {
-        position: absolute;
-        width: 40%;
-        height: 1px;
-        top: 50%;
-        left: 50%;
-        transform-origin: 0 50%;
-        transform: rotate(var(--rotation-angle));
-        transition: background 0.3s ease;
-        background: linear-gradient(to right, var(--line-color, transparent), transparent);
-    }
+  .division-line {
+    position: absolute;
+    width: 40%;
+    height: 1px;
+    top: 50%;
+    left: 50%;
+    transform-origin: 0 50%;
+    transform: rotate(var(--rotation-angle));
+    transition: background 0.3s ease;
+    background: linear-gradient(to right, var(--line-glow-color, transparent), transparent);
+  }
 </style>
