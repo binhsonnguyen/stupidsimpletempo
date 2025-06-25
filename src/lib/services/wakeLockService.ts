@@ -7,20 +7,20 @@ let wakeLock: WakeLockSentinel | null = null;
 
 /**
  * Yêu cầu khóa màn hình.
- * Sẽ tự động bỏ qua nếu khóa đã được giữ.
  */
 const request = async () => {
 	if (!browser || !('wakeLock' in navigator)) {
+		logger.warn('WakeLock API not supported.');
 		return;
 	}
-
 	if (wakeLock) {
+		logger.log('Wake Lock already active, request ignored.');
 		return;
 	}
 
 	try {
 		wakeLock = await navigator.wakeLock.request('screen');
-		logger.log('Wake Lock is active.');
+		logger.log('Wake Lock has been successfully acquired.');
 
 		wakeLock.addEventListener('release', () => {
 			logger.log('Wake Lock was released by the browser.');
@@ -33,40 +33,20 @@ const request = async () => {
 
 /**
  * Chủ động giải phóng khóa màn hình.
- * (Hữu ích nếu sau này có nút cài đặt để người dùng tự tắt tính năng này).
  */
 const release = async () => {
 	if (!wakeLock) return;
 	try {
-		await wakeLock.release();
+		const lockToRelease = wakeLock;
 		wakeLock = null;
+		await lockToRelease.release();
 		logger.log('Wake Lock released manually.');
 	} catch (err: any) {
 		logger.error(`Wake Lock release failed: ${err.name}`, err);
 	}
 };
 
-/**
- * Khởi tạo service.
- * Hàm này nên được gọi một lần duy nhất khi ứng dụng bắt đầu.
- */
-const initialize = () => {
-	if (!browser || !('wakeLock' in navigator)) {
-		logger.warn('Wake Lock API is not supported in this browser.');
-		return;
-	}
-
-	const handleVisibilityChange = () => {
-		if (document.visibilityState === 'visible') {
-			request();
-		}
-	};
-
-	document.addEventListener('visibilitychange', handleVisibilityChange);
-};
-
 export const wakeLockService = {
-	initialize,
 	request,
 	release
 };

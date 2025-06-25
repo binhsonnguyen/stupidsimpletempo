@@ -3,6 +3,8 @@ import { writable, type Writable, get } from 'svelte/store';
 import * as Tone from 'tone';
 import { browser } from '$app/environment';
 import { beatSequenceStore } from './beatSequenceStore';
+import { wakeLockService } from '$lib/services/wakeLockService';
+import { logger } from '$lib/services/logger';
 
 export type MetronomeState = {
 	bpm: number;
@@ -33,6 +35,13 @@ function createMetronomeStore(): MetronomeStore {
 	let scheduledEventId: number | null = null;
 
 	if (browser) {
+		document.addEventListener('visibilitychange', () => {
+			if (document.visibilityState === 'visible' && get(metronomeStore).isRunning) {
+				logger.log('Tab is visible and metronome is running, re-acquiring wake lock...');
+				wakeLockService.request();
+			}
+		});
+
 		subscribe((state) => {
 			Tone.getTransport().bpm.value = state.bpm;
 		});
@@ -64,17 +73,31 @@ function createMetronomeStore(): MetronomeStore {
 				scheduledEventId = null;
 			}
 			beatSequenceStore.reset();
+			wakeLockService.release(); // Giải phóng khóa khi dừng
 		} else {
 			scheduledEventId = Tone.getTransport().scheduleRepeat(loop, '4n');
 			Tone.getTransport().start();
+			wakeLockService.request(); // Yêu cầu khóa khi bắt đầu
 		}
 
 		update((state) => ({ ...state, isRunning: !state.isRunning }));
 	};
 
+	const reset = () => {
+		if (browser) {
+			Tone.getTransport().stop();
+			if (scheduledEventId !== null) {
+				Tone.getTransport().clear(scheduledEventId);
+				scheduledEventId = null;
+			}
+		}
+		beatSequenceStore.reset();
+		wakeLockService.release();
+		set(initialState);
+	};
+
 	return {
 		subscribe,
-
 		setTempo: (newBpm: number) => {
 			const roundedBpm = Math.round(newBpm);
 			update((state) => {
@@ -82,24 +105,11 @@ function createMetronomeStore(): MetronomeStore {
 				return { ...state, bpm: clampedBpm };
 			});
 		},
-
 		setBeatsPerMeasure: (count: number) => {
 			update((state) => ({ ...state, beatsPerMeasure: count }));
 		},
-
 		toggle,
-
-		reset: () => {
-			if (browser) {
-				Tone.getTransport().stop();
-				if (scheduledEventId !== null) {
-					Tone.getTransport().clear(scheduledEventId);
-					scheduledEventId = null;
-				}
-			}
-			beatSequenceStore.reset();
-			set(initialState);
-		}
+		reset
 	};
 }
 
