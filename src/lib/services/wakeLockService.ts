@@ -58,14 +58,11 @@ const initialize = () => {
 
 	const handleVisibilityChange = () => {
 		if (document.visibilityState === 'visible') {
-			// Khi người dùng quay lại, hãy yêu cầu lại khóa.
 			request();
 		}
 	};
 
 	document.addEventListener('visibilitychange', handleVisibilityChange);
-
-	request();
 };
 
 export const wakeLockService = {

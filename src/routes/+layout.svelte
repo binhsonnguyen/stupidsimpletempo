@@ -14,9 +14,19 @@
 	onMount(() => {
 		wakeLockService.initialize();
 
+		const requestWakeLockOnFirstInteraction = () => {
+			wakeLockService.request();
+		};
+
+		document.body.addEventListener('pointerdown', requestWakeLockOnFirstInteraction, { once: true });
+
 		unsubscribeMetronome = metronomeStore.subscribe(async ({ beatsPerMeasure }) => {
 			await beatSequenceStore.setSequence(beatsPerMeasure);
 		});
+
+		return () => {
+			document.body.removeEventListener('pointerdown', requestWakeLockOnFirstInteraction);
+		};
 	});
 
 	onDestroy(() => {
