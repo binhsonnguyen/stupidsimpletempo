@@ -40,8 +40,14 @@ function createMetronomeStore(): MetronomeStore {
 	let scheduledEventId: number | null = null;
 
 	if (browser) {
+		let lastKnownBpm = initialState.bpm;
+		Tone.getTransport().bpm.value = lastKnownBpm;
+
 		subscribe((state) => {
-			Tone.getTransport().bpm.value = state.bpm;
+			if (state.bpm !== lastKnownBpm) {
+				Tone.getTransport().bpm.value = state.bpm;
+				lastKnownBpm = state.bpm;
+			}
 		});
 	}
 
@@ -55,9 +61,8 @@ function createMetronomeStore(): MetronomeStore {
 		}
 	};
 
-	const startLoop = () => {
-		const currentInterval = get(metronomeStore).beatInterval;
-		scheduledEventId = Tone.getTransport().scheduleRepeat(loop, currentInterval);
+	const startLoop = (interval: BeatInterval) => {
+		scheduledEventId = Tone.getTransport().scheduleRepeat(loop, interval);
 		Tone.getTransport().start();
 	};
 
@@ -77,27 +82,28 @@ function createMetronomeStore(): MetronomeStore {
 			Tone.start();
 		}
 
-		const isRunning = get(metronomeStore).isRunning;
+		const currentState = get(metronomeStore);
 
-		if (isRunning) {
+		if (currentState.isRunning) {
 			stopLoop();
 		} else {
-			startLoop();
+			startLoop(currentState.beatInterval);
 		}
 
 		update((state) => ({ ...state, isRunning: !state.isRunning }));
 	};
 
 	const setBeatInterval = (interval: BeatInterval) => {
-		const isRunning = get(metronomeStore).isRunning;
-		if (isRunning) {
+		const wasRunning = get(metronomeStore).isRunning;
+
+		if (wasRunning) {
 			stopLoop();
 		}
 
 		update((state) => ({ ...state, beatInterval: interval }));
 
-		if (isRunning) {
-			startLoop();
+		if (wasRunning) {
+			startLoop(interval);
 		}
 	};
 
