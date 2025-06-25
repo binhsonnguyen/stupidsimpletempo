@@ -12,7 +12,7 @@
 	import DialKnob from './layers/DialKnob.svelte';
 	import { logger } from '$lib/services/logger';
 	import { metronomeStore } from '$lib/state/metronomeStore';
-	import { rotatable } from '$lib/components/dial/actions/rotatable';
+	import { rotatable } from '$lib/components/actions/rotatable';
 
 	const rotationAngle = new Tween(0, {
 		duration: 250,
