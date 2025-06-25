@@ -19,6 +19,8 @@ declare global {
 		interface HTMLAttributes<T> {
 			'onrotate'?: (event: CustomEvent<number>) => void;
 			'ondragend'?: (event: CustomEvent<void>) => void;
+			'onswipeup'?: (event: CustomEvent<void>) => void;
+			'onswipedown'?: (event: CustomEvent<void>) => void;
 		}
 	}
 }
