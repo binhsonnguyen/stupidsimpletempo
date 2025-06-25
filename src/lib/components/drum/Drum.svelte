@@ -16,6 +16,13 @@
 
 	$: divisions = divisionOptions[currentDivisionIndex];
 
+	// tương tự màu transform, nhưng đậm hơn
+	$: lineColor = $isAudioLoading
+		? 'rgba(108, 117, 125, 0.7)'
+		: $metronomeStore.isRunning
+			? 'rgba(220, 53, 69, 0.85)'
+			: 'rgba(40, 167, 69, 0.85)';
+
 	onMount(() => {
 		const sequence = get(beatSequenceStore);
 		if (sequence.head) {
@@ -58,32 +65,33 @@
 	class:on={$metronomeStore.isRunning && !$isAudioLoading}
 	class:off={!$metronomeStore.isRunning && !$isAudioLoading}
 	class:loading={$isAudioLoading}
-class:divisions-2={divisions === 2}
-class:divisions-3={divisions === 3}
-class:divisions-4={divisions === 4}
-class:divisions-6={divisions === 6}
-class:divisions-8={divisions === 8}
-aria-label={$isAudioLoading
-	? 'Loading sounds...'
-	: $metronomeStore.isRunning
+	class:divisions-2={divisions === 2}
+	class:divisions-3={divisions === 3}
+	class:divisions-4={divisions === 4}
+	class:divisions-6={divisions === 6}
+	class:divisions-8={divisions === 8}
+	style="--line-color: {lineColor};"
+	aria-label={$isAudioLoading
+		? 'Loading sounds...'
+		: $metronomeStore.isRunning
 		? 'Stop metronome'
 		: 'Start metronome'}
-disabled={$isAudioLoading}
-tabindex="-1"
+	disabled={$isAudioLoading}
+	tabindex="-1"
 >
-<div class="division-lines-container">
-	{#if divisions > 1}
-		{#each Array(divisions) as _, i (i)}
-			{@const angleOffset = divisions === 3 ? -90 : 0}
-			{@const angle = (i / divisions) * 360 + angleOffset}
-			<div
-				class="division-line"
-				style="--rotation-angle: {angle}deg;"
-				transition:fade={{ duration: 150 }}
-			></div>
-		{/each}
-	{/if}
-</div>
+	<div class="division-lines-container">
+		{#if divisions > 1}
+			{#each Array(divisions) as _, i (i)}
+				{@const angleOffset = divisions === 3 ? -90 : 0}
+				{@const angle = (i / divisions) * 360 + angleOffset}
+				<div
+					class="division-line"
+					style="--rotation-angle: {angle}deg;"
+					transition:fade={{ duration: 150 }}
+				></div>
+			{/each}
+		{/if}
+	</div>
 </button>
 
 <style>
@@ -131,12 +139,13 @@ tabindex="-1"
 
     .division-line {
         position: absolute;
-        width: 25%;
+        width: 40%;
         height: 1px;
-        background-color: rgba(248, 249, 250, 0.5);
         top: 50%;
         left: 50%;
         transform-origin: 0 50%;
         transform: rotate(var(--rotation-angle));
+        transition: background 0.3s ease;
+        background: linear-gradient(to right, var(--line-color, transparent), transparent);
     }
 </style>
