@@ -4,17 +4,29 @@
     import Footer from '$lib/components/Footer.svelte';
     import MainContentWrapper from "$lib/components/MainContentWrapper.svelte";
     import Dial from "$lib/components/dial/Dial.svelte";
+    import TimeNotationSelector from "$lib/components/time-notation-selector/TimeNotationSelector.svelte";
 </script>
 
 <Header />
 
-<!--d-flex: Biến main thành một flex container-->
-<!--align-items-center: Căn giữa các phần tử con của main theo chiều dọc (cross-axis)-->
-<!--justify-content-center: Căn giữa các phần tử con của main theo chiều ngang (main-axis).-->
 <main class="flex-grow-1 d-flex align-items-center justify-content-center">
     <MainContentWrapper>
-        <Dial/>
+        <div class="content-stack">
+            <Dial/>
+            <TimeNotationSelector />
+        </div>
     </MainContentWrapper>
 </main>
 
 <Footer />
+
+<style>
+    .content-stack {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+    }
+</style>
