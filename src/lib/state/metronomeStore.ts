@@ -9,18 +9,21 @@ export type MetronomeState = {
 	isRunning: boolean;
 	minBpm: number;
 	maxBpm: number;
+	beatsPerMeasure: number;
 };
 
 const initialState: MetronomeState = {
 	bpm: 40,
 	isRunning: false,
 	minBpm: 40,
-	maxBpm: 200
+	maxBpm: 200,
+	beatsPerMeasure: 1
 };
 
 export type MetronomeStore = {
 	subscribe: Writable<MetronomeState>['subscribe'];
 	setTempo: (newBpm: number) => void;
+	setBeatsPerMeasure: (count: number) => void;
 	toggle: () => void;
 	reset: () => void;
 };
@@ -62,8 +65,6 @@ function createMetronomeStore(): MetronomeStore {
 			}
 			beatSequenceStore.reset();
 		} else {
-			// Lên lịch cho hàm loop chạy lặp lại sau mỗi nốt đen ('4n')
-			// Tone.js sẽ tự động tính toán thời gian dựa trên BPM
 			scheduledEventId = Tone.getTransport().scheduleRepeat(loop, '4n');
 			Tone.getTransport().start();
 		}
@@ -80,6 +81,10 @@ function createMetronomeStore(): MetronomeStore {
 				const clampedBpm = Math.max(state.minBpm, Math.min(roundedBpm, state.maxBpm));
 				return { ...state, bpm: clampedBpm };
 			});
+		},
+
+		setBeatsPerMeasure: (count: number) => {
+			update((state) => ({ ...state, beatsPerMeasure: count }));
 		},
 
 		toggle,
