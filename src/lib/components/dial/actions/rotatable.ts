@@ -4,10 +4,16 @@ type RotatableOptions = {
 	rotation: number;
 };
 
+const DRAG_THRESHOLD = 2;
+
 export function rotatable(node: HTMLElement, options: RotatableOptions) {
 	let rotation = options.rotation;
 	let startAngle = 0;
 	let startRotation = 0;
+
+	let isDragging = false;
+	let startX = 0;
+	let startY = 0;
 
 	function getAngle(clientX: number, clientY: number): number {
 		const rect = node.getBoundingClientRect();
@@ -25,14 +31,31 @@ export function rotatable(node: HTMLElement, options: RotatableOptions) {
 		return { x: event.clientX, y: event.clientY };
 	}
 
+	function initiateDragOnThreshold(currentX: number, currentY: number): boolean {
+		const dx = currentX - startX;
+		const dy = currentY - startY;
+		const distance = Math.sqrt(dx * dx + dy * dy);
+
+		if (distance < DRAG_THRESHOLD) {
+			return false;
+		}
+
+		isDragging = true;
+		startAngle = getAngle(currentX, currentY);
+		return true;
+	}
+
 	function handleDragStart(event: MouseEvent | TouchEvent) {
 		if ((event.target as Element).closest('.start-stop-button')) {
 			return;
 		}
 		event.preventDefault();
 
-		const { x, y } = getEventCoordinates(event);
-		startAngle = getAngle(x, y);
+		isDragging = false;
+		const coords = getEventCoordinates(event);
+		startX = coords.x;
+		startY = coords.y;
+
 		startRotation = rotation;
 
 		window.addEventListener('mousemove', handleDragMove);
@@ -45,6 +68,11 @@ export function rotatable(node: HTMLElement, options: RotatableOptions) {
 	function handleDragMove(event: MouseEvent | TouchEvent) {
 		event.preventDefault();
 		const { x, y } = getEventCoordinates(event);
+
+		if (!isDragging && !initiateDragOnThreshold(x, y)) {
+			return;
+		}
+
 		const currentAngle = getAngle(x, y);
 		let deltaAngle = currentAngle - startAngle;
 
@@ -55,13 +83,15 @@ export function rotatable(node: HTMLElement, options: RotatableOptions) {
 	}
 
 	function handleDragEnd() {
+		if (isDragging) {
+			node.dispatchEvent(new CustomEvent('dragend'));
+		}
+
 		window.removeEventListener('mousemove', handleDragMove);
 		window.removeEventListener('mouseup', handleDragEnd);
 		window.removeEventListener('touchmove', handleDragMove);
 		window.removeEventListener('touchend', handleDragEnd);
 		window.removeEventListener('touchcancel', handleDragEnd);
-
-		node.dispatchEvent(new CustomEvent('dragend'));
 	}
 
 	node.addEventListener('mousedown', handleDragStart);
