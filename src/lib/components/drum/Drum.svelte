@@ -8,6 +8,7 @@
 	import { isAudioLoading } from '$lib/state/audioLoadingStore';
 	import { beatSequenceStore } from '$lib/state/beatSequenceStore';
 	import { volumeStore } from '$lib/state/volumeStore';
+	import { swipeable } from '$lib/components/actions/swipeable'; // 1. Import action
 
 	onMount(() => {
 		const sequence = get(beatSequenceStore);
@@ -22,10 +23,21 @@
 	function handleDrumClick() {
 		metronomeStore.toggle();
 	}
+
+	function handleSwipeUp() {
+		console.log('✅ Swipe Up Detected!');
+	}
+
+	function handleSwipeDown() {
+		console.log('✅ Swipe Down Detected!');
+	}
 </script>
 
 <button
-	on:click={handleDrumClick}
+	onclick={handleDrumClick}
+	use:swipeable
+	onswipeup={handleSwipeUp}
+	onswipedown={handleSwipeDown}
 	class="start-stop-button"
 	class:on={$metronomeStore.isRunning && !$isAudioLoading}
 	class:off={!$metronomeStore.isRunning && !$isAudioLoading}
