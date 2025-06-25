@@ -16,7 +16,7 @@
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
 		"deploy:dev": "npm run build && firebase deploy --only hosting -P dev --config firebase.dev.json",
-		"deploy:prod": "npm run build && firebase deploy --only hosting -P prod --config firebase.prod.json"
+		"deploy:prod": "npm run build && firebase deploy --only hosting --config firebase.json"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
