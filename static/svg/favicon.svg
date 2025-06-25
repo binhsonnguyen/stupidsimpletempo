@@ -1,0 +1,25 @@
+<svg width="320" height="320" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <filter id="outer-glow-effect">
+            <feGaussianBlur stdDeviation="7" />
+        </filter>
+    </defs>
+
+    <rect width="320" height="320" fill="#212529" />
+
+    <circle
+            cx="160"
+            cy="160"
+            r="60"
+            fill="#28a745"
+            fill-opacity="0.7"
+            filter="url(#outer-glow-effect)"
+    />
+
+    <circle
+            cx="160"
+            cy="160"
+            r="60"
+            fill="#212529"
+    />
+</svg>
