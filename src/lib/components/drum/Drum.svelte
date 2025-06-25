@@ -19,7 +19,7 @@
 
 	onMount(() => {
 		volumeStore.setVolume(100);
-		volumeStore.setBoostFactor(1.1);
+		volumeStore.setBoostFactor(1.2);
 	});
 
 	function beatsPerMeasureAdvance(level: number = 1) {
