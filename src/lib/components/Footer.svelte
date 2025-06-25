@@ -8,13 +8,13 @@
 </script>
 
 <footer class="mt-auto text-center bg-black bg-opacity-10 app-footer">
-		v{version} &copy;{currentYear} {author}
+	v{version} &copy;{currentYear} {author}
 </footer>
 
 <style>
-	.app-footer {
-		padding: 10px 0;
-		color: #6c757d;
-		font-size: 0.75em;
-	}
+    .app-footer {
+        padding: 10px 0;
+        color: #6c757d;
+        font-size: 0.75em;
+    }
 </style>
