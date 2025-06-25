@@ -6,14 +6,87 @@ type RotatableOptions = {
 
 const DRAG_THRESHOLD = 2;
 
+class DragStateManager {
+	private _startX: number = 0;
+	private _startY: number = 0;
+	private _isDragging: boolean = false;
+	private _hasCrossedThreshold: boolean = false;
+
+	constructor(private threshold: number) {}
+
+	private getEventCoordinates(event: MouseEvent | TouchEvent): { x: number; y: number } {
+		if ('touches' in event) {
+			return { x: event.touches[0].clientX, y: event.touches[0].clientY };
+		}
+		return { x: event.clientX, y: event.clientY };
+	}
+
+	/**
+	 * Khởi tạo trạng thái kéo khi sự kiện mousedown/touchstart xảy ra.
+	 * @param event Sự kiện chuột hoặc chạm.
+	 */
+	start(event: MouseEvent | TouchEvent): void {
+		const coords = this.getEventCoordinates(event);
+		this._startX = coords.x;
+		this._startY = coords.y;
+		this._isDragging = false;
+		this._hasCrossedThreshold = false;
+	}
+
+	/**
+	 * Cập nhật trạng thái kéo khi sự kiện mousemove/touchmove xảy ra.
+	 * Kiểm tra ngưỡng kéo và cập nhật trạng thái isDragging.
+	 * @param event Sự kiện chuột hoặc chạm.
+	 * @returns Một đối tượng chứa tọa độ hiện tại và cờ `justCrossedThreshold` (true nếu vừa vượt ngưỡng).
+	 */
+	update(event: MouseEvent | TouchEvent): { x: number; y: number; justCrossedThreshold: boolean } {
+		const coords = this.getEventCoordinates(event);
+		const currentX = coords.x;
+		const currentY = coords.y;
+		let justCrossedThreshold = false;
+
+		if (!this._hasCrossedThreshold) {
+			const dx = currentX - this._startX;
+			const dy = currentY - this._startY;
+			const distance = Math.sqrt(dx * dx + dy * dy);
+
+			if (distance >= this.threshold) {
+				this._hasCrossedThreshold = true;
+				this._isDragging = true;
+				justCrossedThreshold = true;
+			}
+		}
+
+		return {
+			x: currentX,
+			y: currentY,
+			justCrossedThreshold: justCrossedThreshold
+		};
+	}
+
+	/**
+	 * Kết thúc hành động kéo, reset trạng thái.
+	 */
+	end(): void {
+		this._isDragging = false;
+		this._hasCrossedThreshold = false;
+	}
+
+	/**
+	 * Trả về trạng thái hiện tại của việc kéo (đã vượt ngưỡng và đang kéo).
+	 */
+	get isDragging(): boolean {
+		return this._isDragging;
+	}
+}
+
+
 export function rotatable(node: HTMLElement, options: RotatableOptions) {
 	let rotation = options.rotation;
 	let startAngle = 0;
 	let startRotation = 0;
 
-	let isDragging = false;
-	let startX = 0;
-	let startY = 0;
+	const dragStateManager = new DragStateManager(DRAG_THRESHOLD);
 
 	function getAngle(clientX: number, clientY: number): number {
 		const rect = node.getBoundingClientRect();
@@ -24,38 +97,13 @@ export function rotatable(node: HTMLElement, options: RotatableOptions) {
 		return ((Math.atan2(dy, dx) * 180) / Math.PI + 90 + 360) % 360;
 	}
 
-	function getEventCoordinates(event: MouseEvent | TouchEvent): { x: number; y: number } {
-		if ('touches' in event) {
-			return { x: event.touches[0].clientX, y: event.touches[0].clientY };
-		}
-		return { x: event.clientX, y: event.clientY };
-	}
-
-	function initiateDragOnThreshold(currentX: number, currentY: number): boolean {
-		const dx = currentX - startX;
-		const dy = currentY - startY;
-		const distance = Math.sqrt(dx * dx + dy * dy);
-
-		if (distance < DRAG_THRESHOLD) {
-			return false;
-		}
-
-		isDragging = true;
-		startAngle = getAngle(currentX, currentY);
-		return true;
-	}
-
 	function handleDragStart(event: MouseEvent | TouchEvent) {
 		if ((event.target as Element).closest('.start-stop-button')) {
 			return;
 		}
 		event.preventDefault();
 
-		isDragging = false;
-		const coords = getEventCoordinates(event);
-		startX = coords.x;
-		startY = coords.y;
-
+		dragStateManager.start(event);
 		startRotation = rotation;
 
 		window.addEventListener('mousemove', handleDragMove);
@@ -67,9 +115,13 @@ export function rotatable(node: HTMLElement, options: RotatableOptions) {
 
 	function handleDragMove(event: MouseEvent | TouchEvent) {
 		event.preventDefault();
-		const { x, y } = getEventCoordinates(event);
+		const { x, y, justCrossedThreshold } = dragStateManager.update(event);
 
-		if (!isDragging && !initiateDragOnThreshold(x, y)) {
+		if (justCrossedThreshold) {
+			startAngle = getAngle(x, y);
+		}
+
+		if (!dragStateManager.isDragging) {
 			return;
 		}
 
@@ -83,9 +135,11 @@ export function rotatable(node: HTMLElement, options: RotatableOptions) {
 	}
 
 	function handleDragEnd() {
-		if (isDragging) {
+		if (dragStateManager.isDragging) {
 			node.dispatchEvent(new CustomEvent('dragend'));
 		}
+
+		dragStateManager.end();
 
 		window.removeEventListener('mousemove', handleDragMove);
 		window.removeEventListener('mouseup', handleDragEnd);
