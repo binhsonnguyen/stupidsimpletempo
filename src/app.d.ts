@@ -21,6 +21,8 @@ declare global {
 			'ondragend'?: (event: CustomEvent<void>) => void;
 			'onswipeup'?: (event: CustomEvent<void>) => void;
 			'onswipedown'?: (event: CustomEvent<void>) => void;
+			'onswipeleft'?: (event: CustomEvent<void>) => void;
+			'onswiperight'?: (event: CustomEvent<void>) => void;
 		}
 	}
 }
