@@ -2,6 +2,7 @@
 
 import { writable, type Writable } from 'svelte/store';
 import { Sound } from '$lib/audio/Sound';
+import { isAudioLoading } from './audioLoadingStore';
 
 export type BeatNode = {
 	sound: Sound;
@@ -23,21 +24,26 @@ export type BeatSequenceStore = {
 	subscribe: Writable<BeatSequenceState>['subscribe'];
 	advance: () => void;
 	reset: () => void;
-	setSequence: (beatsPerMeasure: number) => void;
+	setSequence: (beatsPerMeasure: number) => Promise<void>;
 };
 
 function createBeatSequenceStore(): BeatSequenceStore {
 	const { subscribe, update } = writable<BeatSequenceState>(initialState);
 
-	const setSequence = (beatsPerMeasure: number) => {
+	const setSequence = async (beatsPerMeasure: number) => {
+		isAudioLoading.set(true);
+
 		const accentSound = Sound.WOODBLOCK_HIGH;
 		const tickSound = Sound.WOODBLOCK;
 
 		Sound.registerForPreload(accentSound);
 		Sound.registerForPreload(tickSound);
 
+		await Sound.preloadRegisteredSounds();
+
 		if (beatsPerMeasure <= 0) {
 			update(() => ({ head: null, nextBeat: null }));
+			isAudioLoading.set(false);
 			return;
 		}
 
@@ -56,6 +62,8 @@ function createBeatSequenceStore(): BeatSequenceStore {
 			head: head,
 			nextBeat: head
 		}));
+
+		isAudioLoading.set(false);
 	};
 
 	return {
