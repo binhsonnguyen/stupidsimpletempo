@@ -8,7 +8,7 @@
 </script>
 
 <footer class="mt-auto text-center bg-black bg-opacity-10 app-footer">
-		v{version} ©{currentYear} {author}
+		v{version} &copy;{currentYear} {author}
 </footer>
 
 <style>
