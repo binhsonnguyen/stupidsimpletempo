@@ -11,13 +11,10 @@
 	import { volumeStore } from '$lib/state/volumeStore';
 	import { swipeable } from '$lib/components/actions/swipeable';
 
-	// 1. Thay đổi trạng thái để quản lý các chế độ chia
-	// Các giá trị đại diện cho số lượng đường kẻ sẽ được vẽ
-	const divisionModes = [0, 1, 2, 3, 4]; // 0: không chia, 1: chia đôi, 2: chia tư...
+	const divisionOptions = [1, 2, 3, 4, 6, 8];
 	let currentDivisionIndex = 0;
 
-	// Giá trị derived để lấy số đường kẻ hiện tại
-	$: numberOfLines = divisionModes[currentDivisionIndex];
+	$: divisions = divisionOptions[currentDivisionIndex];
 
 	onMount(() => {
 		const sequence = get(beatSequenceStore);
@@ -32,13 +29,13 @@
 		metronomeStore.toggle();
 	}
 
-	// 2. Cập nhật hàm vuốt để xoay vòng qua các chế độ
+	// Cập nhật hàm vuốt để xoay vòng qua các chế độ
 	function cycleDivisions(direction: 'up' | 'down') {
 		if (direction === 'up') {
-			currentDivisionIndex = (currentDivisionIndex + 1) % divisionModes.length;
+			currentDivisionIndex = (currentDivisionIndex + 1) % divisionOptions.length;
 		} else {
 			currentDivisionIndex =
-				(currentDivisionIndex - 1 + divisionModes.length) % divisionModes.length;
+				(currentDivisionIndex - 1 + divisionOptions.length) % divisionOptions.length;
 		}
 	}
 
@@ -52,12 +49,12 @@
 </script>
 
 <button
-	on:click={handleDrumClick}
+	onclick={handleDrumClick}
 	use:swipeable
-	on:swipeup={() => cycleDivisions('up')}
-	on:swipedown={() => cycleDivisions('down')}
-	on:swipeleft={handleSwipeLeft}
-	on:swiperight={handleSwipeRight}
+	onswipeup={() => cycleDivisions('up')}
+	onswipedown={() => cycleDivisions('down')}
+	onswipeleft={handleSwipeLeft}
+	onswiperight={handleSwipeRight}
 	class="start-stop-button"
 	class:on={$metronomeStore.isRunning && !$isAudioLoading}
 	class:off={!$metronomeStore.isRunning && !$isAudioLoading}
@@ -70,16 +67,17 @@
 	disabled={$isAudioLoading}
 	tabindex="-1"
 >
-	<!-- 3. Dùng #each để sinh ra các đường kẻ một cách linh động -->
 	<div class="division-lines-container">
-		{#each Array(numberOfLines) as _, i (i)}
-			{@const angle = (i / numberOfLines) * 180}
-			<div
-				class="division-line"
-				style="--rotation-angle: {angle}deg;"
-				transition:fade={{ duration: 150 }}
-			></div>
-		{/each}
+		{#if divisions > 1}
+			{#each Array(divisions) as _, i (i)}
+				{@const angle = (i / divisions) * 360}
+				<div
+					class="division-line"
+					style="--rotation-angle: {angle}deg;"
+					transition:fade={{ duration: 150 }}
+				></div>
+			{/each}
+		{/if}
 	</div>
 </button>
 
@@ -102,7 +100,6 @@
         align-items: center;
     }
 
-    /* ... các style cho .loading, .on, .off không đổi ... */
     .start-stop-button.loading {
         box-shadow: 0 0 15px rgba(108, 117, 125, 0.5);
         cursor: wait;
@@ -120,23 +117,21 @@
         outline: none;
     }
 
-    /* 4. Style cho container và các đường kẻ động */
     .division-lines-container {
         position: absolute;
         width: 100%;
         height: 100%;
-        pointer-events: none; /* Để không cản trở việc click vào nút */
+        pointer-events: none;
     }
 
     .division-line {
-        content: '';
         position: absolute;
-        width: 80%;
+        width: 40%;
         height: 1px;
         background-color: rgba(248, 249, 250, 0.5);
         top: 50%;
-        left: 10%;
-        transform-origin: center; /* Rất quan trọng: xoay quanh tâm */
-        transform: translateY(-50%) rotate(var(--rotation-angle));
+        left: 50%;
+        transform-origin: 0 50%;
+        transform: rotate(var(--rotation-angle));
     }
 </style>
