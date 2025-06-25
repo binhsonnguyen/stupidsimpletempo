@@ -9,7 +9,7 @@
 	import { swipeable } from '$lib/components/actions/swipeable';
 
 	const divisionOptions = [1, 2, 3, 4, 6, 8];
-	let currentDivisionIndex = 3;
+	let currentDivisionIndex = $state(0);
 	const divisions = $derived(divisionOptions[currentDivisionIndex]);
 
 	$effect(() => {
@@ -27,8 +27,10 @@
 
 	function cycleDivisions(direction: 'up' | 'down') {
 		if (direction === 'up') {
+			console.log('⬆️ Swipe Up Detected!');
 			currentDivisionIndex = (currentDivisionIndex + 1) % divisionOptions.length;
 		} else {
+			console.log('⬇️ Swipe Down Detected!');
 			currentDivisionIndex =
 				(currentDivisionIndex - 1 + divisionOptions.length) % divisionOptions.length;
 		}
