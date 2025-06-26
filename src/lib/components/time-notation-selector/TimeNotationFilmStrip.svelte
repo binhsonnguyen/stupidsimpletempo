@@ -12,6 +12,7 @@
 
 <script lang="ts">
 	import { createEventDispatcher, onMount } from 'svelte';
+	import { filmStripVisibilityStore } from '$lib/state/visibilityStore';
 
 	export let options: BeatIntervalOption[] = [];
 	export let initialValue: BeatInterval;
@@ -29,11 +30,8 @@
 	let currentIndex = 0;
 	let activeVisualIndex = 0;
 
-	// "Ranh giới cứng" - phạm vi hợp lệ cuối cùng
 	let minOffset = 0;
 	let maxOffset = 0;
-
-	// "Ranh giới mềm" - phạm vi cho phép kéo lố
 	let minClampOffset = 0;
 	let maxClampOffset = 0;
 
@@ -51,15 +49,11 @@
 		visibleWidth = viewWindowEl.clientWidth;
 
 		if (options.length > 0) {
-			// --- Logic ranh giới một phía ---
 			maxOffset = visibleWidth / 2;
 			minOffset = visibleWidth / 2 - options.length * itemTotalWidth;
-
-			// Tính toán "ranh giới mềm"
 			minClampOffset = minOffset - OVERDRAG_AMOUNT;
 			maxClampOffset = maxOffset + OVERDRAG_AMOUNT;
 
-			// Đặt vị trí ban đầu dựa trên initialValue
 			const initialIndex = options.findIndex((opt) => opt.value === initialValue);
 			if (initialIndex !== -1) {
 				currentIndex = initialIndex;
@@ -67,15 +61,16 @@
 				activeVisualIndex = currentIndex;
 			}
 		}
+
+		filmStripVisibilityStore.startHideTimer();
 	});
 
-	// Khối reactive để cập nhật vị trí nếu initialValue thay đổi từ bên ngoài
 	$: if (options.length > 0 && itemTotalWidth > 0 && !isDragging) {
 		const newIndex = options.findIndex((opt) => opt.value === initialValue);
 		if (newIndex !== -1 && newIndex !== currentIndex) {
 			currentIndex = newIndex;
 			stripOffset = getOffsetForIndex(newIndex);
-			activeVisualIndex = currentIndex; // Cập nhật activeVisualIndex khi initialValue thay đổi
+			activeVisualIndex = currentIndex;
 		}
 	}
 
@@ -88,12 +83,12 @@
 		}
 	}
 
-
 	let startX = 0;
 	let startOffset = 0;
 
 	function draggableX(node: HTMLElement) {
 		function handlePointerDown(event: PointerEvent) {
+			filmStripVisibilityStore.show();
 			isDragging = true;
 			startX = event.clientX;
 			startOffset = stripOffset;
@@ -106,8 +101,6 @@
 			if (!isDragging) return;
 			const dx = event.clientX - startX;
 			const newOffset = startOffset + dx;
-
-			// Kẹp giá trị offset trong "ranh giới mềm"
 			stripOffset = Math.max(minClampOffset, Math.min(newOffset, maxClampOffset));
 		}
 
@@ -117,15 +110,10 @@
 			window.removeEventListener('pointermove', handlePointerMove);
 			window.removeEventListener('pointerup', handlePointerUp);
 
-			// Công thức đảo ngược để tìm index của nốt nhạc gần tâm nhất
 			const potentialIndex = Math.round(
 				(visibleWidth / 2 - stripOffset - itemWidth / 2) / itemTotalWidth
 			);
-
-			// Kẹp index trong phạm vi hợp lệ của mảng
 			const newIndex = Math.max(0, Math.min(potentialIndex, options.length - 1));
-
-			// Hít dải film về vị trí căn giữa của index mới
 			stripOffset = getOffsetForIndex(newIndex);
 
 			if (currentIndex !== newIndex) {
@@ -133,6 +121,8 @@
 				const selectedValue = options[currentIndex].value;
 				dispatch('change', selectedValue);
 			}
+
+			filmStripVisibilityStore.startHideTimer();
 		}
 
 		node.addEventListener('pointerdown', handlePointerDown);
@@ -142,11 +132,18 @@
 				node.removeEventListener('pointerdown', handlePointerDown);
 				window.removeEventListener('pointermove', handlePointerMove);
 				window.removeEventListener('pointerup', handlePointerUp);
+				filmStripVisibilityStore.cancelHideTimer();
 			}
 		};
 	}
 </script>
 
+<div
+	class="film-strip-container"
+	class:hidden={!$filmStripVisibilityStore}
+	on:pointerenter={filmStripVisibilityStore.show}
+	on:pointerleave={filmStripVisibilityStore.startHideTimer}
+>
 <div class="division-line"></div>
 
 <div class="view-window" bind:this={viewWindowEl} use:draggableX>
@@ -171,12 +168,25 @@
 </div>
 
 <div class="division-line"></div>
+</div>
 
 <style>
     :root {
         --visible-width: 100px;
         --item-width: 12px;
         --gap: 20px;
+    }
+
+    .film-strip-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    .film-strip-container.hidden {
+        opacity: 0;
+        pointer-events: none;
     }
 
     .view-window {
