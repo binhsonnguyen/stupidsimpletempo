@@ -158,15 +158,15 @@
 						class="note-symbol"
 						class:active={activeVisualIndex === i}
 						class:hides-with-strip={!$filmStripVisibilityStore && currentIndex !== i}
+						class:standalone={!$filmStripVisibilityStore && currentIndex === i}
 					>
-						{#if !$filmStripVisibilityStore && currentIndex === i}
-							<span class="music-note-font">
-								{bi.symbol}
-							</span>
-						{:else}
+						<span class="label-part">
 							<!--eslint-disable-next-line svelte/no-at-html-tags-->
 							{@html bi.label}
-						{/if}
+						</span>
+						<span class="symbol-part music-note-font">
+							{bi.symbol}
+						</span>
 					</span>
 				</div>
 			{/each}
@@ -267,11 +267,35 @@
         display: inline-flex;
         justify-content: center;
         align-items: center;
+        position: relative;
     }
 
     .note-symbol.active {
         color: #ff0000;
         opacity: 1;
+    }
+
+    .label-part,
+    .symbol-part {
+        position: absolute;
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    .label-part {
+        opacity: 1;
+    }
+
+    .symbol-part {
+        opacity: 0;
+    }
+
+    .note-symbol.standalone .label-part {
+        opacity: 0;
+    }
+
+    .note-symbol.standalone .symbol-part {
+        opacity: 1;
+        transition-delay: 0.25s;
     }
 
     .music-note-font {
