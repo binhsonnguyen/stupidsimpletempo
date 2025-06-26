@@ -205,8 +205,6 @@
         align-items: center;
         overflow: hidden;
         cursor: grab;
-        user-select: none;
-        -webkit-user-select: none;
         position: relative;
     }
 

@@ -23,6 +23,11 @@
 <Footer />
 
 <style>
+    main {
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
     .content-stack {
         display: flex;
         flex-direction: column;
