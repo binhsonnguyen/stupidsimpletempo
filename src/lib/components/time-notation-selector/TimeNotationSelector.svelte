@@ -1,10 +1,7 @@
 <!-- src/lib/components/time-notation-selector/TimeNotationSelector.svelte -->
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { metronomeStore, type BeatInterval } from '$lib/state/metronomeStore';
-	import { swipeable } from '$lib/components/actions/swipeable';
-	import { slide } from 'svelte/transition';
-
-	let isVisible = true;
 
 	type BeatIntervalOption = {
 		label: string;
@@ -13,53 +10,103 @@
 	};
 
 	const BEAT_INTERVAL_OPTIONS: BeatIntervalOption[] = [
+		{ label: '1', value: '1m', description: 'Whole Note (Nốt tròn)' },
 		{ label: '2', value: '2n', description: 'Half Note (Nốt trắng)' },
 		{ label: '4', value: '4n', description: 'Quarter Note (Nốt đen)' },
-		{ label: '8', value: '8n', description: 'Eighth Note (Nốt móc đơn)' }
+		{ label: '8', value: '8n', description: 'Eighth Note (Nốt móc đơn)' },
+		{ label: '16', value: '16n', description: 'Sixteenth Note (Nốt móc kép)' },
+		{ label: '8³', value: '8t', description: 'Eighth Triplet (Chùm ba nốt móc đơn)' }
 	];
 
-	function handleSelect(value: BeatInterval) {
-		metronomeStore.setBeatInterval(value);
-	}
+	// Các hằng số cho việc tính toán layout
+	const ITEM_WIDTH = 50; // Chiều rộng của mỗi lựa chọn
+	const GAP = 20; // Khoảng cách giữa các lựa chọn
+	const ITEM_TOTAL_WIDTH = ITEM_WIDTH + GAP;
 
-	function handleKeyPress(event: KeyboardEvent, value: BeatInterval) {
-		if (event.key === 'Enter' || event.key === ' ') {
-			handleSelect(value);
+	// Trạng thái của component
+	let stripOffset = 0; // Vị trí hiện tại của dải số
+	let currentIndex = 0; // Chỉ số của lựa chọn ở trung tâm
+	let isDragging = false; // Người dùng có đang kéo không?
+
+	// --- Logic & Vòng đời ---
+
+	// Khi component được tạo, tìm và đặt vị trí ban đầu dựa trên store
+	onMount(() => {
+		const initialIndex = BEAT_INTERVAL_OPTIONS.findIndex(
+			(opt) => opt.value === $metronomeStore.beatInterval
+		);
+		if (initialIndex !== -1) {
+			currentIndex = initialIndex;
+			stripOffset = -initialIndex * ITEM_TOTAL_WIDTH;
 		}
-	}
+	});
 
-	function toggleVisibility() {
-		isVisible = !isVisible;
+	// --- Logic Kéo-Thả (Custom Action) ---
+
+	let startX = 0;
+	let startOffset = 0;
+
+	function draggableX(node: HTMLElement) {
+		function handlePointerDown(event: PointerEvent) {
+			isDragging = true;
+			startX = event.clientX;
+			startOffset = stripOffset;
+			node.setPointerCapture(event.pointerId);
+			window.addEventListener('pointermove', handlePointerMove);
+			window.addEventListener('pointerup', handlePointerUp);
+		}
+
+		function handlePointerMove(event: PointerEvent) {
+			const dx = event.clientX - startX;
+			stripOffset = startOffset + dx;
+		}
+
+		function handlePointerUp() {
+			isDragging = false;
+			window.removeEventListener('pointermove', handlePointerMove);
+			window.removeEventListener('pointerup', handlePointerUp);
+
+			// Tính toán và "bắt dính" vào lựa chọn gần nhất
+			const closestIndex = Math.round(-stripOffset / ITEM_TOTAL_WIDTH);
+			currentIndex = Math.max(0, Math.min(closestIndex, BEAT_INTERVAL_OPTIONS.length - 1));
+
+			// Cập nhật vị trí và store
+			stripOffset = -currentIndex * ITEM_TOTAL_WIDTH;
+			const selectedValue = BEAT_INTERVAL_OPTIONS[currentIndex].value;
+			metronomeStore.setBeatInterval(selectedValue);
+		}
+
+		node.addEventListener('pointerdown', handlePointerDown);
+
+		return {
+			destroy() {
+				node.removeEventListener('pointerdown', handlePointerDown);
+			}
+		};
 	}
 </script>
 
-<div
-	class="notation-wrapper"
-	use:swipeable
-	onswipeup={toggleVisibility}
-	onswipedown={toggleVisibility}
->
-	{#if isVisible}
-		<div class="selector-content" transition:slide|local={{ duration: 250 }}>
-			<div class="division-line" />
-			<div class="time-notation-selector-container">
-				{#each BEAT_INTERVAL_OPTIONS as bu (bu.value)}
-					<span
-						class="note-symbol"
-						class:active={$metronomeStore.beatInterval === bu.value}
-						onclick={() => handleSelect(bu.value)}
-						onkeypress={(e) => handleKeyPress(e, bu.value)}
-						role="button"
-						tabindex="0"
-						title={bu.description}
-					>
-						{bu.label}
+<div class="notation-wrapper">
+	<div class="division-line" />
+
+	<div class="view-window">
+		<div
+			class="number-strip"
+			use:draggableX
+			style:--offset="{stripOffset}px"
+			class:is-dragging={isDragging}
+		>
+			{#each BEAT_INTERVAL_OPTIONS as bu, i (bu.value)}
+				<div class="note-symbol-wrapper">
+					<span class="note-symbol" class:active={currentIndex === i}>
+						{@html bu.label}
 					</span>
-				{/each}
-			</div>
-			<div class="division-line" />
+				</div>
+			{/each}
 		</div>
-	{/if}
+	</div>
+
+	<div class="division-line" />
 </div>
 
 <style>
@@ -67,46 +114,64 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 10px 0;
-        min-height: 30px;
+        width: 100%;
     }
 
-    .selector-content {
+    .view-window {
+        width: 100%;
+        height: 30px;
         display: flex;
-        flex-direction: column;
+        justify-content: center;
         align-items: center;
+        overflow: hidden;
+        cursor: grab;
+    }
+
+    .view-window:active {
+        cursor: grabbing;
+    }
+
+    .number-strip {
+        display: flex;
+        gap: var(--gap, 20px);
+        position: relative;
+        transform: translateX(calc(var(--offset) + (100% - var(--item-width, 50px)) / 2));
+        transition: transform 0.25s ease-out;
+        will-change: transform;
+    }
+
+    .number-strip.is-dragging {
+        transition: none;
+    }
+
+    .note-symbol-wrapper {
+        width: var(--item-width, 25px);
+        flex-shrink: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .note-symbol {
+        font-size: 1em;
+        font-weight: bold;
+        color: #6c757d;
+        transition: color 0.2s ease,
+        transform 0.2s ease,
+        opacity 0.2s ease;
+        opacity: 0.5;
+        transform: scale(0.8);
+    }
+
+    .note-symbol.active {
+        color: #f8f9fa;
+        opacity: 1;
+        transform: scale(1.15);
     }
 
     .division-line {
         width: 100px;
         height: 1px;
         background-color: #6c757d;
-    }
-
-    .time-notation-selector-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 20px;
-        margin: 8px 0;
-    }
-
-    .note-symbol {
-        font-size: 1em;
-        font-weight: bold;
-        cursor: pointer;
-        color: #6c757d;
-        transition: color 0.2s ease,
-        transform 0.2s ease;
-    }
-
-    .note-symbol:hover {
-        color: #f8f9fa;
-        transform: scale(1.1);
-    }
-
-    .note-symbol.active {
-        color: #f8f9fa;
-        transform: scale(1.15);
     }
 </style>
