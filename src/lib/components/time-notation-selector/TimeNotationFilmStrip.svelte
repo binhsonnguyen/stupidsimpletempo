@@ -138,15 +138,15 @@
 <div class="division-line"></div>
 
 <div class="view-window" bind:this={viewWindowEl} use:draggableX>
+	<div class="center-marker-top"></div>
+
 	<div
 		class="number-strip"
 		style:--offset="{stripOffset}px"
 		class:is-dragging={isDragging}
 	>
-		<!-- Thay đổi ở đây: Thêm `i` để lấy index -->
 		{#each options as bi, i (bi.value)}
 			<div class="note-symbol-wrapper">
-				<!-- Thay đổi ở đây: Thêm `class:active` -->
 				<span class="note-symbol" class:active={currentIndex === i}>
 					<!--eslint-disable-next-line svelte/no-at-html-tags-->
 					{@html bi.label}
@@ -154,6 +154,8 @@
 			</div>
 		{/each}
 	</div>
+
+	<div class="center-marker-bottom"></div>
 </div>
 
 <div class="division-line"></div>
@@ -174,10 +176,33 @@
         cursor: grab;
         user-select: none;
         -webkit-user-select: none;
+        position: relative;
     }
 
     .view-window:active {
         cursor: grabbing;
+    }
+
+    .center-marker-top,
+    .center-marker-bottom {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 3px solid transparent;
+        border-right: 3px solid transparent;
+        z-index: 2;
+    }
+
+    .center-marker-top {
+        border-top: 5px solid #dee2e6;
+        top: 2px;
+    }
+
+    .center-marker-bottom {
+        border-bottom: 5px solid #dee2e6;
+        bottom: 2px;
     }
 
     .number-strip {
@@ -188,6 +213,7 @@
         transition: transform 0.25s ease-out;
         will-change: transform;
         pointer-events: none;
+        z-index: 1;
     }
 
     .number-strip.is-dragging {
