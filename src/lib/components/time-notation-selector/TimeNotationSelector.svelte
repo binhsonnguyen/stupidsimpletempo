@@ -5,7 +5,7 @@
 	import type { BeatIntervalOption } from './TimeNotationFilmStrip.svelte';
 
 	const BEAT_INTERVAL_OPTIONS: BeatIntervalOption[] = [
-		{ label: '𝅝', value: '1m', description: 'Whole Note (Nốt tròn)', symbol: '𝅝' },
+		{ label: '⚬', value: '1m', description: 'Whole Note (Nốt tròn)', symbol: '⚬' },
 		{ label: '½', value: '2n', description: 'Half Note (Nốt trắng)', symbol: '𝅗𝅥' },
 		{ label: '¼', value: '4n', description: 'Quarter Note (Nốt đen)', symbol: '𝅘𝅥' },
 		{ label: '⅛', value: '8n', description: 'Eighth Note (Nốt móc đơn)', symbol: '𝅘𝅥𝅮' },
