@@ -30,14 +30,10 @@
         justify-content: center;
         width: 100%;
         height: 100%;
-        position: relative;
     }
 
     .notation-container {
-        position: absolute;
-        bottom: -40px;
-        left: 50%;
-        transform: translateX(-50%);
         width: 100%;
+        margin-top: 40px;
     }
 </style>
