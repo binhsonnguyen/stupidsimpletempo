@@ -11,15 +11,11 @@
 </script>
 
 <script lang="ts">
-	import { onMount, createEventDispatcher } from 'svelte';
+	import { onMount } from 'svelte';
 
 	export let options: BeatIntervalOption[] = [];
-	export let initialValue: BeatInterval;
-
-	const dispatch = createEventDispatcher<{ change: BeatInterval }>();
 
 	let stripOffset = 0;
-	let currentIndex = 0;
 	let isDragging = false;
 	let viewWindowEl: HTMLElement;
 	let itemTotalWidth = 70;
@@ -29,12 +25,6 @@
 		const itemWidth = parseFloat(styles.getPropertyValue('--item-width'));
 		const gap = parseFloat(styles.getPropertyValue('--gap'));
 		itemTotalWidth = itemWidth + gap;
-
-		const initialIndex = options.findIndex((opt) => opt.value === initialValue);
-		if (initialIndex !== -1) {
-			currentIndex = initialIndex;
-			stripOffset = -initialIndex * itemTotalWidth;
-		}
 	});
 
 	let startX = 0;
@@ -59,17 +49,6 @@
 			isDragging = false;
 			window.removeEventListener('pointermove', handlePointerMove);
 			window.removeEventListener('pointerup', handlePointerUp);
-
-			const closestIndex = Math.round(-stripOffset / itemTotalWidth);
-			const newIndex = Math.max(0, Math.min(closestIndex, options.length - 1));
-
-			stripOffset = -newIndex * itemTotalWidth;
-
-			if (currentIndex !== newIndex) {
-				currentIndex = newIndex;
-				const selectedValue = options[currentIndex].value;
-				dispatch('change', selectedValue);
-			}
 		}
 
 		node.addEventListener('pointerdown', handlePointerDown);
@@ -91,10 +70,10 @@
 		style:--offset="{stripOffset}px"
 		class:is-dragging={isDragging}
 	>
-		{#each options as bu, i (bu.value)}
+		{#each options as bi (bi.value)}
 			<div class="note-symbol-wrapper">
-				<span class="note-symbol" class:active={currentIndex === i}>
-					{@html bu.label}
+				<span class="note-symbol">
+					{@html bi.label}
 				</span>
 			</div>
 		{/each}
@@ -147,16 +126,8 @@
         font-size: 1em;
         font-weight: bold;
         color: #6c757d;
-        transition: color 0.2s ease,
-        transform 0.2s ease,
-        opacity 0.2s ease;
+        transition: transform 0.2s ease, opacity 0.2s ease;
         opacity: 0.5;
         transform: scale(0.8);
-    }
-
-    .note-symbol.active {
-        color: #f8f9fa;
-        opacity: 1;
-        transform: scale(1.15);
     }
 </style>
