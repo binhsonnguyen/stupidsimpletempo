@@ -170,20 +170,18 @@
 </div>
 
 <style>
-    :root {
+    .film-strip-container {
         --visible-width: 100px;
         --item-width: 12px;
         --gap: 20px;
-    }
 
-    .film-strip-container {
         display: flex;
         flex-direction: column;
         align-items: center;
     }
 
     .film-strip-container.hidden {
-        pointer-events: none;
+        /* No styles needed here anymore for this logic */
     }
 
     .view-window {
