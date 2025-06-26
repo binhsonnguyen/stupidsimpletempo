@@ -16,5 +16,7 @@
         padding: 10px 0;
         color: #6c757d;
         font-size: 0.75em;
+        user-select: text;
+        -webkit-user-select: text;
     }
 </style>
