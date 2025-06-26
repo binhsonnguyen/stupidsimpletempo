@@ -18,7 +18,7 @@
 	let stripOffset = 0;
 	let isDragging = false;
 	let viewWindowEl: HTMLElement;
-	let itemTotalWidth = 70;
+	let itemTotalWidth = 70; // Giá trị mặc định, sẽ được tính toán lại
 
 	onMount(() => {
 		const styles = getComputedStyle(viewWindowEl);
@@ -95,6 +95,8 @@
         align-items: center;
         overflow: hidden;
         cursor: grab;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     .view-window:active {
