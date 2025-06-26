@@ -61,12 +61,15 @@
 			window.removeEventListener('pointerup', handlePointerUp);
 
 			const closestIndex = Math.round(-stripOffset / itemTotalWidth);
-			currentIndex = Math.max(0, Math.min(closestIndex, options.length - 1));
+			const newIndex = Math.max(0, Math.min(closestIndex, options.length - 1));
 
-			stripOffset = -currentIndex * itemTotalWidth;
-			const selectedValue = options[currentIndex].value;
+			stripOffset = -newIndex * itemTotalWidth;
 
-			dispatch('change', selectedValue);
+			if (currentIndex !== newIndex) {
+				currentIndex = newIndex;
+				const selectedValue = options[currentIndex].value;
+				dispatch('change', selectedValue);
+			}
 		}
 
 		node.addEventListener('pointerdown', handlePointerDown);
