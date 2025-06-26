@@ -135,6 +135,8 @@
 	}
 </script>
 
+<div class="division-line"></div>
+
 <div class="view-window" bind:this={viewWindowEl} use:draggableX>
 	<div
 		class="number-strip"
@@ -153,6 +155,8 @@
 		{/each}
 	</div>
 </div>
+
+<div class="division-line"></div>
 
 <style>
     :root {
@@ -212,5 +216,12 @@
     .note-symbol.active {
         color: #ff0000;
         opacity: 1;
+    }
+
+    .division-line {
+        --visible-width: 100px;
+        width: var(--visible-width);
+        height: 1px;
+        background-color: #6c757d;
     }
 </style>

@@ -19,15 +19,11 @@
 </script>
 
 <div class="notation-wrapper">
-	<div class="division-line"></div>
-
 	<TimeNotationFilmStrip
 		options={BEAT_INTERVAL_OPTIONS}
 		initialValue={$metronomeStore.beatInterval}
 		on:change={handleSelectionChange}
 	/>
-
-	<div class="division-line"></div>
 </div>
 
 <style>
@@ -36,12 +32,5 @@
         flex-direction: column;
         align-items: center;
         width: 100%;
-    }
-
-    .division-line {
-        --visible-width: 100px;
-        width: var(--visible-width);
-        height: 1px;
-        background-color: #6c757d;
     }
 </style>
