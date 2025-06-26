@@ -229,14 +229,13 @@
     }
 
     .note-symbol {
-        font-size: 1em;
+        font-size: 0.8em;
         font-weight: bold;
         color: #6c757d;
         transition: color 0.2s ease,
         transform 0.2s ease,
         opacity 0.2s ease;
         opacity: 0.5;
-        transform: scale(0.8);
     }
 
     .note-symbol.active {
