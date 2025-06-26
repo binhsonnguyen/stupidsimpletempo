@@ -63,10 +63,9 @@
 	}
 </script>
 
-<div class="view-window" bind:this={viewWindowEl}>
+<div class="view-window" bind:this={viewWindowEl} use:draggableX>
 	<div
 		class="number-strip"
-		use:draggableX
 		style:--offset="{stripOffset}px"
 		class:is-dragging={isDragging}
 	>
@@ -110,6 +109,7 @@
         transform: translateX(calc(var(--offset) + (var(--visible-width) - var(--item-width)) / 2));
         transition: transform 0.25s ease-out;
         will-change: transform;
+        pointer-events: none;
     }
 
     .number-strip.is-dragging {
