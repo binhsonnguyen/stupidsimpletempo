@@ -8,6 +8,7 @@ export type BeatNode = {
 	sound: Sound;
 	durationInBeats: number;
 	next: BeatNode | null;
+	index: number;
 };
 
 export type BeatSequenceState = {
@@ -47,11 +48,11 @@ function createBeatSequenceStore(): BeatSequenceStore {
 			return;
 		}
 
-		const head: BeatNode = { sound: accentSound, durationInBeats: 1, next: null };
+		const head: BeatNode = { sound: accentSound, durationInBeats: 1, next: null, index: 0 };
 		let currentNode = head;
 
 		for (let i = 1; i < beatsPerMeasure; i++) {
-			const nextNode: BeatNode = { sound: tickSound, durationInBeats: 1, next: null };
+			const nextNode: BeatNode = { sound: tickSound, durationInBeats: 1, next: null, index: i };
 			currentNode.next = nextNode;
 			currentNode = nextNode;
 		}
