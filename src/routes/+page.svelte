@@ -35,7 +35,7 @@
 
     .notation-container {
         position: absolute;
-        bottom: -50px;
+        bottom: -40px;
         left: 50%;
         transform: translateX(-50%);
         width: 100%;

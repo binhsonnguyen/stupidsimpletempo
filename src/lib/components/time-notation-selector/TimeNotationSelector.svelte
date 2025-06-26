@@ -110,6 +110,12 @@
 </div>
 
 <style>
+    :root {
+        --visible-width: 100px;
+        --item-width: 20px;
+        --gap: 20px;
+    }
+
     .notation-wrapper {
         display: flex;
         flex-direction: column;
@@ -118,7 +124,7 @@
     }
 
     .view-window {
-        width: 100%;
+        width: var(--visible-width);
         height: 30px;
         display: flex;
         justify-content: center;
@@ -133,9 +139,9 @@
 
     .number-strip {
         display: flex;
-        gap: var(--gap, 20px);
+        gap: var(--gap);
         position: relative;
-        transform: translateX(calc(var(--offset) + (100% - var(--item-width, 50px)) / 2));
+        transform: translateX(calc(var(--offset) + (var(--visible-width) - var(--item-width)) / 2));
         transition: transform 0.25s ease-out;
         will-change: transform;
     }
@@ -145,7 +151,7 @@
     }
 
     .note-symbol-wrapper {
-        width: var(--item-width, 25px);
+        width: var(--item-width);
         flex-shrink: 0;
         display: flex;
         justify-content: center;
@@ -170,7 +176,7 @@
     }
 
     .division-line {
-        width: 100px;
+        width: var(--visible-width);
         height: 1px;
         background-color: #6c757d;
     }
