@@ -11,9 +11,12 @@
 </script>
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 
 	export let options: BeatIntervalOption[] = [];
+	export let initialValue: BeatInterval;
+
+	const dispatch = createEventDispatcher<{ change: BeatInterval }>();
 
 	const OVERDRAG_AMOUNT = 10; // px
 
@@ -23,6 +26,7 @@
 	let itemTotalWidth = 0;
 	let visibleWidth = 0;
 	let itemWidth = 0;
+	let currentIndex = 0;
 
 	// "Ranh giới cứng" - phạm vi hợp lệ cuối cùng
 	let minOffset = 0;
@@ -47,19 +51,30 @@
 
 		if (options.length > 0) {
 			// --- Logic ranh giới một phía ---
-			// Ranh giới phải: Cạnh trái của nốt đầu tiên không vượt qua tâm view-window.
 			maxOffset = visibleWidth / 2;
-			// Ranh giới trái: Cạnh phải của nốt cuối cùng không lùi qua tâm view-window.
 			minOffset = visibleWidth / 2 - options.length * itemTotalWidth;
 
-			// Tính toán "ranh giới mềm" cho hiệu ứng kéo lố
+			// Tính toán "ranh giới mềm"
 			minClampOffset = minOffset - OVERDRAG_AMOUNT;
 			maxClampOffset = maxOffset + OVERDRAG_AMOUNT;
 
-			// Đặt vị trí ban đầu: căn giữa nốt nhạc đầu tiên
-			stripOffset = getOffsetForIndex(0);
+			// Đặt vị trí ban đầu dựa trên initialValue
+			const initialIndex = options.findIndex((opt) => opt.value === initialValue);
+			if (initialIndex !== -1) {
+				currentIndex = initialIndex;
+				stripOffset = getOffsetForIndex(currentIndex);
+			}
 		}
 	});
+
+	// Khối reactive để cập nhật vị trí nếu initialValue thay đổi từ bên ngoài
+	$: if (options.length > 0 && itemTotalWidth > 0 && !isDragging) {
+		const newIndex = options.findIndex((opt) => opt.value === initialValue);
+		if (newIndex !== -1 && newIndex !== currentIndex) {
+			currentIndex = newIndex;
+			stripOffset = getOffsetForIndex(newIndex);
+		}
+	}
 
 	let startX = 0;
 	let startOffset = 0;
@@ -89,7 +104,7 @@
 			window.removeEventListener('pointermove', handlePointerMove);
 			window.removeEventListener('pointerup', handlePointerUp);
 
-			// Công thức đảo ngược để tìm index từ stripOffset
+			// Công thức đảo ngược để tìm index của nốt nhạc gần tâm nhất
 			const potentialIndex = Math.round(
 				(visibleWidth / 2 - stripOffset - itemWidth / 2) / itemTotalWidth
 			);
@@ -99,6 +114,13 @@
 
 			// Hít dải film về vị trí căn giữa của index mới
 			stripOffset = getOffsetForIndex(newIndex);
+
+			// Chỉ cập nhật và thông báo ra ngoài nếu lựa chọn thực sự thay đổi
+			if (currentIndex !== newIndex) {
+				currentIndex = newIndex;
+				const selectedValue = options[currentIndex].value;
+				dispatch('change', selectedValue);
+			}
 		}
 
 		node.addEventListener('pointerdown', handlePointerDown);
