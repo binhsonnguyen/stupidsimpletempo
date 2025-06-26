@@ -232,9 +232,7 @@
         font-size: 0.8em;
         font-weight: bold;
         color: #6c757d;
-        transition: color 0.2s ease,
-        transform 0.2s ease,
-        opacity 0.2s ease;
+        transition: color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
         opacity: 0.5;
     }
 
@@ -244,7 +242,6 @@
     }
 
     .division-line {
-        --visible-width: 100px;
         width: var(--visible-width);
         height: 1px;
         background-color: #6c757d;
