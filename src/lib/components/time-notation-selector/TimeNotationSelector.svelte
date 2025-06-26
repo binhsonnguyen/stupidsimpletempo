@@ -57,6 +57,7 @@
 					</span>
 				{/each}
 			</div>
+			<div class="division-line" />
 		</div>
 	{/if}
 </div>
@@ -80,7 +81,6 @@
         width: 100px;
         height: 1px;
         background-color: #6c757d;
-        margin-bottom: 8px;
     }
 
     .time-notation-selector-container {
@@ -88,6 +88,7 @@
         justify-content: center;
         align-items: center;
         gap: 20px;
+        margin: 8px 0;
     }
 
     .note-symbol {
@@ -95,7 +96,8 @@
         font-weight: bold;
         cursor: pointer;
         color: #6c757d;
-        transition: color 0.2s ease, transform 0.2s ease;
+        transition: color 0.2s ease,
+        transform 0.2s ease;
     }
 
     .note-symbol:hover {
