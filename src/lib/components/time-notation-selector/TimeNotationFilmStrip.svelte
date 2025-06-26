@@ -177,13 +177,6 @@
 </div>
 
 <style>
-    @font-face {
-        font-family: 'NoteMusicFont';
-        src: url('/fonts/NoteMusic.woff2') format('woff2');
-        font-weight: normal;
-        font-style: normal;
-    }
-
     .film-strip-container {
         --visible-width: 100px;
         --item-width: 12px;
@@ -282,7 +275,7 @@
     }
 
     .music-note-font {
-        font-family: 'NoteMusicFont', sans-serif;
+        font-family: 'Noto Music', sans-serif;
         font-size: 1.8em;
         line-height: 1;
     }
