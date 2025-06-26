@@ -18,31 +18,29 @@
 		{ label: '8³', value: '8t', description: 'Eighth Triplet (Chùm ba nốt móc đơn)' }
 	];
 
-	// Các hằng số cho việc tính toán layout
-	const ITEM_WIDTH = 50; // Chiều rộng của mỗi lựa chọn
-	const GAP = 20; // Khoảng cách giữa các lựa chọn
-	const ITEM_TOTAL_WIDTH = ITEM_WIDTH + GAP;
+	let stripOffset = 0;
+	let currentIndex = 0;
+	let isDragging = false;
+	let viewWindowEl: HTMLElement; // Tham chiếu đến DOM element của "cửa sổ xem"
 
-	// Trạng thái của component
-	let stripOffset = 0; // Vị trí hiện tại của dải số
-	let currentIndex = 0; // Chỉ số của lựa chọn ở trung tâm
-	let isDragging = false; // Người dùng có đang kéo không?
+	let itemTotalWidth = 70; // Giá trị mặc định, sẽ được cập nhật trong onMount
 
-	// --- Logic & Vòng đời ---
-
-	// Khi component được tạo, tìm và đặt vị trí ban đầu dựa trên store
 	onMount(() => {
+		const styles = getComputedStyle(viewWindowEl);
+		const itemWidth = parseFloat(styles.getPropertyValue('--item-width'));
+		const gap = parseFloat(styles.getPropertyValue('--gap'));
+		itemTotalWidth = itemWidth + gap;
+
 		const initialIndex = BEAT_INTERVAL_OPTIONS.findIndex(
 			(opt) => opt.value === $metronomeStore.beatInterval
 		);
 		if (initialIndex !== -1) {
 			currentIndex = initialIndex;
-			stripOffset = -initialIndex * ITEM_TOTAL_WIDTH;
+			stripOffset = -initialIndex * itemTotalWidth;
 		}
 	});
 
 	// --- Logic Kéo-Thả (Custom Action) ---
-
 	let startX = 0;
 	let startOffset = 0;
 
@@ -66,12 +64,10 @@
 			window.removeEventListener('pointermove', handlePointerMove);
 			window.removeEventListener('pointerup', handlePointerUp);
 
-			// Tính toán và "bắt dính" vào lựa chọn gần nhất
-			const closestIndex = Math.round(-stripOffset / ITEM_TOTAL_WIDTH);
+			const closestIndex = Math.round(-stripOffset / itemTotalWidth);
 			currentIndex = Math.max(0, Math.min(closestIndex, BEAT_INTERVAL_OPTIONS.length - 1));
 
-			// Cập nhật vị trí và store
-			stripOffset = -currentIndex * ITEM_TOTAL_WIDTH;
+			stripOffset = -currentIndex * itemTotalWidth;
 			const selectedValue = BEAT_INTERVAL_OPTIONS[currentIndex].value;
 			metronomeStore.setBeatInterval(selectedValue);
 		}
@@ -81,15 +77,17 @@
 		return {
 			destroy() {
 				node.removeEventListener('pointerdown', handlePointerDown);
+				window.removeEventListener('pointermove', handlePointerMove);
+				window.removeEventListener('pointerup', handlePointerUp);
 			}
 		};
 	}
 </script>
 
 <div class="notation-wrapper">
-	<div class="division-line" />
+	<div class="division-line"></div>
 
-	<div class="view-window">
+	<div class="view-window" bind:this={viewWindowEl}>
 		<div
 			class="number-strip"
 			use:draggableX
@@ -106,7 +104,7 @@
 		</div>
 	</div>
 
-	<div class="division-line" />
+	<div class="division-line"></div>
 </div>
 
 <style>
