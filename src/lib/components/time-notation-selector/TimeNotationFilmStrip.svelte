@@ -145,11 +145,11 @@
 	on:pointerenter={filmStripVisibilityStore.show}
 	on:pointerleave={filmStripVisibilityStore.startHideTimer}
 >
-	<div class="division-line" class:hides-with-strip={!$filmStripVisibilityStore}></div>
+	<div class="division-line" class:is-faded-out={!$filmStripVisibilityStore}></div>
 
 	<div class="view-window" bind:this={viewWindowEl} use:draggableX>
-		<div class="center-marker-top" class:hides-with-strip={!$filmStripVisibilityStore}></div>
-		<div class="center-marker-bottom" class:hides-with-strip={!$filmStripVisibilityStore}></div>
+		<div class="center-marker-top" class:is-faded-out={!$filmStripVisibilityStore}></div>
+		<div class="center-marker-bottom" class:is-faded-out={!$filmStripVisibilityStore}></div>
 
 		<div class="number-strip" style:--offset="{stripOffset}px" class:is-dragging={isDragging}>
 			{#each options as bi, i (bi.value)}
@@ -157,14 +157,14 @@
 					<span
 						class="note-symbol"
 						class:active={activeVisualIndex === i}
-						class:hides-with-strip={!$filmStripVisibilityStore && currentIndex !== i}
+						class:is-faded-out={!$filmStripVisibilityStore && currentIndex !== i}
 						class:standalone={!$filmStripVisibilityStore && currentIndex === i}
 					>
-						<span class="label-part">
+					<span class="label-part">
 							<!--eslint-disable-next-line svelte/no-at-html-tags-->
-							{@html bi.label}
+						{@html bi.label}
 						</span>
-						<span class="symbol-part music-note-font">
+					<span class="symbol-part music-note-font">
 							{bi.symbol}
 						</span>
 					</span>
@@ -173,7 +173,7 @@
 		</div>
 	</div>
 
-	<div class="division-line" class:hides-with-strip={!$filmStripVisibilityStore}></div>
+	<div class="division-line" class:is-faded-out={!$filmStripVisibilityStore}></div>
 </div>
 
 <style>
@@ -181,6 +181,9 @@
         --visible-width: 100px;
         --item-width: 12px;
         --gap: 20px;
+
+        --transition-duration: 0.3s;
+        --transition-delay-symbol-reveal: 0.25s;
 
         display: flex;
         flex-direction: column;
@@ -210,7 +213,7 @@
     .center-marker-top,
     .center-marker-bottom,
     .division-line {
-        transition: opacity 0.3s ease-in-out;
+        transition: opacity var(--transition-duration) ease-in-out;
     }
 
     .center-marker-top,
@@ -262,7 +265,7 @@
         font-size: 0.8em;
         font-weight: bold;
         color: #6c757d;
-        transition: color 0.2s ease, opacity 0.2s ease;
+        transition: color 0.2s ease, opacity var(--transition-duration) ease;
         opacity: 0.5;
         display: inline-flex;
         justify-content: center;
@@ -278,7 +281,7 @@
     .label-part,
     .symbol-part {
         position: absolute;
-        transition: opacity 0.3s ease-in-out;
+        transition: opacity var(--transition-duration) ease-in-out;
     }
 
     .label-part {
@@ -295,7 +298,7 @@
 
     .note-symbol.standalone .symbol-part {
         opacity: 1;
-        transition-delay: 0.25s;
+        transition-delay: var(--transition-delay-symbol-reveal);
     }
 
     .music-note-font {
@@ -310,7 +313,7 @@
         background-color: #6c757d;
     }
 
-    .hides-with-strip {
+    .is-faded-out {
         opacity: 0;
     }
 </style>
