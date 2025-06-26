@@ -23,7 +23,6 @@ function createVisibilityStore() {
 		show: () => {
 			cancelHideTimer();
 			set(true);
-			startHideTimer();
 		},
 		startHideTimer,
 		cancelHideTimer

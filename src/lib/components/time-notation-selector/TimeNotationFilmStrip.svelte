@@ -143,7 +143,11 @@
 	class="film-strip-container"
 	class:hidden={!$filmStripVisibilityStore}
 	on:pointerenter={filmStripVisibilityStore.show}
-	on:pointerleave={filmStripVisibilityStore.startHideTimer}
+	on:pointerleave={() => {
+	if (!isDragging) {
+		filmStripVisibilityStore.startHideTimer();
+	}
+}}
 >
 	<div class="division-line" class:is-faded-out={!$filmStripVisibilityStore}></div>
 
