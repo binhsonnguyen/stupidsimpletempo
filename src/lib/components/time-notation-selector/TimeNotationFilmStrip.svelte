@@ -141,9 +141,11 @@
 		style:--offset="{stripOffset}px"
 		class:is-dragging={isDragging}
 	>
-		{#each options as bi (bi.value)}
+		<!-- Thay đổi ở đây: Thêm `i` để lấy index -->
+		{#each options as bi, i (bi.value)}
 			<div class="note-symbol-wrapper">
-				<span class="note-symbol">
+				<!-- Thay đổi ở đây: Thêm `class:active` -->
+				<span class="note-symbol" class:active={currentIndex === i}>
 					<!--eslint-disable-next-line svelte/no-at-html-tags-->
 					{@html bi.label}
 				</span>
@@ -205,5 +207,10 @@
         opacity 0.2s ease;
         opacity: 0.5;
         transform: scale(0.8);
+    }
+
+    .note-symbol.active {
+        color: #ff0000;
+        opacity: 1;
     }
 </style>
