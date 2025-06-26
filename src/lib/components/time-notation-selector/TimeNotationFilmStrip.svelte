@@ -5,6 +5,7 @@
 
 	export type BeatIntervalOption = {
 		label: string;
+		symbol: string;
 		value: BeatInterval;
 		description: string;
 	};
@@ -158,8 +159,14 @@
 						class:active={activeVisualIndex === i}
 						class:hides-with-strip={!$filmStripVisibilityStore && currentIndex !== i}
 					>
-						<!--eslint-disable-next-line svelte/no-at-html-tags-->
-						{@html bi.label}
+						{#if !$filmStripVisibilityStore && currentIndex === i}
+							<span class="music-note-font">
+								{bi.symbol}
+							</span>
+						{:else}
+							<!--eslint-disable-next-line svelte/no-at-html-tags-->
+							{@html bi.label}
+						{/if}
 					</span>
 				</div>
 			{/each}
@@ -170,6 +177,13 @@
 </div>
 
 <style>
+    @font-face {
+        font-family: 'NoteMusicFont';
+        src: url('/fonts/NoteMusic.woff2') format('woff2');
+        font-weight: normal;
+        font-style: normal;
+    }
+
     .film-strip-container {
         --visible-width: 100px;
         --item-width: 12px;
@@ -257,11 +271,20 @@
         color: #6c757d;
         transition: color 0.2s ease, opacity 0.2s ease;
         opacity: 0.5;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
     }
 
     .note-symbol.active {
         color: #ff0000;
         opacity: 1;
+    }
+
+    .music-note-font {
+        font-family: 'NoteMusicFont', sans-serif;
+        font-size: 1.8em;
+        line-height: 1;
     }
 
     .division-line {
