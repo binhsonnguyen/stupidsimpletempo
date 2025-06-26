@@ -144,30 +144,29 @@
 	on:pointerenter={filmStripVisibilityStore.show}
 	on:pointerleave={filmStripVisibilityStore.startHideTimer}
 >
-<div class="division-line"></div>
+	<div class="division-line" class:hides-with-strip={!$filmStripVisibilityStore}></div>
 
-<div class="view-window" bind:this={viewWindowEl} use:draggableX>
-	<div class="center-marker-top"></div>
+	<div class="view-window" bind:this={viewWindowEl} use:draggableX>
+		<div class="center-marker-top" class:hides-with-strip={!$filmStripVisibilityStore}></div>
+		<div class="center-marker-bottom" class:hides-with-strip={!$filmStripVisibilityStore}></div>
 
-	<div
-		class="number-strip"
-		style:--offset="{stripOffset}px"
-		class:is-dragging={isDragging}
-	>
-		{#each options as bi, i (bi.value)}
-			<div class="note-symbol-wrapper">
-				<span class="note-symbol" class:active={activeVisualIndex === i}>
-					<!--eslint-disable-next-line svelte/no-at-html-tags-->
-					{@html bi.label}
-				</span>
-			</div>
-		{/each}
+		<div class="number-strip" style:--offset="{stripOffset}px" class:is-dragging={isDragging}>
+			{#each options as bi, i (bi.value)}
+				<div class="note-symbol-wrapper">
+					<span
+						class="note-symbol"
+						class:active={activeVisualIndex === i}
+						class:hides-with-strip={!$filmStripVisibilityStore && currentIndex !== i}
+					>
+						<!--eslint-disable-next-line svelte/no-at-html-tags-->
+						{@html bi.label}
+					</span>
+				</div>
+			{/each}
+		</div>
 	</div>
 
-	<div class="center-marker-bottom"></div>
-</div>
-
-<div class="division-line"></div>
+	<div class="division-line" class:hides-with-strip={!$filmStripVisibilityStore}></div>
 </div>
 
 <style>
@@ -181,11 +180,9 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        transition: opacity 0.3s ease-in-out;
     }
 
     .film-strip-container.hidden {
-        opacity: 0;
         pointer-events: none;
     }
 
@@ -203,6 +200,12 @@
 
     .view-window:active {
         cursor: grabbing;
+    }
+
+    .center-marker-top,
+    .center-marker-bottom,
+    .division-line {
+        transition: opacity 0.3s ease-in-out;
     }
 
     .center-marker-top,
@@ -254,7 +257,7 @@
         font-size: 0.8em;
         font-weight: bold;
         color: #6c757d;
-        transition: color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+        transition: color 0.2s ease, opacity 0.2s ease;
         opacity: 0.5;
     }
 
@@ -267,5 +270,9 @@
         width: var(--visible-width);
         height: 1px;
         background-color: #6c757d;
+    }
+
+    .hides-with-strip {
+        opacity: 0;
     }
 </style>
