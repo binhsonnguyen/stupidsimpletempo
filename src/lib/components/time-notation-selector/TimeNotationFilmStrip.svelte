@@ -27,6 +27,7 @@
 	let visibleWidth = 0;
 	let itemWidth = 0;
 	let currentIndex = 0;
+	let activeVisualIndex = 0;
 
 	// "Ranh giới cứng" - phạm vi hợp lệ cuối cùng
 	let minOffset = 0;
@@ -63,6 +64,7 @@
 			if (initialIndex !== -1) {
 				currentIndex = initialIndex;
 				stripOffset = getOffsetForIndex(currentIndex);
+				activeVisualIndex = currentIndex;
 			}
 		}
 	});
@@ -73,8 +75,19 @@
 		if (newIndex !== -1 && newIndex !== currentIndex) {
 			currentIndex = newIndex;
 			stripOffset = getOffsetForIndex(newIndex);
+			activeVisualIndex = currentIndex; // Cập nhật activeVisualIndex khi initialValue thay đổi
 		}
 	}
+
+	$: {
+		if (options.length > 0 && itemTotalWidth > 0 && visibleWidth > 0) {
+			const calculatedIndex = Math.round(
+				(visibleWidth / 2 - stripOffset - itemWidth / 2) / itemTotalWidth
+			);
+			activeVisualIndex = Math.max(0, Math.min(calculatedIndex, options.length - 1));
+		}
+	}
+
 
 	let startX = 0;
 	let startOffset = 0;
@@ -115,7 +128,6 @@
 			// Hít dải film về vị trí căn giữa của index mới
 			stripOffset = getOffsetForIndex(newIndex);
 
-			// Chỉ cập nhật và thông báo ra ngoài nếu lựa chọn thực sự thay đổi
 			if (currentIndex !== newIndex) {
 				currentIndex = newIndex;
 				const selectedValue = options[currentIndex].value;
@@ -147,7 +159,7 @@
 	>
 		{#each options as bi, i (bi.value)}
 			<div class="note-symbol-wrapper">
-				<span class="note-symbol" class:active={currentIndex === i}>
+				<span class="note-symbol" class:active={activeVisualIndex === i}>
 					<!--eslint-disable-next-line svelte/no-at-html-tags-->
 					{@html bi.label}
 				</span>
