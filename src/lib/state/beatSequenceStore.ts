@@ -4,34 +4,30 @@ import { writable, type Writable } from 'svelte/store';
 import { Sound } from '$lib/audio/Sound';
 import { isAudioLoading } from './audioLoadingStore';
 
+export const MAX_BEATS = 8;
+
 export type BeatNode = {
 	sound: Sound;
-	durationInBeats: number;
-	next: BeatNode | null;
 	index: number;
 };
 
 export type BeatSequenceState = {
-	head: BeatNode | null;
-	nextBeat: BeatNode | null;
+	allBeats: BeatNode[];
 };
 
 const initialState: BeatSequenceState = {
-	head: null,
-	nextBeat: null
+	allBeats: []
 };
 
 export type BeatSequenceStore = {
 	subscribe: Writable<BeatSequenceState>['subscribe'];
-	advance: () => void;
-	reset: () => void;
-	setSequence: (beatsPerMeasure: number) => Promise<void>;
+	initialize: () => Promise<void>;
 };
 
 function createBeatSequenceStore(): BeatSequenceStore {
-	const { subscribe, update } = writable<BeatSequenceState>(initialState);
+	const { subscribe, set } = writable<BeatSequenceState>(initialState);
 
-	const setSequence = async (beatsPerMeasure: number) => {
+	const initializeAllBeats = async () => {
 		isAudioLoading.set(true);
 
 		const accentSound = Sound.WOODBLOCK_HIGH;
@@ -39,47 +35,21 @@ function createBeatSequenceStore(): BeatSequenceStore {
 
 		Sound.registerForPreload(accentSound);
 		Sound.registerForPreload(tickSound);
-
 		await Sound.preloadRegisteredSounds();
 
-		if (beatsPerMeasure <= 0) {
-			update(() => ({ head: null, nextBeat: null }));
-			isAudioLoading.set(false);
-			return;
+		const beats: BeatNode[] = [];
+		for (let i = 0; i < MAX_BEATS; i++) {
+			const sound = (i === 0) ? accentSound : tickSound;
+			beats.push({ sound, index: i });
 		}
 
-		const head: BeatNode = { sound: accentSound, durationInBeats: 1, next: null, index: 0 };
-		let currentNode = head;
-
-		for (let i = 1; i < beatsPerMeasure; i++) {
-			const nextNode: BeatNode = { sound: tickSound, durationInBeats: 1, next: null, index: i };
-			currentNode.next = nextNode;
-			currentNode = nextNode;
-		}
-
-		currentNode.next = head;
-
-		update(() => ({
-			head: head,
-			nextBeat: head
-		}));
-
+		set({ allBeats: beats });
 		isAudioLoading.set(false);
 	};
 
 	return {
 		subscribe,
-		advance: () => {
-			update((state) => {
-				if (!state.nextBeat) return state;
-				const next = state.nextBeat.next ?? state.head;
-				return { ...state, nextBeat: next };
-			});
-		},
-		reset: () => {
-			update((state) => ({ ...state, nextBeat: state.head }));
-		},
-		setSequence
+		initialize: initializeAllBeats
 	};
 }
 
