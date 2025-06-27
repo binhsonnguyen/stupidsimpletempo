@@ -13,9 +13,9 @@
 	import { VALID_DIVISIONS } from '$lib/constants';
 	import { drumGlowStore } from '$lib/state/drumGlowStore';
 	import {
-		COLOR_RED_RGB,
-		COLOR_GREEN_RGB,
-		COLOR_GRAY_RGB,
+		COLOR_ON_RGB,
+		COLOR_OFF_RGB,
+		COLOR_LOADING_RGB,
 		GLOW_SPREAD_STATIC,
 		GLOW_SPREAD_PULSE_MIN,
 		GLOW_SPREAD_PULSE_MAX,
@@ -98,19 +98,19 @@
 	$effect(() => {
 		if ($isAudioLoading) {
 			drumGlowStore.setGlow({
-				rgb: COLOR_GRAY_RGB,
+				rgb: COLOR_LOADING_RGB,
 				alpha: 0.5,
 				spread: GLOW_SPREAD_STATIC
 			});
 		} else if ($metronomeStore.isRunning) {
 			drumGlowStore.setGlow({
-				rgb: COLOR_RED_RGB,
+				rgb: COLOR_ON_RGB,
 				alpha: pulsingAlpha,
 				spread: pulsingSpread
 			});
 		} else {
 			drumGlowStore.setGlow({
-				rgb: COLOR_GREEN_RGB,
+				rgb: COLOR_OFF_RGB,
 				alpha: GLOW_ALPHA_STATIC,
 				spread: GLOW_SPREAD_STATIC
 			});

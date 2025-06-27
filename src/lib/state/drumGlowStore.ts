@@ -2,7 +2,7 @@
 
 import { writable, derived, type Readable } from 'svelte/store';
 import {
-	COLOR_GREEN_RGB,
+	COLOR_OFF_RGB,
 	GLOW_ALPHA_STATIC,
 	GLOW_SPREAD_STATIC,
 	GLOW_SPREAD_PULSE_MAX,
@@ -20,7 +20,7 @@ export type DrumGlowState = RawGlowState & {
 };
 
 const rawGlowStore = writable<RawGlowState>({
-	rgb: COLOR_GREEN_RGB,
+	rgb: COLOR_OFF_RGB,
 	alpha: GLOW_ALPHA_STATIC,
 	spread: GLOW_SPREAD_STATIC
 });
