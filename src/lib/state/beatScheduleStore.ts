@@ -61,7 +61,9 @@ const initialState: BeatScheduleState = {
 
 export type BeatScheduleStore = {
 	subscribe: Writable<BeatScheduleState>['subscribe'];
-	setBeatAppointment: (beatIndex: number, newAppointment: BeatAppointment) => void;
+	setMasterAppointment: (newAppointment: TimeStamp) => void;
+	getMasterSchedule: (pointOfTime: TimeStamp) => BeatSchedule;
+	setBeatAppointment: (beatIndex: number, newAppointment: TimeStamp) => void;
 	getBeatSchedule: (beatIndex: number, pointOfTime: TimeStamp) => BeatSchedule | undefined;
 	reset: () => void;
 };
@@ -69,31 +71,56 @@ export type BeatScheduleStore = {
 function createBeatScheduleStore(): BeatScheduleStore {
 	const { subscribe, update, set } = writable<BeatScheduleState>(initialState);
 
-	const setBeatAppointment = (beatIndex: number, newAppointment: BeatAppointment) => {
+	const setBeatAppointment = (beatIndex: number, newAppointment: TimeStamp) => {
 		if (beatIndex < 0 || beatIndex >= MAX_BEATS) {
 			logger.warn(`Invalid beat index: ${beatIndex}. Must be between 0 and ${MAX_BEATS - 1}.`);
 			return;
 		}
 
 		update((state) => {
-			const newState = [...state];
-			const currentSchedule = newState[beatIndex];
+			const newIndividualBeatSchedules = [...state.individualBeatSchedules];
+			const currentSchedule = newIndividualBeatSchedules[beatIndex];
 
-			newState[beatIndex] = {
+			newIndividualBeatSchedules[beatIndex] = {
 				current: newAppointment,
 				previous: currentSchedule ? currentSchedule.current : null
 			};
-			return newState;
+
+			const newMasterAppointments = {
+				current: newAppointment,
+				previous: state.masterAppointments.current // Lấy current cũ của master
+			};
+
+			return {
+				individualBeatSchedules: newIndividualBeatSchedules,
+				masterAppointments: newMasterAppointments
+			};
 		});
 	};
 
-//
+	const setMasterAppointment = (newAppointment: TimeStamp) => {
+		update((state) => {
+			const newMasterAppointments = {
+				current: newAppointment,
+				previous: state.masterAppointments.current
+			};
+			return {
+				...state,
+				masterAppointments: newMasterAppointments
+			};
+		});
+	};
 
 	const getBeatSchedule = (beatIndex: number, pointOfTime: TimeStamp): BeatSchedule | undefined => {
 		const state = get(beatScheduleStore);
-		if (beatIndex >= 0 && beatIndex < state.length) {
-			const storedSchedule = state[beatIndex];
-			const proximity = calculateProximity(storedSchedule.previous, storedSchedule.current, pointOfTime);
+		if (beatIndex >= 0 && beatIndex < state.individualBeatSchedules.length) {
+			const storedSchedule = state.individualBeatSchedules[beatIndex];
+			const proximity = calculateProximity(
+				storedSchedule.previous,
+				storedSchedule.current,
+				pointOfTime
+			);
+
 			return {
 				...storedSchedule,
 				proximityToNextBeat: proximity
@@ -103,12 +130,27 @@ function createBeatScheduleStore(): BeatScheduleStore {
 		return undefined;
 	};
 
+	const getMasterSchedule = (pointOfTime: TimeStamp): BeatSchedule => {
+		const state = get(beatScheduleStore);
+		const { current, previous } = state.masterAppointments;
+
+		const proximity = calculateProximity(previous, current, pointOfTime);
+
+		return {
+			current: current,
+			previous: previous,
+			proximityToNextBeat: proximity
+		};
+	};
+
 	const reset = () => {
 		set(initialState);
 	};
 
 	return {
 		subscribe,
+		setMasterAppointment,
+		getMasterSchedule,
 		setBeatAppointment,
 		getBeatSchedule,
 		reset
