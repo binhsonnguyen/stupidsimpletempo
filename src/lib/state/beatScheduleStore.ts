@@ -88,7 +88,7 @@ function createBeatScheduleStore(): BeatScheduleStore {
 
 			const newMasterAppointments = {
 				current: newAppointment,
-				previous: state.masterAppointments.current // Lấy current cũ của master
+				previous: state.masterAppointments.current
 			};
 
 			return {
