@@ -30,18 +30,15 @@ function createBeatSequenceStore(): BeatSequenceStore {
 	const initializeAllBeats = async () => {
 		isAudioLoading.set(true);
 
-		const accentSound = Sound.WOODBLOCK_HIGH;
-		const tickSound = Sound.WOODBLOCK;
-
-		Sound.registerForPreload(accentSound);
-		Sound.registerForPreload(tickSound);
-		await Sound.preloadRegisteredSounds();
-
 		const beats: BeatNode[] = [];
 		for (let i = 0; i < MAX_BEATS; i++) {
-			const sound = (i === 0) ? accentSound : tickSound;
+			const sound = i === 0 ? Sound.WOODBLOCK_HIGH : Sound.WOODBLOCK;
 			beats.push({ sound, index: i });
 		}
+
+		beats.map(beat => beat.sound)
+			.forEach(sound => Sound.registerForPreload(sound));
+		await Sound.preloadRegisteredSounds();
 
 		set({ allBeats: beats });
 		isAudioLoading.set(false);
