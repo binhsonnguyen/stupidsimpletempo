@@ -4,7 +4,8 @@ import { writable, get, type Writable } from 'svelte/store';
 import { MAX_BEATS } from './beatSequenceStore';
 import { logger } from '$lib/services/logger';
 
-export type BeatAppointment = number | null;
+type TimeStamp = number;
+export type BeatAppointment = TimeStamp | null;
 
 export type BeatSchedule = {
 	current: BeatAppointment;
