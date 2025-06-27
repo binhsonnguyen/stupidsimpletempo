@@ -78,15 +78,41 @@
 	const COLOR_GREEN_RGB = '40, 167, 69';
 	const COLOR_GRAY_RGB = '108, 117, 125';
 
-	let computedDrumGlowColor = $state('');
+	const GLOW_SPREAD_STATIC = 0; // px - Độ lan rộng khi metronome tắt
+	const GLOW_SPREAD_PULSE_MIN = 0; // px - Độ lan rộng tối thiểu khi đang chạy
+	const GLOW_SPREAD_PULSE_MAX = 4; // px - Độ lan rộng tối đa khi đang chạy
+
+	const GLOW_ALPHA_STATIC = 0.7; // Độ mờ khi metronome tắt
+	const GLOW_ALPHA_PULSE_MIN = 0.3; // Độ mờ tối thiểu khi đang chạy
+	const GLOW_ALPHA_PULSE_MAX = 0.9; // Độ mờ tối đa khi đang chạy
+
+	const easedProximity = $derived(masterProximity ** 2);
+
+	const pulsingSpread = $derived(
+		GLOW_SPREAD_PULSE_MIN + easedProximity * (GLOW_SPREAD_PULSE_MAX - GLOW_SPREAD_PULSE_MIN)
+	);
+	const pulsingAlpha = $derived(
+		GLOW_ALPHA_PULSE_MIN + easedProximity * (GLOW_ALPHA_PULSE_MAX - GLOW_ALPHA_PULSE_MIN)
+	);
+
+	let glowRgb = $state(COLOR_GREEN_RGB);
+	let glowAlpha = $state(GLOW_ALPHA_STATIC);
+	let glowSpread = $state(GLOW_SPREAD_STATIC);
 
 	$effect(() => {
 		if ($isAudioLoading) {
-			computedDrumGlowColor = `rgba(${COLOR_GRAY_RGB}, 0.5)`;
+			glowRgb = COLOR_GRAY_RGB;
+			glowAlpha = 0.5;
+			glowSpread = GLOW_SPREAD_STATIC;
 		} else if ($metronomeStore.isRunning) {
-			computedDrumGlowColor = `rgba(${COLOR_RED_RGB}, 0.7)`;
+			glowRgb = COLOR_RED_RGB;
+			glowAlpha = pulsingAlpha;
+			glowSpread = pulsingSpread;
 		} else {
-			computedDrumGlowColor = `rgba(${COLOR_GREEN_RGB}, 0.7)`;
+			// Khi dừng, sử dụng các giá trị tĩnh
+			glowRgb = COLOR_GREEN_RGB;
+			glowAlpha = GLOW_ALPHA_STATIC;
+			glowSpread = GLOW_SPREAD_STATIC;
 		}
 	});
 </script>
@@ -114,10 +140,11 @@
 		: 'Start metronome'}
 	disabled={$isAudioLoading}
 	tabindex="-1"
-	style="--computed-drum-glow-color: {computedDrumGlowColor};"
+	style="--glow-rgb: {glowRgb}; --glow-alpha: {glowAlpha}; --glow-spread: {glowSpread}px;"
 >
 	<div class="division-lines-container">
 		{#if divisions > 1}
+			<!--eslint-disable-next-line @typescript-eslint/no-unused-vars-->
 			{#each Array(divisions) as _, i (i)}
 				{@const angleOffset = -90}
 				{@const angle = (i / divisions) * 360 + angleOffset}
@@ -148,7 +175,6 @@
     border: none;
     cursor: pointer;
     background-color: transparent;
-    transition: box-shadow 0.3s ease;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -162,7 +188,7 @@
       --line-glow-color: #{rgba($color-gray, 0.7)};
     }
 
-    box-shadow: 0 0 15px var(--computed-drum-glow-color, transparent);
+    box-shadow: 0 0 15px var(--glow-spread, 5px) rgba(var(--glow-rgb, '40, 167, 69'), var(--glow-alpha, 0.7));
   }
 
   .start-stop-button:focus-visible {
