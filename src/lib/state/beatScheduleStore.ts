@@ -44,7 +44,7 @@ function createBeatScheduleStore(): BeatScheduleStore {
 
 			newState[beatIndex] = {
 				current: newAppointment,
-				previous: currentSchedule ? currentSchedule.current : null // Lịch trình hiện tại cũ trở thành lịch trình trước đó
+				previous: currentSchedule ? currentSchedule.current : null
 			};
 			return newState;
 		});
