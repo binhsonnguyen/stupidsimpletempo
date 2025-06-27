@@ -8,10 +8,11 @@
 	import { volumeStore } from '$lib/state/volumeStore';
 	import { swipeable } from '$lib/components/actions/swipeable';
 	import { logger } from '$lib/services/logger';
+	import { VALID_DIVISIONS } from '$lib/constants';
 
-	const divisionOptions = [1, 2, 3, 4, 6, 8];
+	const divisionOptions = VALID_DIVISIONS;
 	let currentDivisionIndex = $state(0);
-	const divisions = $derived(divisionOptions[currentDivisionIndex]);
+	const divisions = $derived(VALID_DIVISIONS[currentDivisionIndex]);
 
 	$effect(() => {
 		metronomeStore.setBeatsPerMeasure(divisions);
