@@ -38,7 +38,7 @@ export type BeatProximity = number;
 export type BeatSchedule = {
 	current: BeatAppointment;
 	previous: BeatAppointment;
-	proximityToNextBeat?: number;
+	proximityToNextBeat?: BeatProximity;
 };
 
 export type BeatScheduleState = {
