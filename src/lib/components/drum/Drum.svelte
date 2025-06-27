@@ -97,19 +97,19 @@
 
 	$effect(() => {
 		if ($isAudioLoading) {
-			drumGlowStore.set({
+			drumGlowStore.setGlow({
 				rgb: COLOR_GRAY_RGB,
 				alpha: 0.5,
 				spread: GLOW_SPREAD_STATIC
 			});
 		} else if ($metronomeStore.isRunning) {
-			drumGlowStore.set({
+			drumGlowStore.setGlow({
 				rgb: COLOR_RED_RGB,
 				alpha: pulsingAlpha,
 				spread: pulsingSpread
 			});
 		} else {
-			drumGlowStore.set({
+			drumGlowStore.setGlow({
 				rgb: COLOR_GREEN_RGB,
 				alpha: GLOW_ALPHA_STATIC,
 				spread: GLOW_SPREAD_STATIC
