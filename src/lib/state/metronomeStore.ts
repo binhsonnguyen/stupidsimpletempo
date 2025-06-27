@@ -3,6 +3,7 @@ import { writable, type Writable, get } from 'svelte/store';
 import * as Tone from 'tone';
 import { browser } from '$app/environment';
 import { beatSequenceStore, MAX_BEATS } from './beatSequenceStore';
+import { beatScheduleStore } from './beatScheduleStore';
 
 export const VALID_BEAT_INTERVALS = ['1m', '2n', '4n', '8n', '16n', '8t'] as const;
 
@@ -65,6 +66,8 @@ function createMetronomeStore(): MetronomeStore {
 		const currentBeat = allBeats[metronomeState.currentBeatIndex];
 
 		if (currentBeat) {
+			beatScheduleStore.setBeatAppointment(metronomeState.currentBeatIndex, time);
+
 			currentBeat.sound.play(time);
 
 			update((state) => {
@@ -86,6 +89,7 @@ function createMetronomeStore(): MetronomeStore {
 			scheduledEventId = null;
 		}
 		update((state) => ({ ...state, currentBeatIndex: 0 }));
+		beatScheduleStore.reset();
 	};
 
 	const toggle = () => {
