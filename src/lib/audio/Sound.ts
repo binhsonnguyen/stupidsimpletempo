@@ -2,6 +2,7 @@
 
 import * as Tone from 'tone';
 import { browser } from '$app/environment';
+import { logger } from '$lib/services/logger';
 
 export class Sound {
 	private player: Tone.Player | null = null;
@@ -59,19 +60,19 @@ export class Sound {
 
 	public static async preloadRegisteredSounds(): Promise<void> {
 		if (browser && this.soundsToPreload.size > 0) {
-			console.log(`Preloading ${this.soundsToPreload.size} registered sounds...`);
+			logger.log(`Preloading ${this.soundsToPreload.size} registered sounds...`);
 
 			const preloadPromises = Array.from(this.soundsToPreload).map((player) => player.ready);
 
 			await Promise.all(preloadPromises);
-			console.log('Registered sounds preloaded.');
+			logger.log('Registered sounds preloaded.');
 		}
 	}
 
 	public static disposeAll(): void {
 		if (browser) {
 			Sound.ALL_SOUNDS.forEach((sound) => sound.dispose());
-			console.log('All static Sounds disposed.');
+			logger.log('All static Sounds disposed.');
 		}
 	}
 }
