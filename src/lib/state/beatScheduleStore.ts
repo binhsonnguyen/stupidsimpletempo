@@ -42,9 +42,9 @@ export type BeatSchedule = {
 };
 
 export type BeatScheduleState = {
-	current: BeatAppointment;
-	previous: BeatAppointment;
-}[];
+	individualBeatSchedules: { current: BeatAppointment; previous: BeatAppointment }[];
+	masterAppointments: { current: BeatAppointment; previous: BeatAppointment };
+};
 
 const initialState: BeatScheduleState = Array(MAX_BEATS).fill(null).map(() => ({
 	current: null,
