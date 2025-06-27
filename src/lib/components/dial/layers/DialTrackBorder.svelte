@@ -3,10 +3,10 @@
 <script lang="ts">
 	import { drumGlowStore } from '$lib/state/drumGlowStore';
 
-	const DISTANCE_DAMPENING_FACTOR = 0.4;
+	const TINT_INTENSITY_FACTOR = 0.1;
 
 	const finalTintIntensity = $derived(
-		$drumGlowStore.baseIntensity * DISTANCE_DAMPENING_FACTOR
+		$drumGlowStore.baseIntensity * TINT_INTENSITY_FACTOR
 	);
 </script>
 
