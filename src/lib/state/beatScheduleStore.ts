@@ -46,10 +46,18 @@ export type BeatScheduleState = {
 	masterAppointments: { current: BeatAppointment; previous: BeatAppointment };
 };
 
-const initialState: BeatScheduleState = Array(MAX_BEATS).fill(null).map(() => ({
-	current: null,
-	previous: null
-}));
+const initialState: BeatScheduleState = {
+	individualBeatSchedules: Array(MAX_BEATS)
+		.fill(null)
+		.map(() => ({
+			current: null,
+			previous: null
+		})),
+	masterAppointments: {
+		current: null,
+		previous: null
+	}
+};
 
 export type BeatScheduleStore = {
 	subscribe: Writable<BeatScheduleState>['subscribe'];
