@@ -2,6 +2,7 @@
 
 import { writable, get, type Writable } from 'svelte/store';
 import { MAX_BEATS } from './beatSequenceStore';
+import { logger } from '$lib/services/logger';
 
 export type BeatAppointment = number | null;
 
@@ -29,7 +30,7 @@ function createBeatScheduleStore(): BeatScheduleStore {
 
 	const setBeatAppointment = (beatIndex: number, newAppointment: number) => {
 		if (beatIndex < 0 || beatIndex >= MAX_BEATS) {
-			console.warn(`Invalid beat index: ${beatIndex}. Must be between 0 and ${MAX_BEATS - 1}.`);
+			logger.warn(`Invalid beat index: ${beatIndex}. Must be between 0 and ${MAX_BEATS - 1}.`);
 			return;
 		}
 
@@ -50,7 +51,7 @@ function createBeatScheduleStore(): BeatScheduleStore {
 		if (beatIndex >= 0 && beatIndex < state.length) {
 			return state[beatIndex];
 		}
-		console.warn(`Attempted to get schedule for invalid beat index: ${beatIndex}`);
+		logger.warn(`Attempted to get schedule for invalid beat index: ${beatIndex}`);
 		return undefined;
 	};
 
