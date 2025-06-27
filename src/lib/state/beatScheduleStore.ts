@@ -61,7 +61,6 @@ const initialState: BeatScheduleState = {
 
 export type BeatScheduleStore = {
 	subscribe: Writable<BeatScheduleState>['subscribe'];
-	setMasterAppointment: (newAppointment: TimeStamp) => void;
 	getMasterSchedule: (pointOfTime: TimeStamp) => BeatSchedule;
 	setBeatAppointment: (beatIndex: number, newAppointment: TimeStamp) => void;
 	getBeatSchedule: (beatIndex: number, pointOfTime: TimeStamp) => BeatSchedule | undefined;
@@ -93,19 +92,6 @@ function createBeatScheduleStore(): BeatScheduleStore {
 
 			return {
 				individualBeatSchedules: newIndividualBeatSchedules,
-				masterAppointments: newMasterAppointments
-			};
-		});
-	};
-
-	const setMasterAppointment = (newAppointment: TimeStamp) => {
-		update((state) => {
-			const newMasterAppointments = {
-				current: newAppointment,
-				previous: state.masterAppointments.current
-			};
-			return {
-				...state,
 				masterAppointments: newMasterAppointments
 			};
 		});
@@ -149,7 +135,6 @@ function createBeatScheduleStore(): BeatScheduleStore {
 
 	return {
 		subscribe,
-		setMasterAppointment,
 		getMasterSchedule,
 		setBeatAppointment,
 		getBeatSchedule,
