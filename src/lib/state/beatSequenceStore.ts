@@ -3,8 +3,7 @@
 import { writable, type Writable } from 'svelte/store';
 import { Sound } from '$lib/audio/Sound';
 import { isAudioLoading } from './audioLoadingStore';
-
-export const MAX_BEATS = 8;
+import { MAX_BEATS } from '$lib/constants';
 
 export type BeatNode = {
 	sound: Sound;

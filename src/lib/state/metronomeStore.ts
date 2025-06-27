@@ -2,20 +2,17 @@
 import { writable, type Writable, get } from 'svelte/store';
 import * as Tone from 'tone';
 import { browser } from '$app/environment';
-import { beatSequenceStore, MAX_BEATS } from './beatSequenceStore';
+import { beatSequenceStore } from './beatSequenceStore';
 import { beatScheduleStore } from './beatScheduleStore';
 import { logger } from '$lib/services/logger';
-
-export const VALID_BEAT_INTERVALS = ['1m', '2n', '4n', '8n', '16n', '8t'] as const;
-
-export type BeatInterval = (typeof VALID_BEAT_INTERVALS)[number];
+import type { BeatInterval, Division } from '$lib/constants';
 
 export type MetronomeState = {
 	bpm: number;
 	isRunning: boolean;
 	minBpm: number;
 	maxBpm: number;
-	beatsPerMeasure: number;
+	beatsPerMeasure: Division;
 	beatInterval: BeatInterval;
 	currentBeatIndex: number;
 };
@@ -33,7 +30,7 @@ const initialState: MetronomeState = {
 export type MetronomeStore = {
 	subscribe: Writable<MetronomeState>['subscribe'];
 	setTempo: (newBpm: number) => void;
-	setBeatsPerMeasure: (count: number) => void;
+	setBeatsPerMeasure: (count: Division) => void;
 	setBeatInterval: (interval: BeatInterval) => void;
 	toggle: () => void;
 	reset: () => void;
@@ -139,10 +136,9 @@ function createMetronomeStore(): MetronomeStore {
 				return { ...state, bpm: clampedBpm };
 			});
 		},
-		setBeatsPerMeasure: (count: number) => {
+		setBeatsPerMeasure: (count: Division) => {
 			update((state) => {
-				const newCount = Math.max(1, Math.min(count, MAX_BEATS));
-				return { ...state, beatsPerMeasure: newCount, currentBeatIndex: 0 };
+				return { ...state, beatsPerMeasure: count, currentBeatIndex: 0 };
 			});
 		},
 		setBeatInterval,
