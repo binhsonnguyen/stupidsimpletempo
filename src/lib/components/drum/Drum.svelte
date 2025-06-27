@@ -11,6 +11,18 @@
 	import { beatScheduleStore } from '$lib/state/beatScheduleStore';
 	import * as Tone from 'tone';
 	import { VALID_DIVISIONS } from '$lib/constants';
+	import { drumGlowStore } from '$lib/state/drumGlowStore';
+	import {
+		COLOR_RED_RGB,
+		COLOR_GREEN_RGB,
+		COLOR_GRAY_RGB,
+		GLOW_SPREAD_STATIC,
+		GLOW_SPREAD_PULSE_MIN,
+		GLOW_SPREAD_PULSE_MAX,
+		GLOW_ALPHA_STATIC,
+		GLOW_ALPHA_PULSE_MIN,
+		GLOW_ALPHA_PULSE_MAX
+	} from '$lib/config/chromaConstants';
 
 	const divisionOptions = VALID_DIVISIONS;
 	let currentDivisionIndex = $state(0);
@@ -74,18 +86,6 @@
 		}
 	}
 
-	const COLOR_RED_RGB = '220, 53, 69';
-	const COLOR_GREEN_RGB = '40, 167, 69';
-	const COLOR_GRAY_RGB = '108, 117, 125';
-
-	const GLOW_SPREAD_STATIC = 0; // px - Độ lan rộng khi metronome tắt
-	const GLOW_SPREAD_PULSE_MIN = 0; // px - Độ lan rộng tối thiểu khi đang chạy
-	const GLOW_SPREAD_PULSE_MAX = 4; // px - Độ lan rộng tối đa khi đang chạy
-
-	const GLOW_ALPHA_STATIC = 0.7; // Độ mờ khi metronome tắt
-	const GLOW_ALPHA_PULSE_MIN = 0.3; // Độ mờ tối thiểu khi đang chạy
-	const GLOW_ALPHA_PULSE_MAX = 0.9; // Độ mờ tối đa khi đang chạy
-
 	const easedProximity = $derived(masterProximity ** 2);
 
 	const pulsingSpread = $derived(
@@ -95,24 +95,25 @@
 		GLOW_ALPHA_PULSE_MIN + easedProximity * (GLOW_ALPHA_PULSE_MAX - GLOW_ALPHA_PULSE_MIN)
 	);
 
-	let glowRgb = $state(COLOR_GREEN_RGB);
-	let glowAlpha = $state(GLOW_ALPHA_STATIC);
-	let glowSpread = $state(GLOW_SPREAD_STATIC);
-
 	$effect(() => {
-		if ($metronomeStore.isRunning && !$isAudioLoading) {
-			glowRgb = COLOR_RED_RGB;
-			glowAlpha = pulsingAlpha;
-			glowSpread = pulsingSpread;
+		if ($isAudioLoading) {
+			drumGlowStore.set({
+				rgb: COLOR_GRAY_RGB,
+				alpha: 0.5,
+				spread: GLOW_SPREAD_STATIC
+			});
+		} else if ($metronomeStore.isRunning) {
+			drumGlowStore.set({
+				rgb: COLOR_RED_RGB,
+				alpha: pulsingAlpha,
+				spread: pulsingSpread
+			});
 		} else {
-			if ($isAudioLoading) {
-				glowRgb = COLOR_GRAY_RGB;
-				glowAlpha = 0.5;
-			} else {
-				glowRgb = COLOR_GREEN_RGB;
-				glowAlpha = GLOW_ALPHA_STATIC;
-			}
-			glowSpread = GLOW_SPREAD_STATIC;
+			drumGlowStore.set({
+				rgb: COLOR_GREEN_RGB,
+				alpha: GLOW_ALPHA_STATIC,
+				spread: GLOW_SPREAD_STATIC
+			});
 		}
 	});
 </script>
@@ -140,7 +141,7 @@
 		: 'Start metronome'}
 	disabled={$isAudioLoading}
 	tabindex="-1"
-	style="--glow-rgb: {glowRgb}; --glow-alpha: {glowAlpha}; --glow-spread: {glowSpread}px;"
+	style="--glow-rgb: {$drumGlowStore.rgb}; --glow-alpha: {$drumGlowStore.alpha}; --glow-spread: {$drumGlowStore.spread}px;"
 >
 	<div class="division-lines-container">
 		{#if divisions > 1}
