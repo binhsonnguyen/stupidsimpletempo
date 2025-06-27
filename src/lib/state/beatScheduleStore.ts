@@ -25,15 +25,15 @@ const initialState: BeatScheduleState = Array(MAX_BEATS).fill(null).map(() => ({
 
 export type BeatScheduleStore = {
 	subscribe: Writable<BeatScheduleState>['subscribe'];
-	setBeatAppointment: (beatIndex: number, newAppointment: number) => void;
-	getBeatSchedule: (beatIndex: number, currentTime: number) => BeatSchedule | undefined;
+	setBeatAppointment: (beatIndex: number, newAppointment: BeatAppointment) => void;
+	getBeatSchedule: (beatIndex: number, pointOfTime: TimeStamp) => BeatSchedule | undefined;
 	reset: () => void;
 };
 
 function createBeatScheduleStore(): BeatScheduleStore {
 	const { subscribe, update, set } = writable<BeatScheduleState>(initialState);
 
-	const setBeatAppointment = (beatIndex: number, newAppointment: number) => {
+	const setBeatAppointment = (beatIndex: number, newAppointment: BeatAppointment) => {
 		if (beatIndex < 0 || beatIndex >= MAX_BEATS) {
 			logger.warn(`Invalid beat index: ${beatIndex}. Must be between 0 and ${MAX_BEATS - 1}.`);
 			return;
@@ -51,33 +51,33 @@ function createBeatScheduleStore(): BeatScheduleStore {
 		});
 	};
 
-	const calculateProximity = (previous: number | null, current: number | null, moment: number): number => {
+	const calculateProximity = (previous: BeatAppointment | null, current: BeatAppointment | null, pointOfTime: TimeStamp): number => {
 		if (current === null) {
 			return 0;
 		}
 
 		if (previous === null) {
-			return moment >= current ? 1 : 0;
+			return pointOfTime >= current ? 1 : 0;
 		}
 
-		if (moment <= previous) {
+		if (pointOfTime <= previous) {
 			return 0;
-		} else if (moment >= current) {
+		} else if (pointOfTime >= current) {
 			return 1;
 		} else {
 			const range = current - previous;
 			if (range === 0) {
-				return moment >= current ? 1 : 0;
+				return pointOfTime >= current ? 1 : 0;
 			}
-			return (moment - previous) / range;
+			return (pointOfTime - previous) / range;
 		}
 	};
 
-	const getBeatSchedule = (beatIndex: number, currentTime: number): BeatSchedule | undefined => {
-		const state = get(beatScheduleStore); // Lấy trạng thái hiện tại của store
+	const getBeatSchedule = (beatIndex: number, pointOfTime: TimeStamp): BeatSchedule | undefined => {
+		const state = get(beatScheduleStore);
 		if (beatIndex >= 0 && beatIndex < state.length) {
 			const storedSchedule = state[beatIndex];
-			const proximity = calculateProximity(storedSchedule.previous, storedSchedule.current, currentTime);
+			const proximity = calculateProximity(storedSchedule.previous, storedSchedule.current, pointOfTime);
 			return {
 				...storedSchedule,
 				proximityToNextBeat: proximity
