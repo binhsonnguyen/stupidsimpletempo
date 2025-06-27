@@ -57,25 +57,30 @@ function createMetronomeStore(): MetronomeStore {
 		const allBeats = get(beatSequenceStore).allBeats;
 
 		if (allBeats.length === 0) {
-			logger.warn("Beat sequence not initialized or empty. Cannot play beat.");
+			logger.warn('Beat sequence not initialized or empty. Cannot play beat.');
 			return;
 		}
 
 		const currentBeat = allBeats[metronomeState.currentBeatIndex];
 
 		if (currentBeat) {
-			beatScheduleStore.setBeatAppointment(metronomeState.currentBeatIndex, time);
-
 			currentBeat.sound.play(time);
 
+			const nextIndex = (metronomeState.currentBeatIndex + 1) % metronomeState.beatsPerMeasure;
+			const intervalSeconds = Tone.Time(metronomeState.beatInterval).toSeconds();
+			const nextBeatTime = time + intervalSeconds;
+
+			beatScheduleStore.setBeatAppointment(nextIndex, nextBeatTime);
+
 			update((state) => {
-				const nextIndex = (state.currentBeatIndex + 1) % state.beatsPerMeasure;
 				return { ...state, currentBeatIndex: nextIndex };
 			});
 		}
 	};
 
 	const startLoop = (interval: BeatInterval) => {
+		// mồi chu kỳ đầu tiên
+		beatScheduleStore.setBeatAppointment(0, Tone.now());
 		scheduledEventId = Tone.getTransport().scheduleRepeat(loop, interval);
 		Tone.getTransport().start();
 	};
