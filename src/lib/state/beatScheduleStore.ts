@@ -4,14 +4,18 @@ import { writable, get, type Writable } from 'svelte/store';
 import { MAX_BEATS } from './beatSequenceStore';
 import { logger } from '$lib/services/logger';
 
-export type BeatAppointment = number | null;
+export type BeatAppointment = number | null; // Sử dụng timestamp (number) hoặc null
 
 export type BeatSchedule = {
 	current: BeatAppointment;
 	previous: BeatAppointment;
+	proximityToNextBeat?: number;
 };
 
-export type BeatScheduleState = BeatSchedule[];
+export type BeatScheduleState = {
+	current: BeatAppointment;
+	previous: BeatAppointment;
+}[];
 
 const initialState: BeatScheduleState = Array(MAX_BEATS).fill(null).map(() => ({
 	current: null,
@@ -21,7 +25,7 @@ const initialState: BeatScheduleState = Array(MAX_BEATS).fill(null).map(() => ({
 export type BeatScheduleStore = {
 	subscribe: Writable<BeatScheduleState>['subscribe'];
 	setBeatAppointment: (beatIndex: number, newAppointment: number) => void;
-	getBeatSchedule: (beatIndex: number) => BeatSchedule | undefined;
+	getBeatSchedule: (beatIndex: number, currentTime: number) => BeatSchedule | undefined;
 	reset: () => void;
 };
 
@@ -35,21 +39,48 @@ function createBeatScheduleStore(): BeatScheduleStore {
 		}
 
 		update((state) => {
-			const newState = [...state];
+			const newState = [...state]; // Tạo bản sao để đảm bảo tính bất biến của Svelte store
 			const currentSchedule = newState[beatIndex];
 
 			newState[beatIndex] = {
 				current: newAppointment,
-				previous: currentSchedule ? currentSchedule.current : null
+				previous: currentSchedule ? currentSchedule.current : null // Lịch trình hiện tại cũ trở thành lịch trình trước đó
 			};
 			return newState;
 		});
 	};
 
-	const getBeatSchedule = (beatIndex: number): BeatSchedule | undefined => {
-		const state = get(beatScheduleStore);
+	const calculateProximity = (previous: number | null, current: number | null, moment: number): number => {
+		if (current === null) {
+			return 0;
+		}
+
+		if (previous === null) {
+			return moment >= current ? 1 : 0;
+		}
+
+		if (moment <= previous) {
+			return 0;
+		} else if (moment >= current) {
+			return 1;
+		} else {
+			const range = current - previous;
+			if (range === 0) {
+				return moment >= current ? 1 : 0;
+			}
+			return (moment - previous) / range;
+		}
+	};
+
+	const getBeatSchedule = (beatIndex: number, currentTime: number): BeatSchedule | undefined => {
+		const state = get(beatScheduleStore); // Lấy trạng thái hiện tại của store
 		if (beatIndex >= 0 && beatIndex < state.length) {
-			return state[beatIndex];
+			const storedSchedule = state[beatIndex];
+			const proximity = calculateProximity(storedSchedule.previous, storedSchedule.current, currentTime);
+			return {
+				...storedSchedule,
+				proximityToNextBeat: proximity
+			};
 		}
 		logger.warn(`Attempted to get schedule for invalid beat index: ${beatIndex}`);
 		return undefined;
