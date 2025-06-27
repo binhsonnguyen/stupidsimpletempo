@@ -4,7 +4,7 @@ import { writable, get, type Writable } from 'svelte/store';
 import { MAX_BEATS } from './beatSequenceStore';
 import { logger } from '$lib/services/logger';
 
-export type BeatAppointment = number | null; // Sử dụng timestamp (number) hoặc null
+export type BeatAppointment = number | null;
 
 export type BeatSchedule = {
 	current: BeatAppointment;
@@ -39,7 +39,7 @@ function createBeatScheduleStore(): BeatScheduleStore {
 		}
 
 		update((state) => {
-			const newState = [...state]; // Tạo bản sao để đảm bảo tính bất biến của Svelte store
+			const newState = [...state];
 			const currentSchedule = newState[beatIndex];
 
 			newState[beatIndex] = {
