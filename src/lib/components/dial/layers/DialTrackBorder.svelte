@@ -4,15 +4,18 @@
 	import { drumGlowStore } from '$lib/state/drumGlowStore';
 	import { GLOW_SPREAD_PULSE_MAX } from '$lib/config/chromaConstants';
 
-	const DISTANCE_DAMPENING_FACTOR = 0.4;
+	const DISTANCE_DAMPENING_FACTOR = 0.1; // Giả lập "khoảng cách" tới drum
+	const SPREAD_OFFSET = 1; // "Số bù spread" để đảm bảo kể cả khi spread = 0, vẫn có cường độ cơ bản
 
 	let finalTintIntensity = $state(0);
 
 	$effect(() => {
 		const glow = $drumGlowStore;
 
-		const spreadFactor =
-			GLOW_SPREAD_PULSE_MAX > 0 ? glow.spread / GLOW_SPREAD_PULSE_MAX : 0;
+		const adjustedSpread = glow.spread + SPREAD_OFFSET;
+		const adjustedMaxSpread = GLOW_SPREAD_PULSE_MAX + SPREAD_OFFSET;
+
+		const spreadFactor = adjustedMaxSpread > 0 ? adjustedSpread / adjustedMaxSpread : 0;
 
 		const calculatedIntensity = Math.max(
 			0,
