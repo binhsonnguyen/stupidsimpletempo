@@ -28,16 +28,24 @@ function createBeatSequenceStore(): BeatSequenceStore {
 	const { subscribe, set } = writable<BeatSequenceState>(initialState);
 
 	const initialize = async () => {
+		const generateBeatsWithAccentFirst = (count: number): BeatNode[] => {
+			const beats: BeatNode[] = [];
+			for (let i = 0; i < count; i++) {
+				const sound = i === 0 ? Sound.WOODBLOCK_HIGH : Sound.WOODBLOCK;
+				beats.push({ sound, index: i });
+			}
+			return beats;
+		};
+
+		const registerForPreloadSounds = (beats: BeatNode[]) => {
+			const uniqueSounds = [...new Set(beats.map((beat) => beat.sound))];
+			uniqueSounds.forEach((sound) => Sound.registerForPreload(sound));
+		};
+
 		isAudioLoading.set(true);
 
-		const beats: BeatNode[] = [];
-		for (let i = 0; i < MAX_BEATS; i++) {
-			const sound = i === 0 ? Sound.WOODBLOCK_HIGH : Sound.WOODBLOCK;
-			beats.push({ sound, index: i });
-		}
-
-		beats.map(beat => beat.sound)
-			.forEach(sound => Sound.registerForPreload(sound));
+		const beats = generateBeatsWithAccentFirst(MAX_BEATS);
+		registerForPreloadSounds(beats);
 		await Sound.preloadRegisteredSounds();
 
 		set({ allBeats: beats });
