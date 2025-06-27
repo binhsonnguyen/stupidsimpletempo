@@ -13,17 +13,25 @@
 		{ label: '⅛³', value: '8t', description: 'Eighth Triplet (Chùm ba)', symbol: '𝅘𝅥𝅮³' }
 	];
 
+	let initialBeatInterval: BeatInterval | undefined;
+
+	$: if ($metronomeStore.beatInterval) {
+		initialBeatInterval = $metronomeStore.beatInterval;
+	}
+
 	function handleSelectionChange(event: CustomEvent<BeatInterval>) {
 		metronomeStore.setBeatInterval(event.detail);
 	}
 </script>
 
 <div class="notation-wrapper">
-	<TimeNotationFilmStrip
-		options={BEAT_INTERVAL_OPTIONS}
-		initialValue={$metronomeStore.beatInterval}
-		on:change={handleSelectionChange}
-	/>
+	{#if initialBeatInterval}
+		<TimeNotationFilmStrip
+			options={BEAT_INTERVAL_OPTIONS}
+			initialValue={initialBeatInterval}
+			on:change={handleSelectionChange}
+		/>
+	{/if}
 </div>
 
 <style>
