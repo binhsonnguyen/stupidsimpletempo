@@ -1,8 +1,8 @@
 // src/lib/state/beatScheduleStore.ts
 
 import { writable, get, type Writable } from 'svelte/store';
-import { MAX_BEATS } from './beatSequenceStore';
 import { logger } from '$lib/services/logger';
+import { MAX_BEATS } from '$lib/constants';
 
 type TimeStamp = number;
 export type BeatAppointment = TimeStamp | null;
