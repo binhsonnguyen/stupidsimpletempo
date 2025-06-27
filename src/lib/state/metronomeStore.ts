@@ -4,6 +4,7 @@ import * as Tone from 'tone';
 import { browser } from '$app/environment';
 import { beatSequenceStore, MAX_BEATS } from './beatSequenceStore';
 import { beatScheduleStore } from './beatScheduleStore';
+import { logger } from '$lib/services/logger';
 
 export const VALID_BEAT_INTERVALS = ['1m', '2n', '4n', '8n', '16n', '8t'] as const;
 
@@ -59,7 +60,7 @@ function createMetronomeStore(): MetronomeStore {
 		const allBeats = get(beatSequenceStore).allBeats;
 
 		if (allBeats.length === 0) {
-			console.warn("Beat sequence not initialized or empty. Cannot play beat.");
+			logger.warn("Beat sequence not initialized or empty. Cannot play beat.");
 			return;
 		}
 
