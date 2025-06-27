@@ -4,7 +4,7 @@
 	let { rotationAngle = 0 } = $props();
 
 	import { drumGlowStore } from '$lib/state/drumGlowStore';
-	const TINT_INTENSITY_FACTOR = 1;
+	const TINT_INTENSITY_FACTOR = 0.8;
 	const finalTintIntensity = $derived(
 		$drumGlowStore.baseIntensity * TINT_INTENSITY_FACTOR
 	);
