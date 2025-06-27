@@ -2,7 +2,7 @@
 import { writable, type Writable, get } from 'svelte/store';
 import * as Tone from 'tone';
 import { browser } from '$app/environment';
-import { beatSequenceStore } from './beatSequenceStore';
+import { beatSequenceStore, MAX_BEATS } from './beatSequenceStore';
 
 export const VALID_BEAT_INTERVALS = ['1m', '2n', '4n', '8n', '16n', '8t'] as const;
 
@@ -15,6 +15,7 @@ export type MetronomeState = {
 	maxBpm: number;
 	beatsPerMeasure: number;
 	beatInterval: BeatInterval;
+	currentBeatIndex: number;
 };
 
 const initialState: MetronomeState = {
@@ -23,7 +24,8 @@ const initialState: MetronomeState = {
 	minBpm: 40,
 	maxBpm: 200,
 	beatsPerMeasure: 1,
-	beatInterval: '4n'
+	beatInterval: '4n',
+	currentBeatIndex: 0
 };
 
 export type MetronomeStore = {
@@ -52,12 +54,23 @@ function createMetronomeStore(): MetronomeStore {
 	}
 
 	const loop = (time: number) => {
-		const sequenceState = get(beatSequenceStore);
-		const currentBeat = sequenceState.nextBeat;
+		const metronomeState = get(metronomeStore);
+		const allBeats = get(beatSequenceStore).allBeats;
+
+		if (allBeats.length === 0) {
+			console.warn("Beat sequence not initialized or empty. Cannot play beat.");
+			return;
+		}
+
+		const currentBeat = allBeats[metronomeState.currentBeatIndex];
 
 		if (currentBeat) {
 			currentBeat.sound.play(time);
-			beatSequenceStore.advance();
+
+			update((state) => {
+				const nextIndex = (state.currentBeatIndex + 1) % state.beatsPerMeasure;
+				return { ...state, currentBeatIndex: nextIndex };
+			});
 		}
 	};
 
@@ -72,7 +85,7 @@ function createMetronomeStore(): MetronomeStore {
 			Tone.getTransport().clear(scheduledEventId);
 			scheduledEventId = null;
 		}
-		beatSequenceStore.reset();
+		update((state) => ({ ...state, currentBeatIndex: 0 }));
 	};
 
 	const toggle = () => {
@@ -122,7 +135,10 @@ function createMetronomeStore(): MetronomeStore {
 			});
 		},
 		setBeatsPerMeasure: (count: number) => {
-			update((state) => ({ ...state, beatsPerMeasure: count }));
+			update((state) => {
+				const newCount = Math.max(1, Math.min(count, MAX_BEATS));
+				return { ...state, beatsPerMeasure: newCount, currentBeatIndex: 0 };
+			});
 		},
 		setBeatInterval,
 		toggle,
