@@ -100,18 +100,18 @@
 	let glowSpread = $state(GLOW_SPREAD_STATIC);
 
 	$effect(() => {
-		if ($isAudioLoading) {
-			glowRgb = COLOR_GRAY_RGB;
-			glowAlpha = 0.5;
-			glowSpread = GLOW_SPREAD_STATIC;
-		} else if ($metronomeStore.isRunning) {
+		if ($metronomeStore.isRunning && !$isAudioLoading) {
 			glowRgb = COLOR_RED_RGB;
 			glowAlpha = pulsingAlpha;
 			glowSpread = pulsingSpread;
 		} else {
-			// Khi dừng, sử dụng các giá trị tĩnh
-			glowRgb = COLOR_GREEN_RGB;
-			glowAlpha = GLOW_ALPHA_STATIC;
+			if ($isAudioLoading) {
+				glowRgb = COLOR_GRAY_RGB;
+				glowAlpha = 0.5;
+			} else {
+				glowRgb = COLOR_GREEN_RGB;
+				glowAlpha = GLOW_ALPHA_STATIC;
+			}
 			glowSpread = GLOW_SPREAD_STATIC;
 		}
 	});
