@@ -27,7 +27,7 @@ export type BeatSequenceStore = {
 function createBeatSequenceStore(): BeatSequenceStore {
 	const { subscribe, set } = writable<BeatSequenceState>(initialState);
 
-	const initializeAllBeats = async () => {
+	const initialize = async () => {
 		isAudioLoading.set(true);
 
 		const beats: BeatNode[] = [];
@@ -46,7 +46,7 @@ function createBeatSequenceStore(): BeatSequenceStore {
 
 	return {
 		subscribe,
-		initialize: initializeAllBeats
+		initialize: initialize
 	};
 }
 
