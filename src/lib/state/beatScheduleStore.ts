@@ -7,6 +7,34 @@ import { logger } from '$lib/services/logger';
 type TimeStamp = number;
 export type BeatAppointment = TimeStamp | null;
 
+const calculateProximity = (
+	previous: BeatAppointment | null,
+	current: BeatAppointment | null,
+	pointOfTime: TimeStamp
+): number => {
+	if (current === null) {
+		return 0;
+	}
+
+	if (previous === null) {
+		return pointOfTime >= current ? 1 : 0;
+	}
+
+	if (pointOfTime <= previous) {
+		return 0;
+	} else if (pointOfTime >= current) {
+		return 1;
+	} else {
+		const range = current - previous;
+		if (range === 0) {
+			return pointOfTime >= current ? 1 : 0;
+		}
+		return (pointOfTime - previous) / range;
+	}
+};
+
+export type BeatProximity = number;
+
 export type BeatSchedule = {
 	current: BeatAppointment;
 	previous: BeatAppointment;
@@ -51,27 +79,7 @@ function createBeatScheduleStore(): BeatScheduleStore {
 		});
 	};
 
-	const calculateProximity = (previous: BeatAppointment | null, current: BeatAppointment | null, pointOfTime: TimeStamp): number => {
-		if (current === null) {
-			return 0;
-		}
-
-		if (previous === null) {
-			return pointOfTime >= current ? 1 : 0;
-		}
-
-		if (pointOfTime <= previous) {
-			return 0;
-		} else if (pointOfTime >= current) {
-			return 1;
-		} else {
-			const range = current - previous;
-			if (range === 0) {
-				return pointOfTime >= current ? 1 : 0;
-			}
-			return (pointOfTime - previous) / range;
-		}
-	};
+//
 
 	const getBeatSchedule = (beatIndex: number, pointOfTime: TimeStamp): BeatSchedule | undefined => {
 		const state = get(beatScheduleStore);
