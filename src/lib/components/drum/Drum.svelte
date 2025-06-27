@@ -73,6 +73,22 @@
 			beatsPerMeasureAdvance(-1);
 		}
 	}
+
+	const COLOR_RED_RGB = '220, 53, 69';
+	const COLOR_GREEN_RGB = '40, 167, 69';
+	const COLOR_GRAY_RGB = '108, 117, 125';
+
+	let computedDrumGlowColor = $state('');
+
+	$effect(() => {
+		if ($isAudioLoading) {
+			computedDrumGlowColor = `rgba(${COLOR_GRAY_RGB}, 0.5)`;
+		} else if ($metronomeStore.isRunning) {
+			computedDrumGlowColor = `rgba(${COLOR_RED_RGB}, 0.7)`;
+		} else {
+			computedDrumGlowColor = `rgba(${COLOR_GREEN_RGB}, 0.7)`;
+		}
+	});
 </script>
 
 <button
@@ -98,6 +114,7 @@
 		: 'Start metronome'}
 	disabled={$isAudioLoading}
 	tabindex="-1"
+	style="--computed-drum-glow-color: {computedDrumGlowColor};"
 >
 	<div class="division-lines-container">
 		{#if divisions > 1}
@@ -135,20 +152,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    --drum-glow-color: #{rgba($color-green, 0.7)};
     --line-glow-color: #{rgba($color-green, 0.85)};
 
     &.on {
-      --drum-glow-color: #{rgba($color-red, 0.7)};
       --line-glow-color: #{rgba($color-red, 0.85)};
     }
 
     &.loading {
-      --drum-glow-color: #{rgba($color-gray, 0.5)};
       --line-glow-color: #{rgba($color-gray, 0.7)};
     }
 
-    box-shadow: 0 0 15px var(--drum-glow-color, transparent);
+    box-shadow: 0 0 15px var(--computed-drum-glow-color, transparent);
   }
 
   .start-stop-button:focus-visible {
