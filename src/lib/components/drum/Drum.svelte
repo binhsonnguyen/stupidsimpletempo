@@ -8,6 +8,8 @@
 	import { volumeStore } from '$lib/state/volumeStore';
 	import { swipeable } from '$lib/components/actions/swipeable';
 	import { logger } from '$lib/services/logger';
+	import { beatScheduleStore } from '$lib/state/beatScheduleStore';
+	import * as Tone from 'tone';
 	import { VALID_DIVISIONS } from '$lib/constants';
 
 	const divisionOptions = VALID_DIVISIONS;
@@ -21,6 +23,36 @@
 	onMount(() => {
 		volumeStore.setVolume(100);
 		volumeStore.setBoostFactor(1.2);
+	});
+
+	let animationFrameId: number;
+	let masterProximity = $state(0);
+
+	$effect(() => {
+		const isRunning = $metronomeStore.isRunning;
+
+		function updateLoop() {
+			const pot = Tone.now();
+			const schedule = beatScheduleStore.getMasterSchedule(pot);
+
+			if (schedule?.proximityToNextBeat !== undefined) {
+				masterProximity = schedule.proximityToNextBeat;
+			}
+
+			animationFrameId = requestAnimationFrame(updateLoop);
+		}
+
+		if (isRunning) {
+			animationFrameId = requestAnimationFrame(updateLoop);
+		} else {
+			masterProximity = 0;
+		}
+
+		return () => {
+			if (animationFrameId) {
+				cancelAnimationFrame(animationFrameId);
+			}
+		};
 	});
 
 	function beatsPerMeasureAdvance(level: number = 1) {
