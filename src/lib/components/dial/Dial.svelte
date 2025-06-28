@@ -67,6 +67,18 @@
 		return -angle;
 	}
 
+	function calculateShortestRotation(targetAngle: number, currentAngle: number): number {
+		let finalAngle = targetAngle;
+		const delta = finalAngle - currentAngle;
+
+		if (delta > 180) {
+			finalAngle -= 360;
+		} else if (delta < -180) {
+			finalAngle += 360;
+		}
+		return finalAngle;
+	}
+
 	function handleRotate(event: CustomEvent<number>) {
 		userInteractionStore.startInteraction();
 		rotationAngle.set(event.detail, { duration: 0 });
@@ -76,18 +88,12 @@
 		userInteractionStore.endInteraction();
 
 		const current = rotationAngle.current;
-
 		const finalBpm = $metronomeStore.bpm;
-		let targetAngle = calculateAngleFromBpm(finalBpm);
+		const targetAngle = calculateAngleFromBpm(finalBpm);
 
-		const delta = targetAngle - current;
-		if (delta > 180) {
-			targetAngle -= 360;
-		} else if (delta < -180) {
-			targetAngle += 360;
-		}
+		const shortestPathAngle = calculateShortestRotation(targetAngle, current);
 
-		rotationAngle.set(targetAngle);
+		rotationAngle.set(shortestPathAngle);
 	}
 </script>
 
