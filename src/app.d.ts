@@ -25,6 +25,7 @@ declare global {
 			'onswipedown'?: (event: CustomEvent<void>) => void;
 			'onswipeleft'?: (event: CustomEvent<void>) => void;
 			'onswiperight'?: (event: CustomEvent<void>) => void;
+			'ondoubletap'?: (event: CustomEvent<{ angle: number }>) => void;
 		}
 	}
 }
