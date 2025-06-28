@@ -4,7 +4,7 @@
 	import Footer from '$lib/components/Footer.svelte';
 	import MainContentWrapper from '$lib/components/MainContentWrapper.svelte';
 	import Dial from '$lib/components/dial/Dial.svelte';
-	import TimeNotationSelector from '$lib/components/time-notation-selector/TimeNotationSelector.svelte';
+	import TimeSignature from '$lib/components/time-signature/TimeSignature.svelte';
 </script>
 
 <Header />
@@ -14,7 +14,7 @@
 		<div class="content-stack">
 			<Dial />
 			<div class="notation-container">
-				<TimeNotationSelector />
+				<TimeSignature />
 			</div>
 		</div>
 	</MainContentWrapper>
