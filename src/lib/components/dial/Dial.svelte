@@ -90,7 +90,7 @@
 		<div id="rotaryDialContainer" class="rotary-dial-container">
 			<DialLabels rotationAngle={currentRotation} />
 			<DialTickMark rotationAngle={currentRotation} />
-			<DialTrackBorder />
+			<DialTrackBorder divided={false} />
 			<DialKnob />
 			<Drum />
 		</div>
