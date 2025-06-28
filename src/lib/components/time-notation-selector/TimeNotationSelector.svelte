@@ -6,6 +6,7 @@
 	import type { BeatIntervalOption } from './TimeNotationFilmStrip.svelte';
 
 	// https://lights0123.com/fractions/
+	// https://github.com/binhsonnguyen/fractions
 	const BEAT_INTERVAL_OPTIONS: BeatIntervalOption[] = [
 		{ label: '⚬', value: '1m', description: 'Whole Note (Nốt tròn)', symbol: '⚬' },
 		{ label: '½', value: '2n', description: 'Half Note (Nốt trắng)', symbol: '𝅗𝅥' },
