@@ -266,7 +266,7 @@
     .note-symbol {
         font-size: 0.8em;
         font-weight: bold;
-        color: rgb(220, 220, 220);
+        color: white;
         transition: color 0.2s ease, opacity var(--transition-duration) ease;
         opacity: 0.5;
         display: inline-flex;
