@@ -110,7 +110,7 @@
 	{#if children}
 		{@render children()}
 	{:else}
-		<DrumDivisionControl enableSwipe={false} showLines={false} />
+		<DrumDivisionControl enableSwipe={false} showLines={true} />
 	{/if}
 </button>
 
