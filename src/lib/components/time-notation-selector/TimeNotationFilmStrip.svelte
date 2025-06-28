@@ -1,7 +1,7 @@
 <!-- src/lib/components/time-notation-selector/TimeNotationFilmStrip.svelte -->
 
 <script context="module" lang="ts">
-	import type { BeatInterval } from '$lib/state/metronomeStore';
+	import type { BeatInterval } from '$lib/constants';
 
 	export type BeatIntervalOption = {
 		label: string;
@@ -144,10 +144,10 @@
 	class:hidden={!$filmStripVisibilityStore}
 	on:pointerenter={filmStripVisibilityStore.show}
 	on:pointerleave={() => {
-	if (!isDragging) {
-		filmStripVisibilityStore.startHideTimer();
-	}
-}}
+		if (!isDragging) {
+			filmStripVisibilityStore.startHideTimer();
+		}
+	}}
 >
 	<div class="division-line" class:is-faded-out={!$filmStripVisibilityStore}></div>
 
@@ -164,11 +164,11 @@
 						class:is-faded-out={!$filmStripVisibilityStore && currentIndex !== i}
 						class:standalone={!$filmStripVisibilityStore && currentIndex === i}
 					>
-					<span class="label-part">
+						<span class="label-part">
 							<!--eslint-disable-next-line svelte/no-at-html-tags-->
-						{@html bi.label}
+							{@html bi.label}
 						</span>
-					<span class="symbol-part music-note-font">
+						<span class="symbol-part music-note-font">
 							{bi.symbol}
 						</span>
 					</span>
