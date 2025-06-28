@@ -22,7 +22,7 @@
 		easing: quintOut
 	});
 
-	let currentAngle = $derived(rotationAngle.current);
+	let currentRotation = $derived(rotationAngle.current);
 
 	const markerResolver = new DialMarkerResolver({
 		minBpm: get(metronomeStore).minBpm,
@@ -32,7 +32,7 @@
 	});
 
 	$effect(() => {
-		const newBpm = markerResolver.calculateBpmFromDialRotation(currentAngle);
+		const newBpm = markerResolver.calculateBpmFromDialRotation(currentRotation);
 		if (Math.round(newBpm) !== $metronomeStore.bpm) {
 			metronomeStore.setTempo(newBpm);
 		}
@@ -65,7 +65,7 @@
 
 	function handleDoubleTap(event: CustomEvent<{ angle: number }>) {
 		logger.log(`Double tap detected at angle: ${event.detail.angle}`);
-		const bpmAtTap = markerResolver.calculateBpmFromPositionalAngle(event.detail.angle);
+		const bpmAtTap = markerResolver.calculateBpmFromPositionalAngle(event.detail.angle, currentRotation);
 		const targetBpm = Math.round(bpmAtTap / 5) * 5;
 		logger.log(`Snapping to ~${targetBpm} BPM`);
 		snapToBpm(targetBpm);
@@ -80,7 +80,7 @@
 	aria-valuemax={get(metronomeStore).maxBpm}
 	aria-valuenow={$metronomeStore.bpm}
 	tabindex="-1"
-	use:rotatable={{ rotation: currentAngle }}
+	use:rotatable={{ rotation: currentRotation }}
 	onrotate={handleRotate}
 	ondragend={handleDragEnd}
 	use:doubleTappable
@@ -88,8 +88,8 @@
 >
 	<div class="dial-container-outer">
 		<div id="rotaryDialContainer" class="rotary-dial-container">
-			<DialLabels rotationAngle={currentAngle} />
-			<DialTickMark rotationAngle={currentAngle} />
+			<DialLabels rotationAngle={currentRotation} />
+			<DialTickMark rotationAngle={currentRotation} />
 			<DialTrackBorder />
 			<DialKnob />
 			<Drum />
