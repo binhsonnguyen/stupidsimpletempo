@@ -58,6 +58,18 @@
 		return minBpm + percentage * bpmRange;
 	}
 
+	function calculateBpmFromPositionalAngle(positionalAngle: number): number {
+		const dialSystemAngle = ((positionalAngle + 90) % 360 + 360) % 360;
+		const clampedAngle = clamp(dialSystemAngle, minBpmAngle, maxBpmAngle);
+
+		const usableAngleRange = maxBpmAngle - minBpmAngle;
+		const angleWithinUsableRange = clampedAngle - minBpmAngle;
+		const percentage = usableAngleRange > 0 ? angleWithinUsableRange / usableAngleRange : 0;
+
+		const bpmRange = maxBpm - minBpm;
+		return minBpm + percentage * bpmRange;
+	}
+
 	function calculateAngleFromBpm(bpm: number): number {
 		const bpmRange = maxBpm - minBpm;
 		const percentage = bpmRange > 0 ? (bpm - minBpm) / bpmRange : 0;
@@ -95,6 +107,14 @@
 	function handleDragEnd() {
 		userInteractionStore.endInteraction();
 		snapToBpm($metronomeStore.bpm)
+	}
+
+	function handleDoubleTap(event: CustomEvent<{ angle: number }>) {
+		logger.log(`Double tap detected at angle: ${event.detail.angle}`);
+		const bpmAtTap = calculateBpmFromPositionalAngle(event.detail.angle);
+		const targetBpm = Math.round(bpmAtTap / 5) * 5;
+		logger.log(`Snapping to ~${targetBpm} BPM`);
+		snapToBpm(targetBpm);
 	}
 </script>
 
