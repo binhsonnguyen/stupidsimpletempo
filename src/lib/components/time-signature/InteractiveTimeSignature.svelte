@@ -61,7 +61,7 @@
 	onswiperight={() => handleIntervalChange('right')}
 	role="button"
 	aria-label="Change time signature"
-	tabindex="0"
+	tabindex="-1"
 >
 	<span class="beats-per-measure">{beatsPerMeasure}</span>
 	<span class="beat-interval-symbol music-note-font">{beatIntervalSymbol}</span>
