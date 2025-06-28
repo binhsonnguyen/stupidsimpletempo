@@ -6,24 +6,25 @@ import { beatSequenceStore } from './beatSequenceStore';
 import { beatScheduleStore } from './beatScheduleStore';
 import { logger } from '$lib/services/logger';
 import type { BeatInterval, Division } from '$lib/constants';
+import { TimeSignature } from '$lib/models/TimeSignature';
 
 export type MetronomeState = {
 	bpm: number;
 	isRunning: boolean;
 	minBpm: number;
 	maxBpm: number;
-	beatsPerMeasure: Division;
-	beatInterval: BeatInterval;
+	timeSignature: TimeSignature;
 	currentBeatIndex: number;
 };
+
+const initialTimeSignature = new TimeSignature(1, '4n');
 
 const initialState: MetronomeState = {
 	bpm: 40,
 	isRunning: false,
 	minBpm: 40,
 	maxBpm: 200,
-	beatsPerMeasure: 1,
-	beatInterval: '4n',
+	timeSignature: initialTimeSignature,
 	currentBeatIndex: 0
 };
 
@@ -32,6 +33,7 @@ export type MetronomeStore = {
 	setTempo: (newBpm: number) => void;
 	setBeatsPerMeasure: (count: Division) => void;
 	setBeatInterval: (interval: BeatInterval) => void;
+	setTimeSignature: (newTimeSignature: TimeSignature) => void;
 	toggle: () => void;
 	reset: () => void;
 };
@@ -66,8 +68,9 @@ function createMetronomeStore(): MetronomeStore {
 		if (currentBeat) {
 			currentBeat.sound.play(time);
 
-			const nextIndex = (metronomeState.currentBeatIndex + 1) % metronomeState.beatsPerMeasure;
-			const intervalSeconds = Tone.Time(metronomeState.beatInterval).toSeconds();
+			const { beatsPerMeasure, beatInterval } = metronomeState.timeSignature;
+			const nextIndex = (metronomeState.currentBeatIndex + 1) % beatsPerMeasure;
+			const intervalSeconds = Tone.Time(beatInterval).toSeconds();
 			const nextBeatTime = time + intervalSeconds;
 
 			beatScheduleStore.setBeatAppointment(nextIndex, nextBeatTime);
@@ -107,23 +110,23 @@ function createMetronomeStore(): MetronomeStore {
 		if (currentState.isRunning) {
 			stopLoop();
 		} else {
-			startLoop(currentState.beatInterval);
+			startLoop(currentState.timeSignature.beatInterval);
 		}
 
 		update((state) => ({ ...state, isRunning: !state.isRunning }));
 	};
 
-	const setBeatInterval = (interval: BeatInterval) => {
+	const setTimeSignature = (newTimeSignature: TimeSignature) => {
 		const wasRunning = get(metronomeStore).isRunning;
 
 		if (wasRunning) {
 			stopLoop();
 		}
 
-		update((state) => ({ ...state, beatInterval: interval }));
+		update((state) => ({ ...state, timeSignature: newTimeSignature, currentBeatIndex: 0 }));
 
 		if (wasRunning) {
-			startLoop(interval);
+			startLoop(newTimeSignature.beatInterval);
 		}
 	};
 
@@ -142,11 +145,14 @@ function createMetronomeStore(): MetronomeStore {
 			});
 		},
 		setBeatsPerMeasure: (count: Division) => {
-			update((state) => {
-				return { ...state, beatsPerMeasure: count, currentBeatIndex: 0 };
-			});
+			const current = get(metronomeStore).timeSignature;
+			setTimeSignature(current.withBeats(count));
 		},
-		setBeatInterval,
+		setBeatInterval: (interval: BeatInterval) => {
+			const current = get(metronomeStore).timeSignature;
+			setTimeSignature(current.withInterval(interval));
+		},
+		setTimeSignature,
 		toggle,
 		reset
 	};
