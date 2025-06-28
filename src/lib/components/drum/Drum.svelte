@@ -22,6 +22,8 @@
 	} from '$lib/config/chromaConstants';
 	import DrumDivisionControl from '$lib/components/drum/DrumDivisionControl.svelte';
 
+	let { children } = $props();
+
 	onMount(() => {
 		volumeStore.setVolume(100);
 		volumeStore.setBoostFactor(1.2);
@@ -105,9 +107,11 @@
 	tabindex="-1"
 	style="--glow-rgb: {$drumGlowStore.rgb}; --glow-alpha: {$drumGlowStore.alpha}; --glow-spread: {$drumGlowStore.spread}px;"
 >
-	<slot>
+	{#if children}
+		{@render children()}
+	{:else}
 		<DrumDivisionControl />
-	</slot>
+	{/if}
 </button>
 
 <style lang="scss">
@@ -127,7 +131,9 @@
     justify-content: center;
     align-items: center;
 
-    box-shadow: 0 0 15px var(--glow-spread, 5px) rgba(var(--glow-rgb, '40, 167, 69'), var(--glow-alpha, 0.7));
+    box-shadow:
+            0 0 15px var(--glow-spread, 5px)
+            rgba(var(--glow-rgb, '40, 167, 69'), var(--glow-alpha, 0.7));
   }
 
   .start-stop-button:focus-visible {
