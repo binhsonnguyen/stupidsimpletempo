@@ -5,10 +5,10 @@
 	import { swipeable } from '$lib/components/actions/swipeable';
 	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
 	import { VALID_BEAT_INTERVALS, VALID_DIVISIONS, type BeatInterval, type Division } from '$lib/constants';
+	import type { TimeSignature } from '$lib/models/TimeSignature';
 
-	let { beatsPerMeasure, beatInterval } = $props<{
-		beatsPerMeasure: Division;
-		beatInterval: BeatInterval;
+	let { timeSignature } = $props<{
+		timeSignature: TimeSignature;
 	}>();
 
 	const dispatch = createEventDispatcher<{
@@ -16,26 +16,15 @@
 		changeInterval: BeatInterval;
 	}>();
 
-	const beatIntervalToSymbol: Record<BeatInterval, string> = {
-		'1m': '𝅝', // Whole note
-		'2n': '𝅗𝅥', // Half note
-		'4n': '𝅘𝅥', // Quarter note
-		'8n': '𝅘𝅥𝅮', // Eighth note
-		'16n': '𝅘𝅥𝅯', // Sixteenth note
-		'8t': '𝅘𝅥𝅮³' // Eighth triplet
-	};
-
-	const beatIntervalSymbol = $derived(beatIntervalToSymbol[beatInterval] || '𝅘𝅥');
-
 	function handleBeatsChange(direction: 'up' | 'down') {
-		const currentIndex = VALID_DIVISIONS.indexOf(beatsPerMeasure);
+		const currentIndex = VALID_DIVISIONS.indexOf(timeSignature.beatsPerMeasure);
 		const delta = direction === 'up' ? 1 : -1;
 		const nextIndex = (currentIndex + delta + VALID_DIVISIONS.length) % VALID_DIVISIONS.length;
 		dispatch('changeBeats', VALID_DIVISIONS[nextIndex]);
 	}
 
 	function handleIntervalChange(direction: 'left' | 'right') {
-		const currentIndex = VALID_BEAT_INTERVALS.indexOf(beatInterval);
+		const currentIndex = VALID_BEAT_INTERVALS.indexOf(timeSignature.beatInterval);
 		const delta = direction === 'right' ? 1 : -1;
 		const nextIndex = (currentIndex + delta + VALID_BEAT_INTERVALS.length) % VALID_BEAT_INTERVALS.length;
 		dispatch('changeInterval', VALID_BEAT_INTERVALS[nextIndex]);
@@ -63,8 +52,8 @@
 	aria-label="Change time signature"
 	tabindex="-1"
 >
-	<span class="beats-per-measure">{beatsPerMeasure}</span>
-	<span class="beat-interval-symbol music-note-font">{beatIntervalSymbol}</span>
+	<span class="beats-per-measure">{timeSignature.beatsPerMeasure}</span>
+	<span class="beat-interval-symbol music-note-font">{timeSignature.symbol}</span>
 </div>
 
 <style>
