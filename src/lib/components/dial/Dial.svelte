@@ -14,6 +14,7 @@
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
 	import { rotatable } from '$lib/components/actions/rotatable';
+	import { doubleTappable } from '$lib/components/actions/doubleTappable';
 
 	const rotationAngle = new Tween(0, {
 		duration: 250,
@@ -37,11 +38,26 @@
 	});
 
 	$effect(() => {
-		logger.log(`BPM updated to: ${$metronomeStore.bpm}`);
+		const expectedAngle = calculateAngleFromBpm($metronomeStore.bpm);
+		if (Math.abs(expectedAngle - rotationAngle.current) > 1) {
+			rotationAngle.set(expectedAngle);
+		}
 	});
 
 	function clamp(value: number, min: number, max: number): number {
 		return Math.max(min, Math.min(value, max));
+	}
+
+	function calculateBpmFromPositionalAngle(positionalAngle: number): number {
+		const dialSystemAngle = ((positionalAngle + 90) % 360 + 360) % 360;
+		const clampedAngle = clamp(dialSystemAngle, minBpmAngle, maxBpmAngle);
+
+		const usableAngleRange = maxBpmAngle - minBpmAngle;
+		const angleWithinUsableRange = clampedAngle - minBpmAngle;
+		const percentage = usableAngleRange > 0 ? angleWithinUsableRange / usableAngleRange : 0;
+
+		const bpmRange = maxBpm - minBpm;
+		return minBpm + percentage * bpmRange;
 	}
 
 	function calculateBpmFromAngle(angle: number): number {
@@ -89,6 +105,26 @@
 
 		rotationAngle.set(targetAngle);
 	}
+
+	function handleDoubleTap(event: CustomEvent<{ angle: number }>) {
+		logger.log(`Double tap detected at angle: ${event.detail.angle}`);
+
+		const bpmAtTap = calculateBpmFromPositionalAngle(event.detail.angle);
+		const targetBpm = Math.round(bpmAtTap / 5) * 5;
+		let targetAngle = calculateAngleFromBpm(targetBpm);
+
+		logger.log(`Snapping to ~${targetBpm} BPM`);
+
+		const current = rotationAngle.current;
+		const delta = targetAngle - current;
+		if (delta > 180) {
+			targetAngle -= 360;
+		} else if (delta < -180) {
+			targetAngle += 360;
+		}
+
+		rotationAngle.set(targetAngle);
+	}
 </script>
 
 <div
@@ -102,6 +138,8 @@
 	use:rotatable={{ rotation: currentAngle }}
 	onrotate={handleRotate}
 	ondragend={handleDragEnd}
+	use:doubleTappable
+	ondoubletap={handleDoubleTap}
 >
 	<div class="dial-container-outer">
 		<div id="rotaryDialContainer" class="rotary-dial-container">
