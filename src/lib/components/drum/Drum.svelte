@@ -2,8 +2,6 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	// highlight-start
-	// Loại bỏ `fade` vì nó đã được chuyển đi
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import { isAudioLoading } from '$lib/state/audioLoadingStore';
 	import { volumeStore } from '$lib/state/volumeStore';
@@ -157,10 +155,6 @@
 </button>
 
 <style lang="scss">
-  $color-red: rgb(220, 53, 69);
-  $color-green: rgb(40, 167, 69);
-  $color-gray: rgb(108, 117, 125);
-
   .start-stop-button {
     position: absolute;
     top: 50%;
@@ -176,15 +170,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    --line-glow-color: #{rgba($color-green, 0.85)};
-
-    &.on {
-      --line-glow-color: #{rgba($color-red, 0.85)};
-    }
-
-    &.loading {
-      --line-glow-color: #{rgba($color-gray, 0.7)};
-    }
 
     box-shadow: 0 0 15px var(--glow-spread, 5px) rgba(var(--glow-rgb, '40, 167, 69'), var(--glow-alpha, 0.7));
   }
