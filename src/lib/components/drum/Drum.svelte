@@ -78,15 +78,22 @@
 		metronomeStore.toggle();
 	}
 
-	function handleSwipe(direction: 'up' | 'down' | 'left' | 'right') {
-		userInteractionStore.startInteraction();
+	function handleSwipeDirection(direction: 'up' | 'down' | 'left' | 'right') {
 		if (direction === 'down' || direction === 'right') {
-			logger.log('⬆️ Swipe Up Detected!');
+			logger.log('Divisions increased');
 			beatsPerMeasureAdvance(1);
 		} else {
-			logger.log('⬇️ Swipe Down Detected!');
+			logger.log('Divisions decreased');
 			beatsPerMeasureAdvance(-1);
 		}
+	}
+
+	function handleSwipeStart() {
+		userInteractionStore.startInteraction();
+	}
+
+	function handleSwipeEnd() {
+		userInteractionStore.endInteraction();
 	}
 
 	const easedProximity = $derived(masterProximity ** 2);
@@ -130,14 +137,16 @@
 <button
 	onclick={handleDrumClick}
 	use:swipeable
-	onswipeup={() => handleSwipe('up')}
-	onswipedown={() => handleSwipe('down')}
-	onswipeleft={() => handleSwipe('left')}
-	onswiperight={() => handleSwipe('right')}
+	onswipestart={handleSwipeStart}
+	onswipeend={handleSwipeEnd}
+	onswipeup={() => handleSwipeDirection('up')}
+	onswipedown={() => handleSwipeDirection('down')}
+	onswipeleft={() => handleSwipeDirection('left')}
+	onswiperight={() => handleSwipeDirection('right')}
 	class="start-stop-button"
 	aria-label={$isAudioLoading
-		? 'Loading sounds...'
-		: $metronomeStore.isRunning
+	? 'Loading sounds...'
+	: $metronomeStore.isRunning
 		? 'Stop metronome'
 		: 'Start metronome'}
 	disabled={$isAudioLoading}
