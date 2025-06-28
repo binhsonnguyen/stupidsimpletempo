@@ -4,10 +4,18 @@
 	import type { BeatInterval } from '$lib/constants';
 	import TimeNotationFilmStrip from './TimeNotationFilmStrip.svelte';
 	import type { BeatIntervalOption } from './TimeNotationFilmStrip.svelte';
+	import { makeFraction } from '$lib/utils/fractionGenerator';
 
-	// https://lights0123.com/fractions/
-	// https://github.com/binhsonnguyen/fractions
-	const BEAT_INTERVAL_OPTIONS: BeatIntervalOption[] = [
+	const beatIntervalToDenominator: Record<BeatInterval, number> = {
+		'1m': 1,
+		'2n': 2,
+		'4n': 4,
+		'8n': 8,
+		'16n': 16,
+		'8t': 8
+	};
+
+	const BASE_OPTIONS: Omit<BeatIntervalOption, 'timeSignatureLabel'>[] = [
 		{ label: '⚬', value: '1m', description: 'Whole Note (Nốt tròn)', symbol: '⚬' },
 		{ label: '½', value: '2n', description: 'Half Note (Nốt trắng)', symbol: '𝅗𝅥' },
 		{ label: '¼', value: '4n', description: 'Quarter Note (Nốt đen)', symbol: '𝅘𝅥' },
@@ -16,11 +24,13 @@
 		{ label: '⅛³', value: '8t', description: 'Eighth Triplet (Chùm ba)', symbol: '𝅘𝅥𝅮³' }
 	];
 
-	let initialBeatInterval: BeatInterval | undefined;
-
-	$: if ($metronomeStore.beatInterval) {
-		initialBeatInterval = $metronomeStore.beatInterval;
-	}
+	$: optionsWithTimeSignature = BASE_OPTIONS.map((option) => {
+		const denominator = beatIntervalToDenominator[option.value] || 0;
+		return {
+			...option,
+			timeSignatureLabel: makeFraction($metronomeStore.beatsPerMeasure, denominator)
+		};
+	});
 
 	function handleSelectionChange(event: CustomEvent<BeatInterval>) {
 		metronomeStore.setBeatInterval(event.detail);
@@ -28,13 +38,11 @@
 </script>
 
 <div class="notation-wrapper">
-	{#if initialBeatInterval}
-		<TimeNotationFilmStrip
-			options={BEAT_INTERVAL_OPTIONS}
-			initialValue={initialBeatInterval}
-			on:change={handleSelectionChange}
-		/>
-	{/if}
+	<TimeNotationFilmStrip
+		options={optionsWithTimeSignature}
+		initialValue={$metronomeStore.beatInterval}
+		on:change={handleSelectionChange}
+	/>
 </div>
 
 <style>
