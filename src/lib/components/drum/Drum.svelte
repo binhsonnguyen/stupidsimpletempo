@@ -20,6 +20,7 @@
 		GLOW_SPREAD_PULSE_MIN,
 		GLOW_SPREAD_PULSE_MAX,
 		GLOW_ALPHA_STATIC,
+		GLOW_ALPHA_STATIC_DIM,
 		GLOW_ALPHA_PULSE_MIN,
 		GLOW_ALPHA_PULSE_MAX
 	} from '$lib/config/chromaConstants';
@@ -99,7 +100,7 @@
 		if ($isAudioLoading) {
 			drumGlowStore.setGlow({
 				rgb: COLOR_LOADING_RGB,
-				alpha: 0.5,
+				alpha: GLOW_ALPHA_STATIC_DIM,
 				spread: GLOW_SPREAD_STATIC
 			});
 		} else if ($metronomeStore.isRunning) {
