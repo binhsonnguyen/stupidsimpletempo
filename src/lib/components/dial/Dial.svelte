@@ -14,6 +14,7 @@
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
 	import { rotatable } from '$lib/components/actions/rotatable';
+	import { doubleTappable } from '$lib/components/actions/doubleTappable';
 
 	const rotationAngle = new Tween(0, {
 		duration: 250,
