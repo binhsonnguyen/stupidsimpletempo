@@ -12,6 +12,7 @@
 	import * as Tone from 'tone';
 	import { VALID_DIVISIONS } from '$lib/constants';
 	import { drumGlowStore } from '$lib/state/drumGlowStore';
+	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
 	import {
 		COLOR_ON_RGB,
 		COLOR_OFF_RGB,
@@ -97,7 +98,13 @@
 	);
 
 	$effect(() => {
-		if ($isAudioLoading) {
+		if ($userInteractionStore) {
+			drumGlowStore.setGlow({
+				rgb: COLOR_ON_RGB,
+				alpha: GLOW_ALPHA_PULSE_MAX,
+				spread: GLOW_SPREAD_PULSE_MAX
+			});
+		} else if ($isAudioLoading) {
 			drumGlowStore.setGlow({
 				rgb: COLOR_LOADING_RGB,
 				alpha: GLOW_ALPHA_STATIC_DIM,

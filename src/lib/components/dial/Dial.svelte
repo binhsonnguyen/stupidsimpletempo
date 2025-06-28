@@ -12,6 +12,7 @@
 	import DialKnob from './layers/DialKnob.svelte';
 	import { logger } from '$lib/services/logger';
 	import { metronomeStore } from '$lib/state/metronomeStore';
+	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
 	import { rotatable } from '$lib/components/actions/rotatable';
 
 	const rotationAngle = new Tween(0, {
@@ -67,10 +68,13 @@
 	}
 
 	function handleRotate(event: CustomEvent<number>) {
+		userInteractionStore.startInteraction();
 		rotationAngle.set(event.detail, { duration: 0 });
 	}
 
 	function handleDragEnd() {
+		userInteractionStore.endInteraction();
+
 		const current = rotationAngle.current;
 
 		const finalBpm = $metronomeStore.bpm;
