@@ -79,6 +79,13 @@
 		return finalAngle;
 	}
 
+	function snapToBpm(bpm: number) {
+		const current = rotationAngle.current;
+		const targetAngle = calculateAngleFromBpm(bpm);
+		const shortestPathAngle = calculateShortestRotation(targetAngle, current);
+		rotationAngle.set(shortestPathAngle);
+	}
+
 	function handleRotate(event: CustomEvent<number>) {
 		userInteractionStore.startInteraction();
 		rotationAngle.set(event.detail, { duration: 0 });
@@ -86,14 +93,7 @@
 
 	function handleDragEnd() {
 		userInteractionStore.endInteraction();
-
-		const current = rotationAngle.current;
-		const finalBpm = $metronomeStore.bpm;
-		const targetAngle = calculateAngleFromBpm(finalBpm);
-
-		const shortestPathAngle = calculateShortestRotation(targetAngle, current);
-
-		rotationAngle.set(shortestPathAngle);
+		snapToBpm($metronomeStore.bpm)
 	}
 </script>
 
