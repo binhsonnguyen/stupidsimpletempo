@@ -81,10 +81,10 @@
 	function handleSwipe(direction: 'up' | 'down' | 'left' | 'right') {
 		if (direction === 'up' || direction === 'right') {
 			logger.log('⬆️ Swipe Up Detected!');
-			beatsPerMeasureAdvance(1);
+			beatsPerMeasureAdvance(-1);
 		} else {
 			logger.log('⬇️ Swipe Down Detected!');
-			beatsPerMeasureAdvance(-1);
+			beatsPerMeasureAdvance(1);
 		}
 	}
 
