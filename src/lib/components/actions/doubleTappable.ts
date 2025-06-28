@@ -1,5 +1,7 @@
 // src/lib/components/actions/doubleTappable.ts
 
+import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
+
 interface DoubleTapOptions {
 	timeout?: number;
 	maxDistance?: number;
@@ -27,6 +29,8 @@ export function doubleTappable(node: HTMLElement, options?: DoubleTapOptions) {
 		const distance = Math.sqrt((clientX - lastTapX) ** 2 + (clientY - lastTapY) ** 2);
 
 		if (timeSinceLastTap < timeout && distance < maxDistance) {
+			userInteractionStore.startInteraction();
+
 			const rect = node.getBoundingClientRect();
 			const centerX = rect.left + rect.width / 2;
 			const centerY = rect.top + rect.height / 2;
@@ -36,6 +40,8 @@ export function doubleTappable(node: HTMLElement, options?: DoubleTapOptions) {
 			const angle = Math.atan2(relY, relX) * (180 / Math.PI);
 
 			node.dispatchEvent(new CustomEvent('doubletap', { detail: { angle } }));
+
+			userInteractionStore.endInteraction();
 
 			lastTapTime = 0;
 		} else {
