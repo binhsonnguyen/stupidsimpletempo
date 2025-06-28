@@ -78,7 +78,7 @@
         font-size: 1.4rem;
         font-weight: lighter;
         line-height: 1;
-        color: white;
+        color: #dee2e6;
         font-variant-numeric: tabular-nums;
     }
 </style>
