@@ -7,3 +7,8 @@ Nó chủ yếu phục vụ những người đang học về âm nhạc, cung c
 
 * Âm thanh dễ nghe dễ chịu, không chỏi không phân tâm
 * Thời điểm rải nhịp tuyệt đối chính xác
+
+Thanks to
+
+* https://tonejs.github.io/
+* https://lights0123.com/fractions/
