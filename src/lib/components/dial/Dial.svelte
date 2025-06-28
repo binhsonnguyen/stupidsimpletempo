@@ -32,7 +32,7 @@
 	});
 
 	$effect(() => {
-		const newBpm = markerResolver.calculateBpmFromDialAngle(currentAngle);
+		const newBpm = markerResolver.calculateBpmFromDialRotation(currentAngle);
 		if (Math.round(newBpm) !== $metronomeStore.bpm) {
 			metronomeStore.setTempo(newBpm);
 		}

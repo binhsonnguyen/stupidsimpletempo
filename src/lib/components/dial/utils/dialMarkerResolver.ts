@@ -32,10 +32,10 @@ export class DialMarkerResolver {
 	}
 
 	/**
-	 * Tính toán BPM từ góc xoay của knob.
+	 * Tính toán BPM từ góc xoay của dial.
 	 * @param rotationAngle - Góc xoay hiện tại của knob (giá trị âm).
 	 */
-	public calculateBpmFromAngle(rotationAngle: number): number {
+	public calculateBpmFromDialRotation(rotationAngle: number): number {
 		const knobAngle = -rotationAngle;
 		const effectiveAngle = ((knobAngle % 360) + 360) % 360;
 		const clampedAngle = this.#clamp(effectiveAngle, this.#minBpmAngle, this.#maxBpmAngle);
@@ -48,11 +48,13 @@ export class DialMarkerResolver {
 	}
 
 	/**
-	 * Tính toán BPM từ góc vị trí của một cú chạm (hệ tọa độ atan2).
+	 * Tính toán vạch BPM ứng với góc của một vị trí.
 	 * @param positionalAngle - Góc của cú chạm so với tâm.
+	 * @param currentDialRotation - Góc xoay hiện tại của dial.
 	 */
-	public calculateBpmFromPositionalAngle(positionalAngle: number): number {
-		const dialSystemAngle = ((positionalAngle + 90) % 360 + 360) % 360;
+	public calculateBpmFromPositionalAngle(positionalAngle: number, currentDialRotation: number): number {
+		const angleOnDialFace = positionalAngle - currentDialRotation;
+		const dialSystemAngle = (((angleOnDialFace + 90) % 360) + 360) % 360;
 		const clampedAngle = this.#clamp(dialSystemAngle, this.#minBpmAngle, this.#maxBpmAngle);
 
 		const angleWithinUsableRange = clampedAngle - this.#minBpmAngle;
