@@ -52,8 +52,7 @@
 	aria-label="Change time signature"
 	tabindex="-1"
 >
-	<span class="beats-per-measure">{timeSignature.beatsPerMeasure}</span>
-	<span class="beat-interval-symbol music-note-font">{timeSignature.symbol}</span>
+	<span class="time-signature-fraction">{timeSignature.fraction}</span>
 </div>
 
 <style>
@@ -67,26 +66,19 @@
         padding: 8px 16px;
         border-radius: 8px;
         transition: background-color 0.2s;
+        min-height: 60px;
+        min-width: 60px;
     }
 
     .time-signature-container:active {
         cursor: grabbing;
     }
 
-    .beats-per-measure {
-        font-size: 1.5rem;
-        font-weight: 500;
+    .time-signature-fraction {
+        font-size: 1.4rem;
+        font-weight: lighter;
         line-height: 1;
         color: white;
-    }
-
-    .beat-interval-symbol {
-        font-size: 2.5rem;
-        line-height: 1;
-        color: white;
-    }
-
-    .music-note-font {
-        font-family: 'Noto Music', sans-serif;
+        font-variant-numeric: tabular-nums;
     }
 </style>
