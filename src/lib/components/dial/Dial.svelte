@@ -15,6 +15,7 @@
 	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
 	import { rotatable } from '$lib/components/actions/rotatable';
 	import { doubleTappable } from '$lib/components/actions/doubleTappable';
+	import { DialBpmResolver } from './utils/dialBpmResolver';
 
 	const rotationAngle = new Tween(0, {
 		duration: 250,
@@ -23,15 +24,15 @@
 
 	let currentAngle = $derived(rotationAngle.current);
 
-	const { minBpm, maxBpm, minBpmAngle, maxBpmAngle } = {
+	const bpmResolver = new DialBpmResolver({
 		minBpm: get(metronomeStore).minBpm,
 		maxBpm: get(metronomeStore).maxBpm,
 		minBpmAngle: 12,
 		maxBpmAngle: 320
-	};
+	});
 
 	$effect(() => {
-		const newBpm = calculateBpmFromAngle(currentAngle);
+		const newBpm = bpmResolver.calculateBpmFromAngle(currentAngle);
 		if (Math.round(newBpm) !== $metronomeStore.bpm) {
 			metronomeStore.setTempo(newBpm);
 		}
@@ -40,45 +41,6 @@
 	$effect(() => {
 		logger.log(`BPM updated to: ${$metronomeStore.bpm}`);
 	});
-
-	function clamp(value: number, min: number, max: number): number {
-		return Math.max(min, Math.min(value, max));
-	}
-
-	function calculateBpmFromAngle(angle: number): number {
-		const knobAngle = -angle;
-		const effectiveAngle = ((knobAngle % 360) + 360) % 360;
-		const clampedAngle = clamp(effectiveAngle, minBpmAngle, maxBpmAngle);
-
-		const usableAngleRange = maxBpmAngle - minBpmAngle;
-		const angleWithinUsableRange = clampedAngle - minBpmAngle;
-		const percentage = usableAngleRange > 0 ? angleWithinUsableRange / usableAngleRange : 0;
-
-		const bpmRange = maxBpm - minBpm;
-		return minBpm + percentage * bpmRange;
-	}
-
-	function calculateBpmFromPositionalAngle(positionalAngle: number): number {
-		const dialSystemAngle = ((positionalAngle + 90) % 360 + 360) % 360;
-		const clampedAngle = clamp(dialSystemAngle, minBpmAngle, maxBpmAngle);
-
-		const usableAngleRange = maxBpmAngle - minBpmAngle;
-		const angleWithinUsableRange = clampedAngle - minBpmAngle;
-		const percentage = usableAngleRange > 0 ? angleWithinUsableRange / usableAngleRange : 0;
-
-		const bpmRange = maxBpm - minBpm;
-		return minBpm + percentage * bpmRange;
-	}
-
-	function calculateAngleFromBpm(bpm: number): number {
-		const bpmRange = maxBpm - minBpm;
-		const percentage = bpmRange > 0 ? (bpm - minBpm) / bpmRange : 0;
-
-		const usableAngleRange = maxBpmAngle - minBpmAngle;
-		const angle = minBpmAngle + percentage * usableAngleRange;
-
-		return -angle;
-	}
 
 	function calculateShortestRotation(targetAngle: number, currentAngle: number): number {
 		let finalAngle = targetAngle;
@@ -99,7 +61,7 @@
 	}
 
 	function snapToBpm(bpm: number) {
-		const targetAngle = calculateAngleFromBpm(bpm);
+		const targetAngle = bpmResolver.calculateAngleFromBpm(bpm);
 		snapToAngle(targetAngle);
 	}
 
@@ -115,7 +77,7 @@
 
 	function handleDoubleTap(event: CustomEvent<{ angle: number }>) {
 		logger.log(`Double tap detected at angle: ${event.detail.angle}`);
-		const bpmAtTap = calculateBpmFromPositionalAngle(event.detail.angle);
+		const bpmAtTap = bpmResolver.calculateBpmFromPositionalAngle(event.detail.angle);
 		const targetBpm = Math.round(bpmAtTap / 5) * 5;
 		logger.log(`Snapping to ~${targetBpm} BPM`);
 		snapToBpm(targetBpm);
@@ -126,8 +88,8 @@
 	class="dial-area-wrapper"
 	role="slider"
 	aria-label="Metronome tempo"
-	aria-valuemin={minBpm}
-	aria-valuemax={maxBpm}
+	aria-valuemin={get(metronomeStore).minBpm}
+	aria-valuemax={get(metronomeStore).maxBpm}
 	aria-valuenow={$metronomeStore.bpm}
 	tabindex="-1"
 	use:rotatable={{ rotation: currentAngle }}
