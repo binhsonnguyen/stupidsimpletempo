@@ -9,13 +9,20 @@
 	import { VALID_DIVISIONS } from '$lib/constants';
 	import DrumDivisionLines from './DrumDivisionLines.svelte';
 
+	let { enableSwipe = true, showLines = true } = $props<{
+		enableSwipe?: boolean;
+		showLines?: boolean;
+	}>();
+
 	let currentDivisionIndex = $state(
 		VALID_DIVISIONS.indexOf(get(metronomeStore).beatsPerMeasure)
 	);
 	const divisions = $derived(VALID_DIVISIONS[currentDivisionIndex]);
 
 	$effect(() => {
-		metronomeStore.setBeatsPerMeasure(divisions);
+		if (enableSwipe) {
+			metronomeStore.setBeatsPerMeasure(divisions);
+		}
 	});
 
 	function beatsPerMeasureAdvance(level: number = 1) {
@@ -24,6 +31,8 @@
 	}
 
 	function handleSwipeDirection(direction: 'up' | 'down' | 'left' | 'right') {
+		if (!enableSwipe) return;
+
 		if (direction === 'down' || direction === 'right') {
 			logger.log('Divisions increased');
 			beatsPerMeasureAdvance(1);
@@ -32,19 +41,32 @@
 			beatsPerMeasureAdvance(-1);
 		}
 	}
+
+	function handleSwipeStart() {
+		if (!enableSwipe) return;
+		userInteractionStore.startInteraction();
+	}
+
+	function handleSwipeEnd() {
+		if (!enableSwipe) return;
+		userInteractionStore.endInteraction();
+	}
 </script>
 
 <div
 	class="control-overlay"
+	class:interactive={enableSwipe}
 	use:swipeable
-	onswipestart={userInteractionStore.startInteraction}
-	onswipeend={userInteractionStore.endInteraction}
+	onswipestart={handleSwipeStart}
+	onswipeend={handleSwipeEnd}
 	onswipeup={() => handleSwipeDirection('up')}
 	onswipedown={() => handleSwipeDirection('down')}
 	onswipeleft={() => handleSwipeDirection('left')}
 	onswiperight={() => handleSwipeDirection('right')}
 >
-	<DrumDivisionLines {divisions} />
+	{#if showLines}
+		<DrumDivisionLines {divisions} />
+	{/if}
 </div>
 
 <style>
@@ -55,10 +77,14 @@
         width: 100%;
         height: 100%;
         pointer-events: auto;
+        cursor: default;
+    }
+
+    .control-overlay.interactive {
         cursor: grab;
     }
 
-    .control-overlay:active {
+    .control-overlay.interactive:active {
         cursor: grabbing;
     }
 </style>
