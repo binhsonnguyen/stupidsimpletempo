@@ -24,7 +24,7 @@
   @use '../_dial-layer-base.scss';
 
   #labelLayer {
-    z-index: 1;
+    z-index: 2;
 
     // 3. Thay đổi từ background-image sang mask-image
     mask-image: url('/svg/bpm-labels.svg');

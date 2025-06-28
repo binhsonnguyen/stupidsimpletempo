@@ -22,7 +22,7 @@
   @use '../_dial-layer-base.scss';
 
   #tickMarkLayer {
-    z-index: 2;
+    z-index: 3;
 
     mask-image: url('/svg/bpm-markers.svg');
     mask-size: contain;
