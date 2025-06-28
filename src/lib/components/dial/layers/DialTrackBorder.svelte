@@ -20,7 +20,7 @@
   @use '../_dial-layer-base.scss';
 
   #dialTrackBorderLayer {
-    z-index: 3;
+    z-index: 1;
     box-sizing: border-box;
     border-width: 5px;
     border-style: solid;
