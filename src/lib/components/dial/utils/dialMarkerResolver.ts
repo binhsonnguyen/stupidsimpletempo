@@ -1,13 +1,13 @@
-// src/lib/components/dial/utils/dialBpmResolver.ts
+// src/lib/components/dial/utils/dialMarkerResolver.ts
 
-export interface DialResolverOptions {
+export interface DialMarkerResolverOptions {
 	minBpm: number;
 	maxBpm: number;
 	minBpmAngle: number;
 	maxBpmAngle: number;
 }
 
-export class DialBpmResolver {
+export class DialMarkerResolver {
 	readonly #minBpm: number;
 	readonly #maxBpm: number;
 	readonly #minBpmAngle: number;
@@ -15,7 +15,7 @@ export class DialBpmResolver {
 	readonly #bpmRange: number;
 	readonly #usableAngleRange: number;
 
-	constructor(options: DialResolverOptions) {
+	constructor(options: DialMarkerResolverOptions) {
 		this.#minBpm = options.minBpm;
 		this.#maxBpm = options.maxBpm;
 		this.#minBpmAngle = options.minBpmAngle;
@@ -70,5 +70,23 @@ export class DialBpmResolver {
 		const percentage = this.#bpmRange > 0 ? (bpm - this.#minBpm) / this.#bpmRange : 0;
 		const angle = this.#minBpmAngle + percentage * this.#usableAngleRange;
 		return -angle;
+	}
+
+	/**
+	 * Tính toán góc xoay cuối cùng để đi theo con đường ngắn nhất.
+	 * @param targetAngle - Góc đích đến.
+	 * @param currentAngle - Góc hiện tại.
+	 * @returns Góc đích đã được điều chỉnh.
+	 */
+	public calculateShortestRotation(targetAngle: number, currentAngle: number): number {
+		let finalAngle = targetAngle;
+		const delta = finalAngle - currentAngle;
+
+		if (delta > 180) {
+			finalAngle -= 360;
+		} else if (delta < -180) {
+			finalAngle += 360;
+		}
+		return finalAngle;
 	}
 }

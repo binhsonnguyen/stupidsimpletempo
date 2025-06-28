@@ -15,7 +15,7 @@
 	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
 	import { rotatable } from '$lib/components/actions/rotatable';
 	import { doubleTappable } from '$lib/components/actions/doubleTappable';
-	import { DialBpmResolver } from './utils/dialBpmResolver';
+	import { DialMarkerResolver } from './utils/dialMarkerResolver';
 
 	const rotationAngle = new Tween(0, {
 		duration: 250,
@@ -24,7 +24,7 @@
 
 	let currentAngle = $derived(rotationAngle.current);
 
-	const bpmResolver = new DialBpmResolver({
+	const markerResolver = new DialMarkerResolver({
 		minBpm: get(metronomeStore).minBpm,
 		maxBpm: get(metronomeStore).maxBpm,
 		minBpmAngle: 12,
@@ -32,7 +32,7 @@
 	});
 
 	$effect(() => {
-		const newBpm = bpmResolver.calculateBpmFromAngle(currentAngle);
+		const newBpm = markerResolver.calculateBpmFromAngle(currentAngle);
 		if (Math.round(newBpm) !== $metronomeStore.bpm) {
 			metronomeStore.setTempo(newBpm);
 		}
@@ -42,26 +42,14 @@
 		logger.log(`BPM updated to: ${$metronomeStore.bpm}`);
 	});
 
-	function calculateShortestRotation(targetAngle: number, currentAngle: number): number {
-		let finalAngle = targetAngle;
-		const delta = finalAngle - currentAngle;
-
-		if (delta > 180) {
-			finalAngle -= 360;
-		} else if (delta < -180) {
-			finalAngle += 360;
-		}
-		return finalAngle;
-	}
-
 	function snapToAngle(targetAngle: number) {
 		const current = rotationAngle.current;
-		const shortestPathAngle = calculateShortestRotation(targetAngle, current);
+		const shortestPathAngle = markerResolver.calculateShortestRotation(targetAngle, current);
 		rotationAngle.set(shortestPathAngle);
 	}
 
 	function snapToBpm(bpm: number) {
-		const targetAngle = bpmResolver.calculateAngleFromBpm(bpm);
+		const targetAngle = markerResolver.calculateAngleFromBpm(bpm);
 		snapToAngle(targetAngle);
 	}
 
@@ -77,7 +65,7 @@
 
 	function handleDoubleTap(event: CustomEvent<{ angle: number }>) {
 		logger.log(`Double tap detected at angle: ${event.detail.angle}`);
-		const bpmAtTap = bpmResolver.calculateBpmFromPositionalAngle(event.detail.angle);
+		const bpmAtTap = markerResolver.calculateBpmFromPositionalAngle(event.detail.angle);
 		const targetBpm = Math.round(bpmAtTap / 5) * 5;
 		logger.log(`Snapping to ~${targetBpm} BPM`);
 		snapToBpm(targetBpm);
