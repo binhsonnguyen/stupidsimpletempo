@@ -134,14 +134,6 @@
 	onswipeleft={() => handleSwipe('left')}
 	onswiperight={() => handleSwipe('right')}
 	class="start-stop-button"
-	class:on={$metronomeStore.isRunning && !$isAudioLoading}
-	class:off={!$metronomeStore.isRunning && !$isAudioLoading}
-	class:loading={$isAudioLoading}
-	class:divisions-2={divisions === 2}
-	class:divisions-3={divisions === 3}
-	class:divisions-4={divisions === 4}
-	class:divisions-6={divisions === 6}
-	class:divisions-8={divisions === 8}
 	aria-label={$isAudioLoading
 		? 'Loading sounds...'
 		: $metronomeStore.isRunning
