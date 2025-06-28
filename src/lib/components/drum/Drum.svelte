@@ -20,7 +20,7 @@
 		GLOW_ALPHA_PULSE_MIN,
 		GLOW_ALPHA_PULSE_MAX
 	} from '$lib/config/chromaConstants';
-	import DrumDivisionControl from './DrumDivisionControl.svelte';
+	import DrumDivisionControl from '$lib/components/drum/DrumDivisionControl.svelte';
 
 	onMount(() => {
 		volumeStore.setVolume(100);
