@@ -108,6 +108,8 @@
 	use:rotatable={{ rotation: currentAngle }}
 	onrotate={handleRotate}
 	ondragend={handleDragEnd}
+	use:doubleTappable
+	ondoubletap={handleDoubleTap}
 >
 	<div class="dial-container-outer">
 		<div id="rotaryDialContainer" class="rotary-dial-container">
