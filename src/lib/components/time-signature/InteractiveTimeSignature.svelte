@@ -41,6 +41,7 @@
 
 <div
 	class="time-signature-container"
+	class:is-interacting={$userInteractionStore}
 	use:swipeable
 	onswipestart={handleSwipeStart}
 	onswipeend={handleSwipeEnd}
@@ -65,7 +66,8 @@
         user-select: none;
         padding: 8px 16px;
         border-radius: 8px;
-        transition: background-color 0.2s;
+        transition: background-color 0.2s,
+        transform 0.2s ease-out;
         min-height: 60px;
         min-width: 60px;
     }
@@ -80,5 +82,13 @@
         line-height: 1;
         color: #dee2e6;
         font-variant-numeric: tabular-nums;
+        transition: color 0.2s ease-out,
+        transform 0.2s ease-out;
     }
+
+    .time-signature-container.is-interacting .time-signature-fraction {
+        color: white;
+        transform: scale(1.1);
+    }
+
 </style>
