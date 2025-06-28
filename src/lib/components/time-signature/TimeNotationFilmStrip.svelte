@@ -1,4 +1,4 @@
-<!-- src/lib/components/time-notation-selector/TimeNotationFilmStrip.svelte -->
+<!-- src/lib/components/time-signature/TimeNotationFilmStrip.svelte -->
 
 <script context="module" lang="ts">
 	import type { BeatInterval } from '$lib/constants';

@@ -1,4 +1,4 @@
-<!-- src/lib/components/time-notation-selector/InteractiveTimeSignature.svelte -->
+<!-- src/lib/components/time-signature/InteractiveTimeSignature.svelte -->
 
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';

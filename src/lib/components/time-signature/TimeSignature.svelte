@@ -1,4 +1,4 @@
-<!-- src/lib/components/time-notation-selector/TimeNotationSelector.svelte -->
+<!-- src/lib/components/time-signature/TimeSignature.svelte -->
 <script lang="ts">
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import type { BeatInterval, Division } from '$lib/constants';

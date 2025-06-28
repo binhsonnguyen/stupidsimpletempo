@@ -1,4 +1,4 @@
-// src/lib/components/time-notation-selector/visibilityStore.ts
+// src/lib/state/visibilityStore.ts
 import { writable } from 'svelte/store';
 
 const HIDE_DELAY = 1000;
