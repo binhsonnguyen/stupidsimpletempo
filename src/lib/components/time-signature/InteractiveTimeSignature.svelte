@@ -2,6 +2,7 @@
 
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { fade } from 'svelte/transition';
 	import { swipeable } from '$lib/components/actions/swipeable';
 	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
 	import { VALID_BEAT_INTERVALS, VALID_DIVISIONS, type BeatInterval, type Division } from '$lib/constants';
@@ -54,10 +55,20 @@
 	tabindex="-1"
 >
 	<span class="time-signature-fraction">{timeSignature.fraction}</span>
+
+	{#if $userInteractionStore}
+		<div class="interaction-cues" transition:fade={{ duration: 150 }}>
+			<div class="arrow arrow-up"></div>
+			<div class="arrow arrow-down"></div>
+			<div class="arrow arrow-left"></div>
+			<div class="arrow arrow-right"></div>
+		</div>
+	{/if}
 </div>
 
 <style>
     .time-signature-container {
+        position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -91,4 +102,44 @@
         transform: scale(1.1);
     }
 
+    .interaction-cues {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
+    .arrow {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border: solid white;
+        border-width: 0 1px 1px 0;
+    }
+
+    .arrow-up {
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%) rotate(-135deg);
+    }
+
+    .arrow-down {
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%) rotate(45deg);
+    }
+
+    .arrow-left {
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%) rotate(135deg);
+    }
+
+    .arrow-right {
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%) rotate(-45deg);
+    }
 </style>
