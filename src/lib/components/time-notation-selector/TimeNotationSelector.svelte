@@ -1,9 +1,11 @@
 <!-- src/lib/components/time-notation-selector/TimeNotationSelector.svelte -->
 <script lang="ts">
-	import { metronomeStore, type BeatInterval } from '$lib/state/metronomeStore';
+	import { metronomeStore } from '$lib/state/metronomeStore';
+	import type { BeatInterval } from '$lib/constants';
 	import TimeNotationFilmStrip from './TimeNotationFilmStrip.svelte';
 	import type { BeatIntervalOption } from './TimeNotationFilmStrip.svelte';
 
+	// https://lights0123.com/fractions/
 	const BEAT_INTERVAL_OPTIONS: BeatIntervalOption[] = [
 		{ label: '⚬', value: '1m', description: 'Whole Note (Nốt tròn)', symbol: '⚬' },
 		{ label: '½', value: '2n', description: 'Half Note (Nốt trắng)', symbol: '𝅗𝅥' },
