@@ -5,13 +5,9 @@
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import { isAudioLoading } from '$lib/state/audioLoadingStore';
 	import { volumeStore } from '$lib/state/volumeStore';
-	import { swipeable } from '$lib/components/actions/swipeable';
-	import { logger } from '$lib/services/logger';
 	import { beatScheduleStore } from '$lib/state/beatScheduleStore';
 	import * as Tone from 'tone';
-	import { VALID_DIVISIONS } from '$lib/constants';
 	import { drumGlowStore } from '$lib/state/drumGlowStore';
-	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
 	import {
 		COLOR_ON_RGB,
 		COLOR_OFF_RGB,
@@ -24,15 +20,7 @@
 		GLOW_ALPHA_PULSE_MIN,
 		GLOW_ALPHA_PULSE_MAX
 	} from '$lib/config/chromaConstants';
-	import DrumDivisionLines from './DrumDivisionLines.svelte';
-
-	const divisionOptions = VALID_DIVISIONS;
-	let currentDivisionIndex = $state(0);
-	const divisions = $derived(VALID_DIVISIONS[currentDivisionIndex]);
-
-	$effect(() => {
-		metronomeStore.setBeatsPerMeasure(divisions);
-	});
+	import DrumDivisionControl from './DrumDivisionControl.svelte';
 
 	onMount(() => {
 		volumeStore.setVolume(100);
@@ -69,31 +57,8 @@
 		};
 	});
 
-	function beatsPerMeasureAdvance(level: number = 1) {
-		const numOptions = divisionOptions.length;
-		currentDivisionIndex = (currentDivisionIndex + level + numOptions) % numOptions;
-	}
-
 	function handleDrumClick() {
 		metronomeStore.toggle();
-	}
-
-	function handleSwipeDirection(direction: 'up' | 'down' | 'left' | 'right') {
-		if (direction === 'down' || direction === 'right') {
-			logger.log('Divisions increased');
-			beatsPerMeasureAdvance(1);
-		} else {
-			logger.log('Divisions decreased');
-			beatsPerMeasureAdvance(-1);
-		}
-	}
-
-	function handleSwipeStart() {
-		userInteractionStore.startInteraction();
-	}
-
-	function handleSwipeEnd() {
-		userInteractionStore.endInteraction();
 	}
 
 	const easedProximity = $derived(masterProximity ** 2);
@@ -106,13 +71,7 @@
 	);
 
 	$effect(() => {
-		if ($userInteractionStore) {
-			drumGlowStore.setGlow({
-				rgb: COLOR_ON_RGB,
-				alpha: GLOW_ALPHA_PULSE_MAX,
-				spread: GLOW_SPREAD_PULSE_MAX
-			});
-		} else if ($isAudioLoading) {
+		if ($isAudioLoading) {
 			drumGlowStore.setGlow({
 				rgb: COLOR_LOADING_RGB,
 				alpha: GLOW_ALPHA_STATIC_DIM,
@@ -136,24 +95,19 @@
 
 <button
 	onclick={handleDrumClick}
-	use:swipeable
-	onswipestart={handleSwipeStart}
-	onswipeend={handleSwipeEnd}
-	onswipeup={() => handleSwipeDirection('up')}
-	onswipedown={() => handleSwipeDirection('down')}
-	onswipeleft={() => handleSwipeDirection('left')}
-	onswiperight={() => handleSwipeDirection('right')}
 	class="start-stop-button"
 	aria-label={$isAudioLoading
-	? 'Loading sounds...'
-	: $metronomeStore.isRunning
+		? 'Loading sounds...'
+		: $metronomeStore.isRunning
 		? 'Stop metronome'
 		: 'Start metronome'}
 	disabled={$isAudioLoading}
 	tabindex="-1"
 	style="--glow-rgb: {$drumGlowStore.rgb}; --glow-alpha: {$drumGlowStore.alpha}; --glow-spread: {$drumGlowStore.spread}px;"
 >
-	<DrumDivisionLines {divisions} />
+	<slot>
+		<DrumDivisionControl />
+	</slot>
 </button>
 
 <style lang="scss">
