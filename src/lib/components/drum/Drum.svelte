@@ -21,8 +21,9 @@
 		GLOW_ALPHA_PULSE_MAX
 	} from '$lib/config/chromaConstants';
 	import DrumDivisionControl from '$lib/components/drum/DrumDivisionControl.svelte';
+	import * as Svelte from 'svelte';
 
-	let { children } = $props();
+	let { children } = $props<{ children?: Svelte.Snippet }>();
 
 	onMount(() => {
 		volumeStore.setVolume(100);
