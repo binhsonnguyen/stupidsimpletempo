@@ -70,16 +70,6 @@
 		return minBpm + percentage * bpmRange;
 	}
 
-	function calculateAngleFromBpm(bpm: number): number {
-		const bpmRange = maxBpm - minBpm;
-		const percentage = bpmRange > 0 ? (bpm - minBpm) / bpmRange : 0;
-
-		const usableAngleRange = maxBpmAngle - minBpmAngle;
-		const angle = minBpmAngle + percentage * usableAngleRange;
-
-		return -angle;
-	}
-
 	function calculateShortestRotation(targetAngle: number, currentAngle: number): number {
 		let finalAngle = targetAngle;
 		const delta = finalAngle - currentAngle;
@@ -92,11 +82,25 @@
 		return finalAngle;
 	}
 
-	function snapToBpm(bpm: number) {
+	function snapToAngle(targetAngle: number) {
 		const current = rotationAngle.current;
-		const targetAngle = calculateAngleFromBpm(bpm);
 		const shortestPathAngle = calculateShortestRotation(targetAngle, current);
 		rotationAngle.set(shortestPathAngle);
+	}
+
+	function snapToBpm(bpm: number) {
+		const calculateAngleFromBpm = (bpm: number): number => {
+			const bpmRange = maxBpm - minBpm;
+			const percentage = bpmRange > 0 ? (bpm - minBpm) / bpmRange : 0;
+
+			const usableAngleRange = maxBpmAngle - minBpmAngle;
+			const angle = minBpmAngle + percentage * usableAngleRange;
+
+			return -angle;
+		};
+
+		const targetAngle = calculateAngleFromBpm(bpm);
+		snapToAngle(targetAngle);
 	}
 
 	function handleRotate(event: CustomEvent<number>) {
@@ -106,7 +110,7 @@
 
 	function handleDragEnd() {
 		userInteractionStore.endInteraction();
-		snapToBpm($metronomeStore.bpm)
+		snapToBpm($metronomeStore.bpm);
 	}
 
 	function handleDoubleTap(event: CustomEvent<{ angle: number }>) {
