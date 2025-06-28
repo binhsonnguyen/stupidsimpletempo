@@ -79,6 +79,7 @@
 	}
 
 	function handleSwipe(direction: 'up' | 'down' | 'left' | 'right') {
+		userInteractionStore.startInteraction();
 		if (direction === 'down' || direction === 'right') {
 			logger.log('⬆️ Swipe Up Detected!');
 			beatsPerMeasureAdvance(1);
