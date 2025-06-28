@@ -70,6 +70,16 @@
 		return minBpm + percentage * bpmRange;
 	}
 
+	function calculateAngleFromBpm(bpm: number): number {
+		const bpmRange = maxBpm - minBpm;
+		const percentage = bpmRange > 0 ? (bpm - minBpm) / bpmRange : 0;
+
+		const usableAngleRange = maxBpmAngle - minBpmAngle;
+		const angle = minBpmAngle + percentage * usableAngleRange;
+
+		return -angle;
+	}
+
 	function calculateShortestRotation(targetAngle: number, currentAngle: number): number {
 		let finalAngle = targetAngle;
 		const delta = finalAngle - currentAngle;
@@ -89,16 +99,6 @@
 	}
 
 	function snapToBpm(bpm: number) {
-		const calculateAngleFromBpm = (bpm: number): number => {
-			const bpmRange = maxBpm - minBpm;
-			const percentage = bpmRange > 0 ? (bpm - minBpm) / bpmRange : 0;
-
-			const usableAngleRange = maxBpmAngle - minBpmAngle;
-			const angle = minBpmAngle + percentage * usableAngleRange;
-
-			return -angle;
-		};
-
 		const targetAngle = calculateAngleFromBpm(bpm);
 		snapToAngle(targetAngle);
 	}
