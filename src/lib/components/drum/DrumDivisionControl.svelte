@@ -1,7 +1,6 @@
 <!-- src/lib/components/drum/DrumDivisionControl.svelte -->
 
 <script lang="ts">
-	import { get } from 'svelte/store';
 	import { swipeable } from '$lib/components/actions/swipeable';
 	import { logger } from '$lib/services/logger';
 	import { metronomeStore } from '$lib/state/metronomeStore';
@@ -14,32 +13,25 @@
 		showLines?: boolean;
 	}>();
 
-	let currentDivisionIndex = $state(
-		VALID_DIVISIONS.indexOf(get(metronomeStore).beatsPerMeasure)
-	);
-	const divisions = $derived(VALID_DIVISIONS[currentDivisionIndex]);
-
-	$effect(() => {
-		if (enableSwipe) {
-			metronomeStore.setBeatsPerMeasure(divisions);
-		}
-	});
-
-	function beatsPerMeasureAdvance(level: number = 1) {
-		const numOptions = VALID_DIVISIONS.length;
-		currentDivisionIndex = (currentDivisionIndex + level + numOptions) % numOptions;
-	}
+	const divisions = $derived($metronomeStore.timeSignature.beatsPerMeasure);
 
 	function handleSwipeDirection(direction: 'up' | 'down' | 'left' | 'right') {
 		if (!enableSwipe) return;
 
+		const currentBeats = $metronomeStore.timeSignature.beatsPerMeasure;
+		const currentIndex = VALID_DIVISIONS.indexOf(currentBeats);
+
+		const delta = direction === 'down' || direction === 'right' ? 1 : -1;
+		const nextIndex = (currentIndex + delta + VALID_DIVISIONS.length) % VALID_DIVISIONS.length;
+		const nextBeats = VALID_DIVISIONS[nextIndex];
+
 		if (direction === 'down' || direction === 'right') {
 			logger.log('Divisions increased');
-			beatsPerMeasureAdvance(1);
 		} else {
 			logger.log('Divisions decreased');
-			beatsPerMeasureAdvance(-1);
 		}
+
+		metronomeStore.setBeatsPerMeasure(nextBeats);
 	}
 
 	function handleSwipeStart() {
