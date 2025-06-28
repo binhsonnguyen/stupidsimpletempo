@@ -12,13 +12,13 @@ const BEAT_INTERVAL_TO_SYMBOL: Record<BeatInterval, string> = {
 	'8t': '𝅘𝅥𝅮³' // Eighth triplet
 };
 
-const BEAT_INTERVAL_TO_DENOMINATOR: Record<BeatInterval, number> = {
-	'1m': 1,
-	'2n': 2,
-	'4n': 4,
-	'8n': 8,
-	'16n': 16,
-	'8t': 8
+const BEAT_INTERVAL_TO_DENOMINATOR: Record<BeatInterval, string> = {
+	'1m': '1',
+	'2n': '2',
+	'4n': '4',
+	'8n': '8',
+	'16n': '16',
+	'8t': '8³'
 };
 
 export class TimeSignature {
@@ -40,8 +40,8 @@ export class TimeSignature {
 	/**
 	 * Lấy mẫu số dưới dạng số.
 	 */
-	get beatIntervalDenominator(): number {
-		return BEAT_INTERVAL_TO_DENOMINATOR[this.beatInterval] || 4;
+	get beatIntervalDenominator(): string {
+		return BEAT_INTERVAL_TO_DENOMINATOR[this.beatInterval] || '4';
 	}
 
 	/**
