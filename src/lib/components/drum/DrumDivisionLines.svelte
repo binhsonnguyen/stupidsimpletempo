@@ -22,11 +22,25 @@
 </div>
 
 <style lang="scss">
+  $color-red: rgb(220, 53, 69);
+  $color-green: rgb(40, 167, 69);
+  $color-gray: rgb(108, 117, 125);
+
   .division-lines-container {
     position: absolute;
     width: 100%;
     height: 100%;
     pointer-events: none;
+
+    --line-glow-color: #{rgba($color-green, 0.85)};
+
+    &.on {
+      --line-glow-color: #{rgba($color-red, 0.85)};
+    }
+
+    &.loading {
+      --line-glow-color: #{rgba($color-gray, 0.7)};
+    }
   }
 
   .division-line {
