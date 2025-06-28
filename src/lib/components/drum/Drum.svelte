@@ -2,7 +2,8 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { fade } from 'svelte/transition';
+	// highlight-start
+	// Loại bỏ `fade` vì nó đã được chuyển đi
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import { isAudioLoading } from '$lib/state/audioLoadingStore';
 	import { volumeStore } from '$lib/state/volumeStore';
@@ -25,6 +26,7 @@
 		GLOW_ALPHA_PULSE_MIN,
 		GLOW_ALPHA_PULSE_MAX
 	} from '$lib/config/chromaConstants';
+	import DrumDivisionLines from './DrumDivisionLines.svelte';
 
 	const divisionOptions = VALID_DIVISIONS;
 	let currentDivisionIndex = $state(0);
@@ -151,20 +153,7 @@
 	tabindex="-1"
 	style="--glow-rgb: {$drumGlowStore.rgb}; --glow-alpha: {$drumGlowStore.alpha}; --glow-spread: {$drumGlowStore.spread}px;"
 >
-	<div class="division-lines-container">
-		{#if divisions > 1}
-			<!--eslint-disable-next-line @typescript-eslint/no-unused-vars-->
-			{#each Array(divisions) as _, i (i)}
-				{@const angleOffset = -90}
-				{@const angle = (i / divisions) * 360 + angleOffset}
-				<div
-					class="division-line"
-					style="--rotation-angle: {angle}deg;"
-					transition:fade={{ duration: 150 }}
-				></div>
-			{/each}
-		{/if}
-	</div>
+	<DrumDivisionLines {divisions} />
 </button>
 
 <style lang="scss">
@@ -202,24 +191,5 @@
 
   .start-stop-button:focus-visible {
     outline: none;
-  }
-
-  .division-lines-container {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-  }
-
-  .division-line {
-    position: absolute;
-    width: 75%;
-    height: 1px;
-    top: 50%;
-    left: 50%;
-    transform-origin: 0 50%;
-    transform: rotate(var(--rotation-angle));
-    transition: background 0.3s ease;
-    background: linear-gradient(to right, var(--line-glow-color, transparent), transparent);
   }
 </style>
