@@ -2,11 +2,18 @@
 
 <script lang="ts">
 	import { fade } from 'svelte/transition';
+	import { drumGlowStore } from '$lib/state/drumGlowStore';
 
 	let { divisions = 0 } = $props<{ divisions: number }>();
+
+	const TINT_INTENSITY_FACTOR = 1;
+	const tintIntensity = $derived($drumGlowStore.baseIntensity * TINT_INTENSITY_FACTOR);
 </script>
 
-<div class="division-lines-container">
+<div
+	class="division-lines-container"
+	style="--glow-rgb: {$drumGlowStore.rgb}; --tint-intensity: {tintIntensity};"
+>
 	{#if divisions > 1}
 		<!--eslint-disable-next-line @typescript-eslint/no-unused-vars-->
 		{#each Array(divisions) as _, i (i)}
@@ -22,25 +29,11 @@
 </div>
 
 <style lang="scss">
-  $color-red: rgb(220, 53, 69);
-  $color-green: rgb(40, 167, 69);
-  $color-gray: rgb(108, 117, 125);
-
   .division-lines-container {
     position: absolute;
     width: 100%;
     height: 100%;
     pointer-events: none;
-
-    --line-glow-color: #{rgba($color-green, 0.85)};
-
-    &.on {
-      --line-glow-color: #{rgba($color-red, 0.85)};
-    }
-
-    &.loading {
-      --line-glow-color: #{rgba($color-gray, 0.7)};
-    }
   }
 
   .division-line {
@@ -51,7 +44,17 @@
     left: 50%;
     transform-origin: 0 50%;
     transform: rotate(var(--rotation-angle));
-    transition: background 0.3s ease;
-    background: linear-gradient(to right, var(--line-glow-color, transparent), transparent);
+    transition: background 0.1s ease;
+
+    $base-color: #6c757d;
+    background: linear-gradient(
+                    to right,
+                    color-mix(
+                                    in srgb,
+                                    rgba(var(--glow-rgb), 1) calc(var(--tint-intensity) * 100%),
+                                    $base-color
+                    ),
+                    transparent
+    );
   }
 </style>
