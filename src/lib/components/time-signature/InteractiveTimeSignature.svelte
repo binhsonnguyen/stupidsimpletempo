@@ -109,6 +109,7 @@
         width: 100%;
         height: 100%;
         pointer-events: none;
+        --arrow-offset-from-center: 28px;
     }
 
     .arrow {
@@ -120,26 +121,26 @@
     }
 
     .arrow-up {
-        top: 8px;
+        top: calc(50% - var(--arrow-offset-from-center));
         left: 50%;
-        transform: translateX(-50%) rotate(-135deg);
+        transform: translate(-50%, -50%) rotate(-135deg);
     }
 
     .arrow-down {
-        bottom: 8px;
+        top: calc(50% + var(--arrow-offset-from-center));
         left: 50%;
-        transform: translateX(-50%) rotate(45deg);
+        transform: translate(-50%, -50%) rotate(45deg);
     }
 
     .arrow-left {
-        left: 12px;
+        left: calc(50% - var(--arrow-offset-from-center));
         top: 50%;
-        transform: translateY(-50%) rotate(135deg);
+        transform: translate(-50%, -50%) rotate(135deg);
     }
 
     .arrow-right {
-        right: 12px;
+        left: calc(50% + var(--arrow-offset-from-center));
         top: 50%;
-        transform: translateY(-50%) rotate(-45deg);
+        transform: translate(-50%, -50%) rotate(-45deg);
     }
 </style>
