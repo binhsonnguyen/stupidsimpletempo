@@ -1,24 +1,14 @@
 <!-- src/lib/components/time-signature/TimeSignature.svelte -->
 <script lang="ts">
 	import { metronomeStore } from '$lib/state/metronomeStore';
-	import type { BeatInterval, Division } from '$lib/constants';
 	import InteractiveTimeSignature from './InteractiveTimeSignature.svelte';
-
-	function handleChangeBeats(event: CustomEvent<Division>) {
-		metronomeStore.setBeatsPerMeasure(event.detail);
-	}
-
-	function handleChangeInterval(event: CustomEvent<BeatInterval>) {
-		metronomeStore.setBeatInterval(event.detail);
-	}
 </script>
 
 <div class="notation-wrapper">
 	<InteractiveTimeSignature
-		beatsPerMeasure={$metronomeStore.beatsPerMeasure}
-		beatInterval={$metronomeStore.beatInterval}
-		on:changeBeats={handleChangeBeats}
-		on:changeInterval={handleChangeInterval}
+		timeSignature={$metronomeStore.timeSignature}
+		on:changeBeats={(event) => metronomeStore.setBeatsPerMeasure(event.detail)}
+		on:changeInterval={(event) => metronomeStore.setBeatInterval(event.detail)}
 	/>
 </div>
 
