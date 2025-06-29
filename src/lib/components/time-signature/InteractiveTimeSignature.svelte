@@ -5,7 +5,7 @@
 	import { fade } from 'svelte/transition';
 	import { swipeable } from '$lib/components/actions/swipeable';
 	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
-	import { chromaStore } from '$lib/state/chromaStore';
+	import { dialGlowStore } from '$lib/state/chromaStore';
 	import { VALID_BEAT_INTERVALS, VALID_DIVISIONS, type BeatInterval, type Division } from '$lib/constants';
 	import type { TimeSignature } from '$lib/models/timeSignature';
 
@@ -14,7 +14,7 @@
 	}>();
 
 	const TINT_INTENSITY_FACTOR = 0.8;
-	const tintIntensity = $derived($chromaStore.baseIntensity * TINT_INTENSITY_FACTOR);
+	const tintIntensity = $derived($dialGlowStore.baseIntensity * TINT_INTENSITY_FACTOR);
 
 	const dispatch = createEventDispatcher<{
 		changeBeats: Division;
@@ -64,7 +64,7 @@
 		<div
 			class="interaction-cues"
 			transition:fade={{ duration: 150 }}
-			style="--glow-rgb: {$chromaStore.rgb}; --tint-intensity: {tintIntensity};"
+			style="--glow-rgb: {$dialGlowStore.rgb}; --tint-intensity: {tintIntensity};"
 		>
 			<div class="arrow arrow-up">
 				<div class="arrow-line"></div>
