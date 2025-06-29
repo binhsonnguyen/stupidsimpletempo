@@ -1,4 +1,4 @@
-// src/lib/state/drumGlowStore.ts
+// src/lib/state/glowStore.ts
 
 import { writable, derived, type Readable } from 'svelte/store';
 import {
@@ -15,7 +15,7 @@ type RawGlowState = {
 	spread: number;
 };
 
-export type DrumGlowState = RawGlowState & {
+export type GlowState = RawGlowState & {
 	baseIntensity: number;
 };
 
@@ -25,7 +25,7 @@ const rawGlowStore = writable<RawGlowState>({
 	spread: GLOW_SPREAD_STATIC
 });
 
-const derivedGlowStore = derived<typeof rawGlowStore, DrumGlowState>(
+const derivedGlowStore = derived<typeof rawGlowStore, GlowState>(
 	rawGlowStore,
 	($rawGlow) => {
 		const adjustedSpread = $rawGlow.spread + SPREAD_OFFSET;
@@ -41,7 +41,7 @@ const derivedGlowStore = derived<typeof rawGlowStore, DrumGlowState>(
 	}
 );
 
-export const drumGlowStore = {
+export const glowStore = {
 	subscribe: derivedGlowStore.subscribe,
 	setGlow: (rawState: RawGlowState) => {
 		rawGlowStore.set(rawState);

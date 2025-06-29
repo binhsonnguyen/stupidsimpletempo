@@ -3,12 +3,12 @@
 <script lang="ts">
 	let { rotationAngle = 0 } = $props();
 
-	import { drumGlowStore } from '$lib/state/drumGlowStore';
+	import { glowStore } from '$lib/state/glowStore';
 
 	const TINT_INTENSITY_FACTOR = 0.9;
 
 	const finalTintIntensity = $derived(
-		$drumGlowStore.baseIntensity * TINT_INTENSITY_FACTOR
+		$glowStore.baseIntensity * TINT_INTENSITY_FACTOR
 	);
 </script>
 
@@ -16,7 +16,7 @@
 	id="labelLayer"
 	class="dial-layer"
 	style="transform: rotate({rotationAngle}deg);
-	       --glow-rgb: {$drumGlowStore.rgb};
+	       --glow-rgb: {$glowStore.rgb};
 	       --tint-intensity: {finalTintIntensity};"
 ></div>
 

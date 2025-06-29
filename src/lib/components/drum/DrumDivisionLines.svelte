@@ -2,17 +2,17 @@
 
 <script lang="ts">
 	import { fade } from 'svelte/transition';
-	import { drumGlowStore } from '$lib/state/drumGlowStore';
+	import { glowStore } from '$lib/state/glowStore';
 
 	let { divisions = 0 } = $props<{ divisions: number }>();
 
 	const TINT_INTENSITY_FACTOR = 1;
-	const tintIntensity = $derived($drumGlowStore.baseIntensity * TINT_INTENSITY_FACTOR);
+	const tintIntensity = $derived($glowStore.baseIntensity * TINT_INTENSITY_FACTOR);
 </script>
 
 <div
 	class="division-lines-container"
-	style="--glow-rgb: {$drumGlowStore.rgb}; --tint-intensity: {tintIntensity};"
+	style="--glow-rgb: {$glowStore.rgb}; --tint-intensity: {tintIntensity};"
 >
 	{#if divisions > 1}
 		<!--eslint-disable-next-line @typescript-eslint/no-unused-vars-->
