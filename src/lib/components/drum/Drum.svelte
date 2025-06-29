@@ -22,6 +22,7 @@
 	} from '$lib/config/chromaConstants';
 	import DrumDivisionControl from '$lib/components/drum/DrumDivisionControl.svelte';
 	import * as Svelte from 'svelte';
+	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
 
 	let { children } = $props<{ children?: Svelte.Snippet }>();
 
@@ -74,7 +75,13 @@
 	);
 
 	$effect(() => {
-		if ($isAudioLoading) {
+		if ($userInteractionStore) {
+			drumGlowStore.setGlow({
+				rgb: COLOR_ON_RGB,
+				alpha: GLOW_ALPHA_PULSE_MAX,
+				spread: GLOW_SPREAD_PULSE_MAX
+			});
+		} else if ($isAudioLoading) {
 			drumGlowStore.setGlow({
 				rgb: COLOR_LOADING_RGB,
 				alpha: GLOW_ALPHA_STATIC_DIM,
