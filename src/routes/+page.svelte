@@ -4,7 +4,7 @@
 	import Footer from '$lib/components/Footer.svelte';
 	import MainContentWrapper from '$lib/components/MainContentWrapper.svelte';
 	import Dial from '$lib/components/dial/Dial.svelte';
-	import TimeSignature from '$lib/components/time-signature/TimeSignature.svelte';
+	import TimeSignatureSwitcher from '$lib/components/time-signature/TimeSignatureSwitcher.svelte';
 </script>
 
 <Header />
@@ -14,7 +14,7 @@
 		<div class="content-stack">
 			<Dial />
 			<div class="notation-container">
-				<TimeSignature />
+				<TimeSignatureSwitcher />
 			</div>
 		</div>
 	</MainContentWrapper>

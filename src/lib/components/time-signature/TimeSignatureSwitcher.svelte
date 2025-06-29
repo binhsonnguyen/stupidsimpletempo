@@ -1,4 +1,4 @@
-<!-- src/lib/components/time-signature/TimeSignature.svelte -->
+<!-- src/lib/components/time-signature/TimeSignatureSwitcher.svelte -->
 <script lang="ts">
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import InteractiveTimeSignature from './InteractiveTimeSignature.svelte';
