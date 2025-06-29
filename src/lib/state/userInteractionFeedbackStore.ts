@@ -3,7 +3,7 @@
 import { writable } from 'svelte/store';
 
 // Thời gian chờ (ms) trước khi coi là người dùng đã ngừng tương tác
-const INTERACTION_COOLDOWN_MS = 750;
+const INTERACTION_COOLDOWN_MS = 1000;
 
 const { subscribe, set } = writable<boolean>(false);
 
