@@ -6,7 +6,7 @@ import { beatSequenceStore } from './beatSequenceStore';
 import { beatScheduleStore } from './beatScheduleStore';
 import { logger } from '$lib/services/logger';
 import type { BeatInterval, Division } from '$lib/constants';
-import { TimeSignature } from '$lib/models/TimeSignature';
+import { TimeSignature } from '$lib/models/timeSignature';
 
 export type MetronomeState = {
 	bpm: number;

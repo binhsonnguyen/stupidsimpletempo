@@ -1,4 +1,4 @@
-// src/lib/models/TimeSignature.ts
+// src/lib/models/timeSignature.ts
 
 import type { BeatInterval, Division } from '$lib/constants';
 import { makeFraction } from '$lib/utils/fractionGenerator';

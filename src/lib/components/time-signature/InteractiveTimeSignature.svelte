@@ -7,7 +7,7 @@
 	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
 	import { drumGlowStore } from '$lib/state/drumGlowStore';
 	import { VALID_BEAT_INTERVALS, VALID_DIVISIONS, type BeatInterval, type Division } from '$lib/constants';
-	import type { TimeSignature } from '$lib/models/TimeSignature';
+	import type { TimeSignature } from '$lib/models/timeSignature';
 
 	let { timeSignature } = $props<{
 		timeSignature: TimeSignature;
