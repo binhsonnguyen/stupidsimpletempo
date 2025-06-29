@@ -20,7 +20,7 @@
 	<meta property="og:description" content={pageDescription} />
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content={canonicalUrl} />
-	 <meta property="og:image" content="{canonicalUrl}/images/preview-image.png" />
+	 <meta property="og:image" content="{canonicalUrl}/images/preview.png" />
 </svelte:head>
 
 <Header />
