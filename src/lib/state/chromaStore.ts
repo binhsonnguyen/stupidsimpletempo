@@ -1,4 +1,4 @@
-// src/lib/state/glowStore.ts
+// src/lib/state/chromaStore.ts
 
 import { writable, derived, type Readable } from 'svelte/store';
 import {
@@ -41,7 +41,7 @@ const derivedGlowStore = derived<typeof rawGlowStore, GlowState>(
 	}
 );
 
-export const glowStore = {
+export const chromaStore = {
 	subscribe: derivedGlowStore.subscribe,
 	setGlow: (rawState: RawGlowState) => {
 		rawGlowStore.set(rawState);

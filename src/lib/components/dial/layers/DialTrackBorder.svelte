@@ -1,20 +1,20 @@
 <!-- src/lib/components/dial/layers/DialTrackBorder.svelte -->
 
 <script lang="ts">
-	import { glowStore } from '$lib/state/glowStore';
+	import { chromaStore } from '$lib/state/chromaStore';
 	import BezelDividers from './BezelDividers.svelte';
 
 	let { divided = false } = $props<{ divided?: boolean }>();
 
 	const TINT_INTENSITY_FACTOR = 0.3;
 
-	const finalTintIntensity = $derived($glowStore.baseIntensity * TINT_INTENSITY_FACTOR);
+	const finalTintIntensity = $derived($chromaStore.baseIntensity * TINT_INTENSITY_FACTOR);
 </script>
 
 <div
 	id="dialTrackBorderLayer"
 	class="dial-layer"
-	style="--glow-rgb: {$glowStore.rgb}; --tint-intensity: {finalTintIntensity};"
+	style="--glow-rgb: {$chromaStore.rgb}; --tint-intensity: {finalTintIntensity};"
 >
 	{#if divided}
 		<BezelDividers />
