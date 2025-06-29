@@ -55,22 +55,23 @@ function createGlowStore(initialState: RawGlowState) {
 	};
 }
 
-export const drumGlowStore = createGlowStore({
+const staticGlowState: RawGlowState = {
 	rgb: COLOR_OFF_RGB,
 	alpha: GLOW_ALPHA_STATIC,
 	spread: GLOW_SPREAD_STATIC
-});
+};
 
-// Định nghĩa trạng thái thô cho hiệu ứng phát sáng tối đa khi tương tác
-const activeDialGlowState: RawGlowState = {
+const activeGlowState: RawGlowState = {
 	rgb: COLOR_ON_RGB,
 	alpha: GLOW_ALPHA_PULSE_MAX,
 	spread: GLOW_SPREAD_PULSE_MAX
 };
 
+export const drumGlowStore = createGlowStore(staticGlowState);
+
 export const dialGlowStore = derived<
-	[typeof drumGlowStore, typeof userInteractionStore],
+	[typeof userInteractionStore],
 	GlowState
->([drumGlowStore, userInteractionStore], ([$drumGlow, $isInteracting]) => {
-	return $isInteracting ? calculateGlowState(activeDialGlowState) : $drumGlow;
+>([userInteractionStore], ([$isInteracting]) => {
+	return calculateGlowState($isInteracting ? activeGlowState : staticGlowState);
 });
