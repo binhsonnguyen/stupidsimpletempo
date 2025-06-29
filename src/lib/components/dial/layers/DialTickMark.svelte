@@ -3,10 +3,10 @@
 <script lang="ts">
 	let { rotationAngle = 0 } = $props();
 
-	import { chromaStore } from '$lib/state/chromaStore';
+	import { dialGlowStore } from '$lib/state/chromaStore';
 	const TINT_INTENSITY_FACTOR = 0.8;
 	const finalTintIntensity = $derived(
-		$chromaStore.baseIntensity * TINT_INTENSITY_FACTOR
+		$dialGlowStore.baseIntensity * TINT_INTENSITY_FACTOR
 	);
 </script>
 
@@ -14,7 +14,7 @@
 	id="tickMarkLayer"
 	class="dial-layer"
 	style="transform: rotate({rotationAngle}deg);
-	       --glow-rgb: {$chromaStore.rgb};
+	       --glow-rgb: {$dialGlowStore.rgb};
 	       --tint-intensity: {finalTintIntensity};"
 ></div>
 
