@@ -75,13 +75,7 @@
 	);
 
 	$effect(() => {
-		if ($userInteractionStore) {
-			drumGlowStore.setGlow({
-				rgb: COLOR_ON_RGB,
-				alpha: GLOW_ALPHA_PULSE_MAX,
-				spread: GLOW_SPREAD_PULSE_MAX
-			});
-		} else if ($isAudioLoading) {
+		if ($isAudioLoading) {
 			drumGlowStore.setGlow({
 				rgb: COLOR_LOADING_RGB,
 				alpha: GLOW_ALPHA_STATIC_DIM,
@@ -92,6 +86,12 @@
 				rgb: COLOR_ON_RGB,
 				alpha: pulsingAlpha,
 				spread: pulsingSpread
+			});
+		} else if ($userInteractionStore) {
+			drumGlowStore.setGlow({
+				rgb: COLOR_ON_RGB,
+				alpha: GLOW_ALPHA_PULSE_MAX,
+				spread: GLOW_SPREAD_PULSE_MAX
 			});
 		} else {
 			drumGlowStore.setGlow({
@@ -139,9 +139,7 @@
     justify-content: center;
     align-items: center;
 
-    box-shadow:
-            0 0 15px var(--glow-spread, 5px)
-            rgba(var(--glow-rgb, '40, 167, 69'), var(--glow-alpha, 0.7));
+    box-shadow: 0 0 15px var(--glow-spread, 5px) rgba(var(--glow-rgb, '40, 167, 69'), var(--glow-alpha, 0.7));
   }
 
   .start-stop-button:focus-visible {
