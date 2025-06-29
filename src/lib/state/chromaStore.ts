@@ -1,6 +1,6 @@
 // src/lib/state/chromaStore.ts
 
-import { writable, derived, type Readable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 import { userInteractionStore } from './userInteractionFeedbackStore';
 import {
 	COLOR_OFF_RGB,
