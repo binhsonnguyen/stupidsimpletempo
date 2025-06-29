@@ -17,8 +17,9 @@
 	{#if divisions > 1}
 		<!--eslint-disable-next-line @typescript-eslint/no-unused-vars-->
 		{#each Array(divisions) as _, i (i)}
-			{@const angleOffset = -90}
-			{@const angle = (i / divisions) * 360 + angleOffset}
+			{@const baseAngleOffset = -90}
+			{@const conditionalOffset = divisions === 2 ? 90 : 0}
+			{@const angle = (i / divisions) * 360 + baseAngleOffset + conditionalOffset}
 			<div
 				class="division-line"
 				style="--rotation-angle: {angle}deg;"
