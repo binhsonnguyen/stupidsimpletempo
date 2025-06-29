@@ -7,7 +7,7 @@
 	import { volumeStore } from '$lib/state/volumeStore';
 	import { beatScheduleStore } from '$lib/state/beatScheduleStore';
 	import * as Tone from 'tone';
-	import { chromaStore } from '$lib/state/chromaStore';
+	import { drumGlowStore } from '$lib/state/chromaStore';
 	import {
 		COLOR_ON_RGB,
 		COLOR_OFF_RGB,
@@ -76,25 +76,25 @@
 
 	$effect(() => {
 		if ($userInteractionStore) {
-			chromaStore.setGlow({
+			drumGlowStore.setGlow({
 				rgb: COLOR_ON_RGB,
 				alpha: GLOW_ALPHA_PULSE_MAX,
 				spread: GLOW_SPREAD_PULSE_MAX
 			});
 		} else if ($isAudioLoading) {
-			chromaStore.setGlow({
+			drumGlowStore.setGlow({
 				rgb: COLOR_LOADING_RGB,
 				alpha: GLOW_ALPHA_STATIC_DIM,
 				spread: GLOW_SPREAD_STATIC
 			});
 		} else if ($metronomeStore.isRunning) {
-			chromaStore.setGlow({
+			drumGlowStore.setGlow({
 				rgb: COLOR_ON_RGB,
 				alpha: pulsingAlpha,
 				spread: pulsingSpread
 			});
 		} else {
-			chromaStore.setGlow({
+			drumGlowStore.setGlow({
 				rgb: COLOR_OFF_RGB,
 				alpha: GLOW_ALPHA_STATIC,
 				spread: GLOW_SPREAD_STATIC
@@ -113,7 +113,7 @@
 		: 'Start metronome'}
 	disabled={$isAudioLoading}
 	tabindex="-1"
-	style="--glow-rgb: {$chromaStore.rgb}; --glow-alpha: {$chromaStore.alpha}; --glow-spread: {$chromaStore.spread}px;"
+	style="--glow-rgb: {$drumGlowStore.rgb}; --glow-alpha: {$drumGlowStore.alpha}; --glow-spread: {$drumGlowStore.spread}px;"
 >
 	{#if children}
 		{@render children()}
