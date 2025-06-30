@@ -16,7 +16,8 @@
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
 		"deploy:dev": "npm run build && firebase deploy --only hosting -P dev --config firebase.dev.json",
-		"deploy:prod": "npm run build && firebase deploy --only hosting --config firebase.json"
+		"deploy:prod": "npm run build && firebase deploy --only hosting --config firebase.json",
+		"deploy:s3": "npm run build && aws s3 sync ./build s3://static-stupid-simple-tempo --delete && aws cloudfront create-invalidation --distribution-id EM26EQUKY01WA --paths \"/*\""
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",

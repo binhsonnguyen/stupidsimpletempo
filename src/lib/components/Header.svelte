@@ -2,6 +2,7 @@
 
 <header class="d-flex justify-content-center app-header">
 	<picture>
+		<source srcset="/images/logo.webp" type="image/webp" />
 		<img
 			class="app-logo"
 			src="/images/logo.png"
