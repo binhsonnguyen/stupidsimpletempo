@@ -26,14 +26,12 @@
   #labelLayer {
     z-index: 2;
 
-    // 3. Thay đổi từ background-image sang mask-image
     mask-image: url('/svg/bpm-labels.svg');
     mask-size: contain;
     mask-repeat: no-repeat;
     mask-position: center;
 
-    // 4. Dùng color-mix để tô màu cho các nhãn
-    $base-color: #6c757d; // Màu nền của nhãn khi không bị ảnh hưởng
+    $base-color: #8b9196;
 
     background-color: color-mix(
                     in srgb,

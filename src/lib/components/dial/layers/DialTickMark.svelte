@@ -29,7 +29,7 @@
     mask-repeat: no-repeat;
     mask-position: center;
 
-    $base-color: #6c757d;
+    $base-color: #8b9196;
 
     background-color: color-mix(
                     in srgb,

@@ -47,7 +47,7 @@
     transform: rotate(var(--rotation-angle));
     transition: background 0.1s ease;
 
-    $base-color: #6c757d;
+    $base-color: #8b9196;
     background: linear-gradient(
                     to right,
                     color-mix(
