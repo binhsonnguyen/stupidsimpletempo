@@ -4,7 +4,7 @@
 	<picture>
 		<img
 			class="app-logo"
-			src="/images/logo.jpg"
+			src="/images/logo.png"
 			alt="Stupid Simple Tempo Logo"
 			fetchpriority="high"
 			width="750"

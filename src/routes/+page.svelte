@@ -3,13 +3,27 @@
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import MainContentWrapper from '$lib/components/MainContentWrapper.svelte';
-	import Dial from '$lib/components/dial/Dial.svelte';
-	import TimeSignatureSwitcher from '$lib/components/time-signature/TimeSignatureSwitcher.svelte';
+	// Xóa các import tĩnh
+	// import Dial from '$lib/components/dial/Dial.svelte';
+	// import TimeSignatureSwitcher from '$lib/components/time-signature/TimeSignatureSwitcher.svelte';
+	import { onMount } from 'svelte';
 
 	const pageTitle = 'Tempo';
 	const pageDescription =
 		'Stupid Simple Tempo - A Free Online Metronome - A clean, simple, and accurate online metronome for musicians. Set tempo, time signature, and subdivisions with ease. No ads, no clutter. Just tempo.';
 	const canonicalUrl = 'https://stupidsimpletempo.com';
+
+	// Tạo một biến để giữ component sau khi được tải
+	let Dial: any;
+	let TimeSignatureSwitcher: any;
+
+	// Chỉ bắt đầu tải các component nặng sau khi trang đã hiển thị
+	onMount(async () => {
+		Dial = (await import('$lib/components/dial/Dial.svelte')).default;
+		TimeSignatureSwitcher = (
+			await import('$lib/components/time-signature/TimeSignatureSwitcher.svelte')
+		).default;
+	});
 </script>
 
 <svelte:head>
@@ -20,7 +34,7 @@
 	<meta property="og:description" content={pageDescription} />
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content={canonicalUrl} />
-	<link rel="preload" href="/images/logo.png" as="image" fetchpriority="high">
+	<link rel="preload" href="/images/logo.png" as="image" fetchpriority="high" />
 	<meta property="og:image" content="{canonicalUrl}/images/preview.png" />
 </svelte:head>
 
@@ -29,9 +43,20 @@
 <main class="flex-grow-1 d-flex align-items-center justify-content-center">
 	<MainContentWrapper>
 		<div class="content-stack">
-			<Dial />
+			<!-- Sử dụng svelte:component để render component đã được tải động -->
+			{#if Dial}
+				<svelte:component this={Dial} />
+			{:else}
+				<!-- Hiển thị một placeholder trong khi tải -->
+				<div style="height: 300px; width: 300px;"></div>
+			{/if}
+
 			<div class="notation-container">
-				<TimeSignatureSwitcher />
+				{#if TimeSignatureSwitcher}
+					<svelte:component this={TimeSignatureSwitcher} />
+				{:else}
+					<div style="height: 60px;"></div>
+				{/if}
 			</div>
 		</div>
 	</MainContentWrapper>
