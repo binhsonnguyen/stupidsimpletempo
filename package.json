@@ -2,7 +2,7 @@
 	"name": "stupid-simple-tempo",
 	"author": "Nguyen Binh Son",
 	"private": true,
-	"version": "2.6.16",
+	"version": "2.6.17",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
