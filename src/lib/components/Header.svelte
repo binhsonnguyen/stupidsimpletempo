@@ -1,11 +1,12 @@
 <!-- src/lib/components/Header.svelte -->
 
 <header class="d-flex justify-content-center app-header">
-    <img
-            class="app-logo"
-            src="/images/logo.png"
-            alt="Stupid Simple Tempo Logo"
-    />
+	<img
+		class="app-logo"
+		src="/images/logo.png"
+		alt="Stupid Simple Tempo Logo"
+		fetchpriority="high"
+	/>
 </header>
 
 <style>
