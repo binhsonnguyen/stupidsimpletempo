@@ -14,7 +14,7 @@
     ],
     "headers": [
       {
-        "source": "_app/immutable/**",
+        "source": "/_app/immutable/**",
         "headers": [
           {
             "key": "Cache-Control",
