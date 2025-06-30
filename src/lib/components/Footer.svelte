@@ -14,7 +14,7 @@
 <style>
     .app-footer {
         padding: 10px 0;
-        color: #747c84;
+        color: #8b9196;
         font-size: 0.75em;
         user-select: text;
         -webkit-user-select: text;
