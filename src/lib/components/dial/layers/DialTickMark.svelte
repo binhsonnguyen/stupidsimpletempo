@@ -20,6 +20,7 @@
 
 <style lang="scss">
   @use '../_dial-layer-base.scss';
+  @use '$lib/styles/variables';
 
   #tickMarkLayer {
     z-index: 3;
@@ -29,12 +30,10 @@
     mask-repeat: no-repeat;
     mask-position: center;
 
-    $base-color: #8b9196;
-
     background-color: color-mix(
                     in srgb,
                     rgba(var(--glow-rgb), 1) calc(var(--tint-intensity) * 100%),
-                    $base-color
+                    variables.$base-forefront
     );
 
     transition: background-color 0.1s ease-out;

@@ -30,6 +30,8 @@
 </div>
 
 <style lang="scss">
+  @use '$lib/styles/variables';
+
   .division-lines-container {
     position: absolute;
     width: 100%;
@@ -47,13 +49,12 @@
     transform: rotate(var(--rotation-angle));
     transition: background 0.1s ease;
 
-    $base-color: #8b9196;
     background: linear-gradient(
                     to right,
                     color-mix(
                                     in srgb,
                                     rgba(var(--glow-rgb), 1) calc(var(--tint-intensity) * 100%),
-                                    $base-color
+                                    variables.$base-forefront
                     ),
                     transparent
     );
