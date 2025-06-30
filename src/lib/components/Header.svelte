@@ -1,12 +1,16 @@
 <!-- src/lib/components/Header.svelte -->
 
 <header class="d-flex justify-content-center app-header">
-	<img
-		class="app-logo"
-		src="/images/logo.png"
-		alt="Stupid Simple Tempo Logo"
-		fetchpriority="high"
-	/>
+	<picture>
+		<img
+			class="app-logo"
+			src="/images/logo.png"
+			alt="Stupid Simple Tempo Logo"
+			fetchpriority="high"
+			width="750"
+			height="128"
+		/>
+	</picture>
 </header>
 
 <style>
@@ -19,5 +23,6 @@
         mix-blend-mode: screen;
         max-height: 40px;
         width: auto;
+        height: auto;
     }
 </style>
