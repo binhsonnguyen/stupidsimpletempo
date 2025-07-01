@@ -1,7 +1,6 @@
 <!-- src/routes/+page.svelte -->
+
 <script lang="ts">
-	import Header from '$lib/components/Header.svelte';
-	import Footer from '$lib/components/Footer.svelte';
 	import MainContentWrapper from '$lib/components/MainContentWrapper.svelte';
 
 	import Dial from '$lib/components/dial/Dial.svelte';
@@ -29,20 +28,14 @@
 	<meta property="og:image" content="{canonicalUrl}/images/preview.png" />
 </svelte:head>
 
-<Header />
-
-<main class="flex-grow-1 d-flex align-items-center justify-content-center">
-	<MainContentWrapper>
-		<div class="content-stack">
-			<Dial />
-			<div class="notation-container">
-				<TimeSignatureSwitcher />
-			</div>
+<MainContentWrapper>
+	<div class="content-stack">
+		<Dial />
+		<div class="notation-container">
+			<TimeSignatureSwitcher />
 		</div>
-	</MainContentWrapper>
-</main>
-
-<Footer />
+	</div>
+</MainContentWrapper>
 
 <style>
     .content-stack {
