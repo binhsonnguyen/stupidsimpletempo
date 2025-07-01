@@ -1,7 +1,7 @@
 // src/lib/state/settingsStore.ts
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
-import { type SoundIdentifier } from '$lib/audio/Sound';
+import { Sound, type SoundIdentifier } from '$lib/audio/Sound';
 
 export type AppSettings = {
 	strongBeatSound: SoundIdentifier;
@@ -22,7 +22,11 @@ const initialSettings = (): AppSettings => {
 		const savedSettingsJSON = localStorage.getItem('appSettings');
 		if (savedSettingsJSON) {
 			const savedSettings = JSON.parse(savedSettingsJSON) as AppSettings;
-			if (savedSettings.strongBeatSound && savedSettings.weakBeatSound) {
+
+			const isStrongSoundValid = Sound.soundMap.has(savedSettings.strongBeatSound);
+			const isWeakSoundValid = Sound.soundMap.has(savedSettings.weakBeatSound);
+
+			if (isStrongSoundValid && isWeakSoundValid) {
 				return savedSettings;
 			}
 		}
@@ -43,11 +47,11 @@ store.subscribe((value) => {
 });
 
 export const settingsStore = {
-	subscribe: store.subscribe,
-	setStrongBeatSound: (sound: SoundIdentifier) => {
+	...store,
+	setAccentSound: (sound: SoundIdentifier) => {
 		store.update((settings) => ({ ...settings, strongBeatSound: sound }));
 	},
-	setWeakBeatSound: (sound: SoundIdentifier) => {
+	setBeatSound: (sound: SoundIdentifier) => {
 		store.update((settings) => ({ ...settings, weakBeatSound: sound }));
 	}
 };
