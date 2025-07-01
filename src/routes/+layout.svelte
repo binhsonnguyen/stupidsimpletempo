@@ -5,6 +5,7 @@
 	import { Sound } from '$lib/audio/Sound';
 	import { isAudioLoading } from '$lib/state/audioLoadingStore';
 	import { beatSequenceStore } from '$lib/state/beatSequenceStore';
+	import { beatSoundStore } from '$lib/state/beatSoundStore';
 	import { wakeLockManager } from '$lib/services/wakeLockManager';
 	import '../styles/theme.scss';
 
@@ -14,6 +15,8 @@
 	onMount(() => {
 		wakeLockManager.initialize();
 		beatSequenceStore.initialize();
+		const unsubscribe = beatSoundStore.subscribe(() => {});
+		onDestroy(unsubscribe);
 	});
 
 	onDestroy(() => {
