@@ -8,6 +8,9 @@
 	import { wakeLockManager } from '$lib/services/wakeLockManager';
 	import '../styles/theme.scss';
 
+	import Header from '$lib/components/Header.svelte';
+	import Footer from '$lib/components/Footer.svelte';
+
 	onMount(() => {
 		wakeLockManager.initialize();
 		beatSequenceStore.initialize();
@@ -21,4 +24,10 @@
 
 <svelte:body class:audio-loading={$isAudioLoading} />
 
-<slot />
+<Header />
+
+<main class="flex-grow-1 d-flex align-items-center justify-content-center">
+	<slot />
+</main>
+
+<Footer />
