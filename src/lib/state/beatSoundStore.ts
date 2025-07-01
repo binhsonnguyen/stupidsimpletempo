@@ -2,10 +2,18 @@
 import { derived } from 'svelte/store';
 import { settingsStore } from './settingsStore';
 import { Sound } from '$lib/audio/Sound';
+import { isAudioLoading } from './audioLoadingStore';
 
-export const beatSoundStore = derived(
+export type BeatSoundSet = {
+	strong: Sound;
+	weak: Sound;
+};
+
+export const beatSoundStore = derived<typeof settingsStore, BeatSoundSet>(
 	settingsStore,
 	($settings, set) => {
+		isAudioLoading.set(true);
+
 		const strongSound = Sound.soundMap.get($settings.strongBeatSound) || Sound.WOODBLOCK_HIGH;
 		const weakSound = Sound.soundMap.get($settings.weakBeatSound) || Sound.WOODBLOCK;
 
@@ -17,6 +25,7 @@ export const beatSoundStore = derived(
 				strong: strongSound,
 				weak: weakSound
 			});
+			isAudioLoading.set(false);
 		});
 	},
 	{

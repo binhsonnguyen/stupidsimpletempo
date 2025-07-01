@@ -4,10 +4,30 @@ import { writable, type Writable, get } from 'svelte/store';
 import { Sound } from '$lib/audio/Sound';
 import { isAudioLoading } from './audioLoadingStore';
 import { MAX_BEATS } from '$lib/constants';
-import { settingsStore, type AppSettings } from './settingsStore'; // 1. Import settingsStore
+import { settingsStore, type AppSettings } from './settingsStore';
+
+export interface IPlayable {
+	play(time: number): void;
+}
+
+class AccentPlayer implements IPlayable {
+	constructor(private sound: Sound) {}
+
+	play(time: number): void {
+		this.sound.play(time);
+	}
+}
+
+class NormalBeatPlayer implements IPlayable {
+	constructor(private sound: Sound) {}
+
+	play(time: number): void {
+		this.sound.play(time);
+	}
+}
 
 export type BeatNode = {
-	sound: Sound;
+	player: IPlayable;
 	index: number;
 };
 
@@ -25,7 +45,7 @@ export type BeatSequenceStore = {
 };
 
 function createBeatSequenceStore(): BeatSequenceStore {
-	const { subscribe, set, update } = writable<BeatSequenceState>(initialState);
+	const { subscribe, set } = writable<BeatSequenceState>(initialState);
 	let isInitialized = false;
 
 	const generateBeats = async (settings: AppSettings) => {
@@ -36,8 +56,8 @@ function createBeatSequenceStore(): BeatSequenceStore {
 
 		const beats: BeatNode[] = [];
 		for (let i = 0; i < MAX_BEATS; i++) {
-			const sound = i === 0 ? strongSound : weakSound;
-			beats.push({ sound, index: i });
+			const player = i === 0 ? new AccentPlayer(strongSound) : new NormalBeatPlayer(weakSound);
+			beats.push({ player: player, index: i });
 		}
 
 		Sound.registerForPreload(strongSound);

@@ -66,7 +66,7 @@ function createMetronomeStore(): MetronomeStore {
 		const currentBeat = allBeats[metronomeState.currentBeatIndex];
 
 		if (currentBeat) {
-			currentBeat.sound.play(time);
+			currentBeat.player.play(time);
 
 			const { beatsPerMeasure, beatInterval } = metronomeState.timeSignature;
 			const nextIndex = (metronomeState.currentBeatIndex + 1) % beatsPerMeasure;
