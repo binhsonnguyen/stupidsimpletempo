@@ -22,6 +22,10 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content={canonicalUrl} />
 	<link rel="preload" href="/images/logo.webp" as="image" fetchpriority="high" />
+	<link rel="preload" href="/svg/bpm-labels.svg" as="image" fetchpriority="high" />
+	<link rel="preload" href="/svg/bpm-markers.svg" as="image" fetchpriority="high" />
+	<link rel="preload" href="/svg/bezel.svg" as="image" fetchpriority="high" />
+	<link rel="preload" href="/svg/knob.svg" as="image" fetchpriority="high" />
 	<meta property="og:image" content="{canonicalUrl}/images/preview.png" />
 </svelte:head>
 
