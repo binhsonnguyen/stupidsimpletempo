@@ -4,11 +4,25 @@ import * as Tone from 'tone';
 import { browser } from '$app/environment';
 import { logger } from '$lib/services/logger';
 
+export type SoundIdentifier =
+	| 'CAJON_BASS'
+	| 'CAJON_SNARE'
+	| 'CLAP'
+	| 'CLAPS'
+	| 'SHAKER'
+	| 'SLEIGH_BELLS'
+	| 'STOMP'
+	| 'WOODBLOCK'
+	| 'WOODBLOCK_HIGH';
+
 export class Sound {
 	private player: Tone.Player | null = null;
 	private readonly ready: Promise<void>;
 
-	private constructor(filename: string) {
+	public readonly identifier: SoundIdentifier;
+
+	private constructor(filename: string, identifier: SoundIdentifier) {
+		this.identifier = identifier;
 		if (browser) {
 			const soundUrl = `/sound/${filename}`;
 			this.player = new Tone.Player(soundUrl).toDestination();
@@ -18,15 +32,15 @@ export class Sound {
 		}
 	}
 
-	public static readonly CAJON_BASS = new Sound('cajon-bass.mp3');
-	public static readonly CAJON_SNARE = new Sound('cajon-snare.mp3');
-	public static readonly CLAP = new Sound('clap.mp3');
-	public static readonly CLAPS = new Sound('claps.mp3');
-	public static readonly SHAKER = new Sound('shaker.mp3');
-	public static readonly SLEIGH_BELLS = new Sound('sleigh-bells.mp3');
-	public static readonly STOMP = new Sound('stomp.mp3');
-	public static readonly WOODBLOCK = new Sound('woodblock.mp3');
-	public static readonly WOODBLOCK_HIGH = new Sound('woodblock-high.mp3');
+	public static readonly CAJON_BASS = new Sound('cajon-bass.mp3', 'CAJON_BASS');
+	public static readonly CAJON_SNARE = new Sound('cajon-snare.mp3', 'CAJON_SNARE');
+	public static readonly CLAP = new Sound('clap.mp3', 'CLAP');
+	public static readonly CLAPS = new Sound('claps.mp3', 'CLAPS');
+	public static readonly SHAKER = new Sound('shaker.mp3', 'SHAKER');
+	public static readonly SLEIGH_BELLS = new Sound('sleigh-bells.mp3', 'SLEIGH_BELLS');
+	public static readonly STOMP = new Sound('stomp.mp3', 'STOMP');
+	public static readonly WOODBLOCK = new Sound('woodblock.mp3', 'WOODBLOCK');
+	public static readonly WOODBLOCK_HIGH = new Sound('woodblock-high.mp3', 'WOODBLOCK_HIGH');
 
 	public static readonly ALL_SOUNDS: Sound[] = [
 		this.CAJON_BASS,
@@ -39,6 +53,11 @@ export class Sound {
 		this.WOODBLOCK,
 		this.WOODBLOCK_HIGH
 	];
+
+	public static readonly soundMap = new Map<SoundIdentifier, Sound>(
+		Sound.ALL_SOUNDS.map((sound) => [sound.identifier, sound])
+	);
+
 	private static readonly soundsToPreload = new Set<Sound>();
 
 	public static registerForPreload(sound: Sound): void {
@@ -66,6 +85,7 @@ export class Sound {
 
 			await Promise.all(preloadPromises);
 			logger.log('Registered sounds preloaded.');
+			this.soundsToPreload.clear();
 		}
 	}
 
