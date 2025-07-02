@@ -37,17 +37,27 @@
 	<Footer />
 </div>
 
-<style>
-    .app-container {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
+<style lang="scss">
+  .app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+
+    scrollbar-width: thin;
+
+    &::-webkit-scrollbar {
+      width: 10px;
     }
 
-    main {
-        flex-grow: 1;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
+    &::-webkit-scrollbar-track {
+      background: transparent;
     }
+  }
 </style>
