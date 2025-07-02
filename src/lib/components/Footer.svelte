@@ -2,18 +2,24 @@
 
 <script lang="ts">
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faScrewdriverWrench } from '@fortawesome/free-solid-svg-icons';
+	import { faSliders, faDrum } from '@fortawesome/free-solid-svg-icons';
+	import { page } from '$app/stores';
 
 	const version = __APP_VERSION__;
 	const author = __APP_AUTHOR__;
-
 	const currentYear = new Date().getFullYear();
+
+	$: ({ href, icon, ariaLabel } =
+		$page.url.pathname === '/settings'
+			? { href: '/', icon: faDrum, ariaLabel: 'Back to Metronome' }
+			: { href: '/settings', icon: faSliders, ariaLabel: 'Application Settings' });
 </script>
 
 <footer class="mt-auto text-center bg-black bg-opacity-10 app-footer">
 	<span>v{version} &copy;{currentYear} {author}</span>
-	<a href="/settings" class="settings-link" aria-label="Application Settings">
-		<FontAwesomeIcon icon={faScrewdriverWrench} />
+
+	<a {href} class="settings-link" aria-label={ariaLabel}>
+		<FontAwesomeIcon {icon} />
 	</a>
 </footer>
 
