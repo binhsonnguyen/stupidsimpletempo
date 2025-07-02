@@ -17,19 +17,21 @@
 	import { doubleTappable } from '$lib/components/actions/doubleTappable';
 	import { DialMarkerResolver } from './utils/dialMarkerResolver';
 
-	const rotationAngle = new Tween(0, {
-		duration: 250,
-		easing: quintOut
-	});
-
-	let currentRotation = $derived(rotationAngle.current);
-
 	const markerResolver = new DialMarkerResolver({
 		minBpm: get(metronomeStore).minBpm,
 		maxBpm: get(metronomeStore).maxBpm,
 		minBpmAngle: 12,
 		maxBpmAngle: 320
 	});
+
+	const initialAngle = markerResolver.calculateAngleFromBpm(get(metronomeStore).bpm);
+
+	const rotationAngle = new Tween(initialAngle, {
+		duration: 250,
+		easing: quintOut
+	});
+
+	let currentRotation = $derived(rotationAngle.current);
 
 	$effect(() => {
 		const newBpm = markerResolver.calculateBpmFromDialRotation(currentRotation);
