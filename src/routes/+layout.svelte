@@ -7,16 +7,17 @@
 	import { beatSequenceStore } from '$lib/state/beatSequenceStore';
 	import { beatSoundStore } from '$lib/state/beatSoundStore';
 	import { wakeLockManager } from '$lib/services/wakeLockManager';
+	import { settingsStore } from '$lib/state/settingsStore';
 	import '../styles/theme.scss';
 
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 
 	onMount(() => {
+		settingsStore.initialize();
 		wakeLockManager.initialize();
 		beatSequenceStore.initialize();
-		const unsubscribe = beatSoundStore.subscribe(() => {
-		});
+		const unsubscribe = beatSoundStore.subscribe(() => {});
 		onDestroy(unsubscribe);
 	});
 
