@@ -3,13 +3,18 @@
 <script>
 </script>
 
-<div class="container text-center">
+<div class="main-controlls-wrapper">
 	<slot />
 </div>
 
 <style>
-    /*
-       Bạn có thể thêm bất kỳ style tùy chỉnh nào cho wrapper này nếu cần.
-       Hiện tại, không cần style cụ thể nào ở đây vì Bootstrap đã xử lý hầu hết.
-    */
+    .main-controlls-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+        width: 100%;
+        padding: 0 15px;
+    }
 </style>
