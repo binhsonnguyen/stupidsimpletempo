@@ -15,7 +15,8 @@
 	onMount(() => {
 		wakeLockManager.initialize();
 		beatSequenceStore.initialize();
-		const unsubscribe = beatSoundStore.subscribe(() => {});
+		const unsubscribe = beatSoundStore.subscribe(() => {
+		});
 		onDestroy(unsubscribe);
 	});
 
@@ -41,7 +42,8 @@
     .app-container {
         display: flex;
         flex-direction: column;
-        min-height: 100vh;
+        min-height: 100vh; /* Cung cấp giá trị cũ làm fallback cho các trình duyệt không hỗ trợ dvh */
+        min-height: 100dvh; /* Sử dụng đơn vị viewport động để tính đến các thanh công cụ của trình duyệt */
     }
 
     main {
