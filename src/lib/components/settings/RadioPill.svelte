@@ -70,7 +70,7 @@
   }
 
   input[type='radio']:checked + .radio-label {
-    background-color: #fafafa;
+    background-color: variables.$primary-color;
     color: variables.$base-background;
     border-color: variables.$base-border-active;
   }
