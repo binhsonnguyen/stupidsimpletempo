@@ -9,7 +9,7 @@
 	const availableSounds = Sound.ALL_SOUNDS;
 
 	function formatSoundName(identifier: SoundIdentifier): string {
-		return identifier.replace(/_/g, ' ');
+		return identifier.replace(/_/g, ' ').toLowerCase();
 	}
 </script>
 
@@ -79,7 +79,6 @@
     display: flex;
     align-items: center;
     margin-bottom: 2rem;
-
     .back-button {
       color: inherit;
       margin-right: 1.5rem;
@@ -90,7 +89,6 @@
         opacity: 1;
       }
     }
-
     h1 {
       font-size: 2.5rem;
       font-weight: 700;
@@ -105,7 +103,6 @@
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    /* SỬA LỖI: Thêm namespace 'variables.' */
     color: variables.$base-forefront-muted;
   }
 
@@ -117,7 +114,7 @@
 
   .radio-option {
     position: relative;
-
+		font-size: 0.9rem;
     input[type='radio'] {
       position: absolute;
       opacity: 0;
@@ -127,27 +124,27 @@
 
     .radio-label {
       display: inline-block;
-      padding: 10px 18px;
+      padding: 5px 18px;
       border: 1px solid variables.$base-border;
-      border-radius: 20px;
+      border-radius: 999px;
       background-color: transparent;
       color: variables.$base-forefront-muted;
       cursor: pointer;
       transition: all 0.2s ease-in-out;
-      text-transform: capitalize;
+      text-transform: lowercase;
 
       &:hover {
         background-color: variables.$base-background-hover;
         color: variables.$base-forefront;
       }
     }
+  }
 
-    input[type='radio']:checked + .radio-label {
-      background-color: variables.$primary-color;
-      color: variables.$base-background;
-      border-color: variables.$primary-color;
-      font-weight: 600;
-    }
+  input[type='radio']:checked + .radio-label {
+    background-color: variables.$primary-color;
+    color: variables.$base-background;
+    border-color: variables.$primary-color;
+    font-weight: 600;
   }
 
   @keyframes fade-in {
