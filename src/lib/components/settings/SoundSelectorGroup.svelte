@@ -14,9 +14,8 @@
 		return identifier.replace(/_/g, ' ').toLowerCase();
 	}
 
-	function handlePillClick(event: CustomEvent<{ value: SoundIdentifier }>) {
-		const soundIdentifier = event.detail.value;
-		const soundToPlay = Sound.soundMap.get(soundIdentifier);
+	function handlePillClick(soundIdentifier: string) {
+		const soundToPlay = Sound.soundMap.get(<SoundIdentifier>soundIdentifier);
 
 		if (soundToPlay) {
 			soundToPlay.play();
@@ -34,7 +33,7 @@
 				value={sound.identifier}
 				bind:group
 				label={formatSoundName(sound.identifier)}
-				on:pillClick={handlePillClick}
+				onPillClick={handlePillClick}
 			/>
 		{/each}
 	</div>

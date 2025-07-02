@@ -1,19 +1,18 @@
 <!-- src/lib/components/settings/RadioPill.svelte -->
 
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-
 	export let id: string;
 	export let name: string;
 	export let value: string;
 	export let label: string;
-
 	export let group: string;
 
-	const dispatch = createEventDispatcher();
+	export let onPillClick: ((value: string) => void) | undefined = undefined;
 
 	function handleClick() {
-		dispatch('pillClick', { value });
+		if (onPillClick) {
+			onPillClick(value);
+		}
 	}
 </script>
 
