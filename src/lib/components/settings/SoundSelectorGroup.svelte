@@ -70,7 +70,7 @@
       border: 1px solid variables.$base-border;
       border-radius: 999px;
       background-color: transparent;
-      color: variables.$base-forefront-muted;
+      color: variables.$base-forefront;
       cursor: pointer;
       transition: all 0.2s ease-in-out;
       text-transform: lowercase;
@@ -86,6 +86,6 @@
     background-color: variables.$primary-color;
     color: variables.$base-background;
     border-color: variables.$primary-color;
-    font-weight: 600;
+    //font-weight: 600;
   }
 </style>
