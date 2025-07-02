@@ -12,16 +12,21 @@ export type BeatSoundSet = {
 
 let preloadRequestCounter = 0;
 
-export const beatSoundStore = derived<typeof settingsStore, BeatSoundSet>(
+export const beatSoundStore = derived<typeof settingsStore, BeatSoundSet | null>(
 	settingsStore,
 	($settings, set) => {
+		if (!$settings) {
+			set(null);
+			return;
+		}
+
 		logger.log('BeatSoundStore', $settings);
 		isAudioLoading.set(true);
 
 		const currentRequestId = ++preloadRequestCounter;
 
-		const strongSound = Sound.soundMap.get($settings.strongBeatSound) || Sound.WOODBLOCK_HIGH;
-		const weakSound = Sound.soundMap.get($settings.weakBeatSound) || Sound.WOODBLOCK;
+		const strongSound = Sound.soundMap.get($settings.strongBeatSound)!;
+		const weakSound = Sound.soundMap.get($settings.weakBeatSound)!;
 
 		Sound.registerForPreload(strongSound);
 		Sound.registerForPreload(weakSound);
@@ -45,8 +50,5 @@ export const beatSoundStore = derived<typeof settingsStore, BeatSoundSet>(
 
 		performPreload();
 	},
-	{
-		strong: Sound.WOODBLOCK_HIGH,
-		weak: Sound.WOODBLOCK
-	}
+	null
 );
