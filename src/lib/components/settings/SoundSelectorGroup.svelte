@@ -25,8 +25,12 @@
 					bind:group
 					value={sound.identifier}
 				/>
-				<label class="radio-label" for="{name}-{sound.identifier}">
-					{formatSoundName(sound.identifier)}
+				<label
+					class="radio-label"
+					for="{name}-{sound.identifier}"
+					data-text={formatSoundName(sound.identifier)}
+				>
+					<span>{formatSoundName(sound.identifier)}</span>
 				</label>
 			</div>
 		{/each}
@@ -65,6 +69,7 @@
     }
 
     .radio-label {
+      position: relative;
       display: inline-block;
       padding: 5px 18px;
       border: 1px solid variables.$base-border;
@@ -74,10 +79,32 @@
       cursor: pointer;
       transition: all 0.2s ease-in-out;
       text-transform: lowercase;
+      user-select: none;
 
       &:hover {
         background-color: variables.$base-background-hover;
         color: variables.$base-forefront;
+      }
+
+      /* Lớp "ma" để giữ chỗ cho chữ đậm */
+      &::before {
+        content: attr(data-text);
+        display: block;
+        font-weight: 600;
+        visibility: hidden;
+      }
+
+      /* Lớp chứa text thật sự, nằm đè lên trên */
+      span {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: font-weight 0.1s;
       }
     }
   }
@@ -86,6 +113,9 @@
     background-color: variables.$primary-color;
     color: variables.$base-background;
     border-color: variables.$primary-color;
-    //font-weight: 600;
+  }
+
+  input[type='radio']:checked + .radio-label span {
+    font-weight: 600;
   }
 </style>
