@@ -18,9 +18,11 @@
 <footer class="mt-auto text-center bg-black bg-opacity-10 app-footer">
 	<span>v{version} &copy;{currentYear} {author}</span>
 
-	<a {href} class="settings-link" aria-label={ariaLabel}>
-		<FontAwesomeIcon {icon} />
-	</a>
+	{#key $page.url.pathname}
+		<a {href} class="settings-link" aria-label={ariaLabel}>
+			<FontAwesomeIcon {icon} />
+		</a>
+	{/key}
 </footer>
 
 <style lang="scss">
