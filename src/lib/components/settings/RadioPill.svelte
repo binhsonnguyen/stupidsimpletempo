@@ -1,15 +1,23 @@
 <!-- src/lib/components/settings/RadioPill.svelte -->
 
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+
 	export let id: string;
 	export let name: string;
 	export let value: string;
 	export let label: string;
 
 	export let group: string;
+
+	const dispatch = createEventDispatcher();
+
+	function handleClick() {
+		dispatch('pillClick', { value });
+	}
 </script>
 
-<div class="radio-option">
+<div class="radio-option" on:click={handleClick}>
 	<input type="radio" {id} {name} {value} bind:group />
 	<label class="radio-label" for={id} data-text={label}>
 		<span>{label}</span>

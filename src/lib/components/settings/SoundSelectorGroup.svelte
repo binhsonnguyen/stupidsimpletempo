@@ -2,7 +2,8 @@
 
 <script lang="ts">
 	import type { SoundIdentifier } from '$lib/audio/Sound';
-	import RadioPill from './RadioPill.svelte'; // <-- Import component mới
+	import RadioPill from './RadioPill.svelte';
+	import { Sound } from '$lib/audio/Sound';
 
 	export let label: string;
 	export let group: SoundIdentifier;
@@ -11,6 +12,15 @@
 
 	function formatSoundName(identifier: SoundIdentifier): string {
 		return identifier.replace(/_/g, ' ').toLowerCase();
+	}
+
+	function handlePillClick(event: CustomEvent<{ value: SoundIdentifier }>) {
+		const soundIdentifier = event.detail.value;
+		const soundToPlay = Sound.soundMap.get(soundIdentifier);
+
+		if (soundToPlay) {
+			soundToPlay.play();
+		}
 	}
 </script>
 
@@ -24,6 +34,7 @@
 				value={sound.identifier}
 				bind:group
 				label={formatSoundName(sound.identifier)}
+				on:pillClick={handlePillClick}
 			/>
 		{/each}
 	</div>
