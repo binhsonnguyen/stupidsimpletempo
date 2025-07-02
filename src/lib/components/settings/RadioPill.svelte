@@ -72,7 +72,7 @@
   input[type='radio']:checked + .radio-label {
     background-color: #fafafa;
     color: variables.$base-background;
-    border-color: variables.$base-forefront;
+    border-color: variables.$base-border;
   }
 
   input[type='radio']:checked + .radio-label span {
