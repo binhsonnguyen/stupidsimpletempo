@@ -27,10 +27,27 @@
 
 <svelte:body class:audio-loading={$isAudioLoading} />
 
-<Header />
+<div class="app-container">
+	<Header />
 
-<main class="flex-grow-1 d-flex align-items-center justify-content-center">
-	<slot />
-</main>
+	<main>
+		<slot />
+	</main>
 
-<Footer />
+	<Footer />
+</div>
+
+<style>
+    .app-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    main {
+        flex-grow: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+</style>
