@@ -30,9 +30,11 @@
 
 <MainContentWrapper>
 	<div class="content-stack">
-		<Dial />
-		<div class="notation-container">
-			<TimeSignatureSwitcher />
+		<div class="metronome-unit">
+			<Dial />
+			<div class="notation-container">
+				<TimeSignatureSwitcher />
+			</div>
 		</div>
 	</div>
 </MainContentWrapper>
@@ -41,14 +43,21 @@
     .content-stack {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
         width: 100%;
         flex-grow: 1;
     }
 
+    .metronome-unit {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+
     .notation-container {
         width: 100%;
-        margin-top: 40px;
+        margin-top: clamp(10px, 5vh, 40px);
     }
 </style>
