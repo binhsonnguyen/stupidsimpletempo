@@ -1,57 +1,49 @@
 // src/lib/state/settingsStore.ts
-import { writable } from 'svelte/store';
-import { browser } from '$app/environment';
-import { Sound, type SoundIdentifier } from '$lib/audio/Sound';
 
-export type AppSettings = {
+import { writable, get } from 'svelte/store';
+import type { SoundIdentifier } from '$lib/audio/Sound';
+import { browser } from '$app/environment';
+
+export interface Settings {
 	strongBeatSound: SoundIdentifier;
 	weakBeatSound: SoundIdentifier;
-};
+}
 
-const defaultSettings: AppSettings = {
+const DEFAULT_SETTINGS: Settings = {
 	strongBeatSound: 'WOODBLOCK_HIGH',
 	weakBeatSound: 'WOODBLOCK'
 };
 
-const initialSettings = (): AppSettings => {
-	if (!browser) {
-		return defaultSettings;
-	}
+function getStoredSettings(): Settings | null {
+	if (!browser) return null;
+	const stored = localStorage.getItem('settings');
+	return stored ? JSON.parse(stored) : null;
+}
 
-	try {
-		const savedSettingsJSON = localStorage.getItem('appSettings');
-		if (savedSettingsJSON) {
-			const savedSettings = JSON.parse(savedSettingsJSON) as AppSettings;
+const store = writable<Settings | null>(getStoredSettings());
 
-			const isStrongSoundValid = Sound.soundMap.has(savedSettings.strongBeatSound);
-			const isWeakSoundValid = Sound.soundMap.has(savedSettings.weakBeatSound);
-
-			if (isStrongSoundValid && isWeakSoundValid) {
-				return savedSettings;
-			}
-		}
-	} catch (error) {
-		console.error('Failed to parse settings from localStorage:', error);
-		localStorage.removeItem('appSettings');
-	}
-
-	return defaultSettings;
-};
-
-const store = writable<AppSettings>(initialSettings());
-
-store.subscribe((value) => {
-	if (browser) {
-		localStorage.setItem('appSettings', JSON.stringify(value));
-	}
-});
+let isInitialized = false;
 
 export const settingsStore = {
-	...store,
-	setAccentSound: (sound: SoundIdentifier) => {
-		store.update((settings) => ({ ...settings, strongBeatSound: sound }));
+	subscribe: store.subscribe,
+	initialize: () => {
+		if (!browser || isInitialized) return;
+
+		const currentSettings = get(store);
+
+		if (!currentSettings?.strongBeatSound || !currentSettings?.weakBeatSound) {
+			const newSettings = { ...DEFAULT_SETTINGS, ...currentSettings };
+			store.set(newSettings);
+		}
+		isInitialized = true;
 	},
-	setBeatSound: (sound: SoundIdentifier) => {
-		store.update((settings) => ({ ...settings, weakBeatSound: sound }));
-	}
+	set: store.set
 };
+
+if (browser) {
+	settingsStore.subscribe((value) => {
+		if (value) {
+			localStorage.setItem('settings', JSON.stringify(value));
+		}
+	});
+}
