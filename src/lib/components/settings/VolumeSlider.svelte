@@ -9,9 +9,36 @@
 	const allTicks = [0, 100, 150];
 	const specialTicks = new Set([0, 100, 150]);
 
+	const SNAP_THRESHOLD = 6;
+
 	const fillPercent = $derived(
 		($settingsStore.volume / $volumeStore.maxVolume) * 100
 	);
+
+	function handleWrapperClick(event: MouseEvent) {
+		const wrapper = event.currentTarget as HTMLElement;
+		const rect = wrapper.getBoundingClientRect();
+
+		// Tính toán vị trí click (từ 0.0 đến 1.0)
+		const clickX = event.clientX - rect.left;
+		const clickRatio = Math.max(0, Math.min(1, clickX / rect.width));
+
+		// Chuyển đổi vị trí click thành giá trị âm lượng
+		const clickedVolume = Math.round(clickRatio * $volumeStore.maxVolume);
+
+		// Tìm vạch chia gần nhất với vị trí click
+		const closestTick = allTicks.reduce((prev, curr) => {
+			const prevDiff = Math.abs(prev - clickedVolume);
+			const currDiff = Math.abs(curr - clickedVolume);
+			return currDiff < prevDiff ? curr : prev;
+		});
+
+		if (Math.abs(closestTick - clickedVolume) <= SNAP_THRESHOLD) {
+			volumeStore.setVolume(closestTick);
+		} else {
+			volumeStore.setVolume(clickedVolume);
+		}
+	}
 </script>
 
 <div class="setting-item">
@@ -22,7 +49,7 @@
 			<FontAwesomeIcon icon={$volumeStore.isMuted ? faVolumeXmark : faVolumeHigh} />
 		</button>
 
-		<div class="slider-wrapper">
+		<div class="slider-wrapper" onclick={handleWrapperClick}>
 			<div class="visual-track" style="--fill-percent: {fillPercent}%"></div>
 			<input
 				type="range"
@@ -86,6 +113,7 @@
     display: flex;
     align-items: center;
     height: 20px;
+    cursor: pointer;
   }
 
   .ticks-container {
@@ -109,7 +137,7 @@
     background: rgba(255, 255, 255, 0.3);
 
     &.active {
-      background: rgba(255, 255, 255, 1.0);
+      background: rgba(255, 255, 255, 1);
     }
 
     &.special {
@@ -143,6 +171,7 @@
     background: transparent;
     outline: none;
     margin: 0;
+    pointer-events: none;
   }
 
   .slider::-webkit-slider-thumb {
