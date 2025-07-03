@@ -2,7 +2,6 @@
 
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { settingsStore } from '$lib/state/settingsStore';
 	import { beatSequenceStore } from '$lib/state/beatSequenceStore';
 	import { beatSoundStore } from '$lib/state/beatSoundStore';
 	import { wakeLockManager } from '$lib/services/wakeLockManager';
@@ -14,7 +13,6 @@
 	import Footer from '$lib/components/Footer.svelte';
 
 	onMount(() => {
-		settingsStore.initialize();
 		beatSequenceStore.initialize();
 		const unsubscribe = beatSoundStore.subscribe(() => {
 		});
