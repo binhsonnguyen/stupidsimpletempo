@@ -1,11 +1,12 @@
-<!-- src/lib/components/settings/Settings.svelte (đã tái cấu trúc) -->
+<!-- src/lib/components/settings/Settings.svelte -->
 
 <script lang="ts">
 	import { settingsStore } from '$lib/state/settingsStore';
 	import { Sound } from '$lib/audio/Sound';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-	import SoundSelectorGroup from './SoundSelectorGroup.svelte'; // Import component mới
+	import SoundSelectorGroup from './SoundSelectorGroup.svelte';
+	import VolumeSlider from './VolumeSlider.svelte'; // 1. Import component mới
 
 	const availableSounds = Sound.ALL_SOUNDS;
 </script>
@@ -19,19 +20,26 @@
 	</header>
 
 	<div class="settings-list">
-		<SoundSelectorGroup
-			label="Downbeat"
-			name="strong-beat-sound"
-			bind:group={$settingsStore.strongBeatSound}
-			{availableSounds}
-		/>
+		{#if $settingsStore}
+			<VolumeSlider />
+			<hr class="divider" />
 
-		<SoundSelectorGroup
-			label="Upbeat"
-			name="weak-beat-sound"
-			bind:group={$settingsStore.weakBeatSound}
-			{availableSounds}
-		/>
+			<SoundSelectorGroup
+				label="Downbeat"
+				name="strong-beat-sound"
+				bind:group={$settingsStore.strongBeatSound}
+				{availableSounds}
+			/>
+
+			<SoundSelectorGroup
+				label="Upbeat"
+				name="weak-beat-sound"
+				bind:group={$settingsStore.weakBeatSound}
+				{availableSounds}
+			/>
+		{:else}
+			<p>Loading settings...</p>
+		{/if}
 	</div>
 </div>
 
@@ -65,6 +73,18 @@
       font-size: 2.5rem;
       font-weight: 700;
     }
+  }
+
+  .settings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 1rem 0;
   }
 
   @keyframes fade-in {
