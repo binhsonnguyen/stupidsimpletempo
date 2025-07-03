@@ -55,6 +55,7 @@
 
 	<div
 		class="volume-control"
+		class:is-muted={isMuted}
 		style="--danger-mix-percent: {dangerMixPercent}%; --fill-percent: {fillPercent}%"
 	>
 		<button onclick={volumeStore.toggleMute} class="mute-button" aria-label="Toggle Mute">
@@ -101,6 +102,17 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+
+    transition: color 0.1s ease-in-out;
+    color: color-mix(
+                    in srgb,
+				#{variables.$primary-color},
+				#{variables.$danger-color-3} var(--danger-mix-percent, 0%)
+    );
+
+    &.is-muted {
+      color: #888;
+    }
   }
 
   .mute-button {
@@ -175,7 +187,6 @@
                     var(--track-fill-color) var(--fill-percent, 0%),
                     rgba(255, 255, 255, 0.2) var(--fill-percent, 0%)
     );
-    pointer-events: none;
   }
 
   .slider {
@@ -251,10 +262,6 @@
     text-align: right;
     opacity: 0.9;
     transition: color 0.1s ease-in-out;
-    color: color-mix(
-                    in srgb,
-				#{variables.$primary-color},
-				#{variables.$danger-color-3} var(--danger-mix-percent, 0%)
-    );
+    color: inherit; // Kế thừa màu từ .volume-control
   }
 </style>
