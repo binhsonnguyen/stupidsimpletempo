@@ -6,7 +6,7 @@
 	import { faVolumeHigh, faVolumeXmark } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 
-	const allTicks = new Set([0, 100, 150]);
+	const allTicks = [0, 100, 150];
 	const specialTicks = new Set([0, 100, 150]);
 
 	const fillPercent = $derived(
