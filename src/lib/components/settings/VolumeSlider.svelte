@@ -3,7 +3,12 @@
 <script lang="ts">
 	import { volumeStore } from '$lib/state/volumeStore';
 	import { settingsStore } from '$lib/state/settingsStore';
-	import { faVolumeHigh, faVolumeXmark } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faVolumeHigh,
+		faVolumeXmark,
+		faVolumeLow,
+		faVolumeOff
+	} from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 
 	const allTicks = [0, 100, 120];
@@ -21,6 +26,19 @@
 	const dangerMixPercent = $derived(
 		volume <= 100 ? 0 : Math.min(1, (volume - 100) / (120 - 100)) * 100
 	);
+
+	const currentVolumeIcon = $derived((() => {
+		if (isMuted) {
+			return faVolumeXmark;
+		}
+		if (volume === 0) {
+			return faVolumeOff;
+		}
+		if (volume <= 50) {
+			return faVolumeLow;
+		}
+		return faVolumeHigh;
+	})());
 
 	function handleWrapperClick(event: MouseEvent) {
 		const target = event.target as HTMLElement;
@@ -59,8 +77,8 @@
 		style="--danger-mix-percent: {dangerMixPercent}%; --fill-percent: {fillPercent}%"
 	>
 		<button onclick={volumeStore.toggleMute} class="mute-button" aria-label="Toggle Mute">
-			{#key isMuted}
-				<FontAwesomeIcon icon={isMuted ? faVolumeXmark : faVolumeHigh} />
+			{#key currentVolumeIcon}
+				<FontAwesomeIcon icon={currentVolumeIcon} />
 			{/key}
 		</button>
 
