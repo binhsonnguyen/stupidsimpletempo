@@ -23,6 +23,7 @@
 		</button>
 
 		<div class="slider-wrapper">
+			<div class="visual-track" style="--fill-percent: {fillPercent}%"></div>
 			<input
 				type="range"
 				id="volume-slider"
@@ -33,7 +34,6 @@
 				oninput={() => volumeStore.setVolume($settingsStore.volume)}
 				disabled={$volumeStore.isMuted}
 				class="slider"
-				style="--fill-percent: {fillPercent}%"
 			/>
 			<div class="ticks-container">
 				{#each allTicks as tick}
@@ -52,6 +52,10 @@
 
 <style lang="scss">
   @use '$lib/styles/variables';
+
+  :root {
+    --thumb-width: 20px;
+  }
 
   .volume-control {
     display: flex;
@@ -107,39 +111,51 @@
     }
   }
 
-  .slider {
+  .visual-track {
     position: absolute;
-    width: 100%;
-    -webkit-appearance: none;
-    appearance: none;
+    width: calc(100% - var(--thumb-width));
     height: 1px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     background: linear-gradient(
                     to right,
                     variables.$primary-color var(--fill-percent, 0%),
                     rgba(255, 255, 255, 0.2) var(--fill-percent, 0%)
     );
-    outline: none;
-    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+
+  .slider {
+    position: absolute;
+    width: 100%;
+    left: 0;
     top: 50%;
     transform: translateY(-50%);
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    outline: none;
+    margin: 0;
   }
 
   .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 20px;
-    height: 20px;
+    width: var(--thumb-width);
+    height: var(--thumb-width);
     background: #fff;
     cursor: pointer;
     border-radius: 50%;
     border: none;
     transition: transform 0.2s ease;
+    /* Con trượt vẫn cần bắt sự kiện chuột */
     pointer-events: auto;
   }
 
   .slider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
+    width: var(--thumb-width);
+    height: var(--thumb-width);
     background: #fff;
     cursor: pointer;
     border-radius: 50%;
@@ -157,8 +173,7 @@
     transform: scale(1.2);
   }
 
-  .slider:disabled {
-    cursor: not-allowed;
+  .slider:disabled .visual-track {
     background: linear-gradient(
                     to right,
                     #666 var(--fill-percent, 0%),
