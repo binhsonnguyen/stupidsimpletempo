@@ -4,6 +4,8 @@
 	import type { SoundIdentifier } from '$lib/audio/Sound';
 	import RadioPill from './RadioPill.svelte';
 	import { Sound } from '$lib/audio/Sound';
+	import { settingsStore } from '$lib/state/settingsStore';
+	import { logger } from '$lib/services/logger';
 
 	export let label: string;
 	export let group: SoundIdentifier;
@@ -14,9 +16,12 @@
 		return identifier.replace(/_/g, ' ').toLowerCase();
 	}
 
-	function handlePillClick(soundIdentifier: string) {
-		const soundToPlay = Sound.soundMap.get(<SoundIdentifier>soundIdentifier);
+	function handleSoundChange(event: CustomEvent<string>) {
+		const newSound = event.detail as SoundIdentifier;
 
+		settingsStore.updateSetting({ [name]: newSound });
+
+		const soundToPlay = Sound.soundMap.get(newSound);
 		if (soundToPlay) {
 			soundToPlay.play();
 		}
@@ -31,9 +36,9 @@
 				id="{name}-{sound.identifier}"
 				{name}
 				value={sound.identifier}
-				bind:group
+				checked={group === sound.identifier}
 				label={formatSoundName(sound.identifier)}
-				onPillClick={handlePillClick}
+				on:change={handleSoundChange}
 			/>
 		{/each}
 	</div>
