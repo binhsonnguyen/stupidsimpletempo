@@ -173,8 +173,8 @@
   }
 
   .volume-value {
+    width: 4.5ch;
     font-variant-numeric: tabular-nums;
-    min-width: 4ch;
     text-align: right;
     opacity: 0.9;
   }
