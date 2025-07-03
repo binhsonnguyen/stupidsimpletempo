@@ -7,6 +7,7 @@
 
 	import SoundSelectorGroup from './SoundSelectorGroup.svelte';
 	import VolumeSlider from './VolumeSlider.svelte';
+	import DivisionSelector from './DivisionSelector.svelte';
 
 	const availableSounds = Sound.ALL_SOUNDS;
 </script>
@@ -37,6 +38,9 @@
 				bind:group={$settingsStore.weakBeatSound}
 				{availableSounds}
 			/>
+			<hr class="divider" />
+
+			<DivisionSelector />
 		{:else}
 			<p>Loading settings...</p>
 		{/if}
