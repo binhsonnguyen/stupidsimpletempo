@@ -40,6 +40,7 @@
 					<span
 						class="tick-mark"
 						class:special={specialTicks.has(tick)}
+						class:active={tick <= $settingsStore.volume}
 						style="left: {(tick / $volumeStore.maxVolume) * 100}%"
 					></span>
 				{/each}
@@ -100,15 +101,19 @@
   .tick-mark {
     position: absolute;
     width: 1px;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.3);
     top: 50%;
     transform: translateY(-50%);
     transition: all 0.2s ease;
 
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+
+    &.active {
+      background: rgba(255, 255, 255, 1.0);
+    }
+
     &.special {
       height: 12px;
-      background: rgba(255, 255, 255, 0.6);
     }
   }
 
@@ -150,7 +155,6 @@
     border-radius: 50%;
     border: none;
     transition: transform 0.2s ease;
-    /* Con trượt vẫn cần bắt sự kiện chuột */
     pointer-events: auto;
   }
 
