@@ -27,14 +27,14 @@
 
 			<SoundSelectorGroup
 				label="Downbeat"
-				name="strong-beat-sound"
+				name="strongBeatSound"
 				group={$settingsStore.strongBeatSound}
 				{availableSounds}
 			/>
 
 			<SoundSelectorGroup
 				label="Upbeat"
-				name="weak-beat-sound"
+				name="weakBeatSound"
 				group={$settingsStore.weakBeatSound}
 				{availableSounds}
 			/>
