@@ -14,7 +14,7 @@
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
 	import { rotatable } from '$lib/components/dial/rotatable';
-	import { doubleTappable } from '$lib/components/actions/doubleTappable';
+	import { doubleTappable } from '$lib/components/dial/doubleTappable';
 	import { DialMarkerResolver } from './utils/dialMarkerResolver';
 
 	const markerResolver = new DialMarkerResolver({
