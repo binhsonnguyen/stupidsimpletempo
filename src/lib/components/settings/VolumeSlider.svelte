@@ -11,7 +11,7 @@
 
 	const SNAP_THRESHOLD = 8;
 
-	let volume = $derived($settingsStore.volume);
+	const volume = $derived($settingsStore.volume);
 	const isMuted = $derived($volumeStore.isMuted);
 	const minVolume = $derived($volumeStore.minVolume);
 	const maxVolume = $derived($volumeStore.maxVolume);
@@ -59,7 +59,9 @@
 		style="--danger-mix-percent: {dangerMixPercent}%; --fill-percent: {fillPercent}%"
 	>
 		<button onclick={volumeStore.toggleMute} class="mute-button" aria-label="Toggle Mute">
-			<FontAwesomeIcon icon={isMuted ? faVolumeXmark : faVolumeHigh} />
+			{#key isMuted}
+				<FontAwesomeIcon icon={isMuted ? faVolumeXmark : faVolumeHigh} />
+			{/key}
 		</button>
 
 		<div class="slider-wrapper" onclick={handleWrapperClick}>
@@ -81,7 +83,7 @@
 				min={minVolume}
 				max={maxVolume}
 				step="1"
-				bind:value={volume}
+				value={volume}
 				oninput={(e) => volumeStore.setVolume(Number(e.currentTarget.value))}
 				disabled={isMuted}
 				class="slider"
