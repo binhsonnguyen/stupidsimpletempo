@@ -1,4 +1,4 @@
-<!-- src/lib/components/settings/Settings.svelte -->
+<!-- src/lib/components/settings/Settings.svelte (ĐÚNG & KHÔNG CẦN THAY ĐỔI) -->
 
 <script lang="ts">
 	import { settingsStore } from '$lib/state/settingsStore';
@@ -28,14 +28,14 @@
 			<SoundSelectorGroup
 				label="Downbeat"
 				name="strong-beat-sound"
-				bind:group={$settingsStore.strongBeatSound}
+				group={$settingsStore.strongBeatSound}
 				{availableSounds}
 			/>
 
 			<SoundSelectorGroup
 				label="Upbeat"
 				name="weak-beat-sound"
-				bind:group={$settingsStore.weakBeatSound}
+				group={$settingsStore.weakBeatSound}
 				{availableSounds}
 			/>
 			<hr class="divider" />
