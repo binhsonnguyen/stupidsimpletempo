@@ -1,10 +1,8 @@
 <!-- src/lib/components/drum/Drum.svelte -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import { isAudioLoading } from '$lib/state/audioLoadingStore';
-	import { volumeStore } from '$lib/state/volumeStore';
 	import { beatScheduleStore } from '$lib/state/beatScheduleStore';
 	import * as Tone from 'tone';
 	import { drumGlowStore } from '$lib/state/chromaStore';
@@ -25,11 +23,6 @@
 	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
 
 	let { children } = $props<{ children?: Svelte.Snippet }>();
-
-	onMount(() => {
-		volumeStore.setVolume(100);
-		volumeStore.setBoostFactor(1.2);
-	});
 
 	let animationFrameId: number;
 	let masterProximity = $state(0);
