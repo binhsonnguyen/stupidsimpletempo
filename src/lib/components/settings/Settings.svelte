@@ -8,6 +8,7 @@
 	import SoundSelectorGroup from './SoundSelectorGroup.svelte';
 	import VolumeSlider from './VolumeSlider.svelte';
 	import DivisionSelector from './DivisionSelector.svelte';
+	import BeatIntervalSelector from './BeatIntervalSelector.svelte';
 
 	const availableSounds = Sound.ALL_SOUNDS;
 </script>
@@ -41,6 +42,7 @@
 			<hr class="divider" />
 
 			<DivisionSelector />
+			<BeatIntervalSelector />
 		{:else}
 			<p>Loading settings...</p>
 		{/if}
