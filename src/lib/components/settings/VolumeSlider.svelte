@@ -160,7 +160,11 @@
     background: rgba(255, 255, 255, 0.3);
 
     &.active {
-      background: rgba(255, 255, 255, 1);
+      background: color-mix(
+                      in srgb,
+					#{variables.$primary-color},
+					#{variables.$danger-color-3} var(--danger-mix-percent, 0%)
+      );
     }
 
     &.special {
@@ -261,7 +265,6 @@
     font-variant-numeric: tabular-nums;
     text-align: right;
     opacity: 0.9;
-    transition: color 0.1s ease-in-out;
-    color: inherit; // Kế thừa màu từ .volume-control
+    color: inherit;
   }
 </style>
