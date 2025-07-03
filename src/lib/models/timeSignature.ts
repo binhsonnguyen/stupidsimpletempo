@@ -3,7 +3,7 @@
 import type { BeatInterval, Division } from '$lib/constants';
 import { makeFraction } from '$lib/utils/fractionGenerator';
 
-const BEAT_INTERVAL_TO_SYMBOL: Record<BeatInterval, string> = {
+export const BEAT_INTERVAL_TO_SYMBOL: Record<BeatInterval, string> = {
 	'1m': '𝅝', // Whole note
 	'2n': '𝅗𝅥', // Half note
 	'4n': '𝅘𝅥', // Quarter note
@@ -12,13 +12,22 @@ const BEAT_INTERVAL_TO_SYMBOL: Record<BeatInterval, string> = {
 	'8t': '𝅘𝅥𝅮³' // Eighth triplet
 };
 
-const BEAT_INTERVAL_TO_DENOMINATOR: Record<BeatInterval, string> = {
+export const BEAT_INTERVAL_TO_DENOMINATOR: Record<BeatInterval, string> = {
 	'1m': '1',
 	'2n': '2',
 	'4n': '4',
 	'8n': '8',
 	'16n': '16',
 	'8t': '8³'
+};
+
+export const BEAT_INTERVAL_TO_FRACTION_DENOMINATOR: Record<BeatInterval, string> = {
+	'1m': '1',
+	'2n': '½',
+	'4n': '¼',
+	'8n': '⅛',
+	'16n': '¹⁄₁₆',
+	'8t': '⅛³'
 };
 
 export class TimeSignature {
