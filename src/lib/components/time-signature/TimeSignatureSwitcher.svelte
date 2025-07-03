@@ -2,11 +2,15 @@
 <script lang="ts">
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import InteractiveTimeSignature from './InteractiveTimeSignature.svelte';
+	import { settingsStore } from '$lib/state/settingsStore';
+
+	const enabledBeats = $derived($settingsStore.enabledDivisions ?? []);
 </script>
 
 <div class="notation-wrapper">
 	<InteractiveTimeSignature
 		timeSignature={$metronomeStore.timeSignature}
+		{enabledBeats}
 		on:changeBeats={(event) => metronomeStore.setBeatsPerMeasure(event.detail)}
 		on:changeInterval={(event) => metronomeStore.setBeatInterval(event.detail)}
 	/>
