@@ -7,11 +7,15 @@ import { browser } from '$app/environment';
 export interface Settings {
 	strongBeatSound: SoundIdentifier;
 	weakBeatSound: SoundIdentifier;
+	volume: number;
+	boostFactor: number;
 }
 
 const DEFAULT_SETTINGS: Settings = {
 	strongBeatSound: 'WOODBLOCK_HIGH',
-	weakBeatSound: 'WOODBLOCK'
+	weakBeatSound: 'WOODBLOCK',
+	volume: 100,
+	boostFactor: 1.2
 };
 
 function getStoredSettings(): Settings | null {
@@ -30,14 +34,14 @@ export const settingsStore = {
 		if (!browser || isInitialized) return;
 
 		const currentSettings = get(store);
+		const newSettings = { ...DEFAULT_SETTINGS, ...currentSettings };
+		store.set(newSettings);
 
-		if (!currentSettings?.strongBeatSound || !currentSettings?.weakBeatSound) {
-			const newSettings = { ...DEFAULT_SETTINGS, ...currentSettings };
-			store.set(newSettings);
-		}
 		isInitialized = true;
 	},
-	set: store.set
+	set: (newSettings: Settings) => {
+		store.set(newSettings);
+	}
 };
 
 if (browser) {
