@@ -1,13 +1,13 @@
 <!-- src/routes/+layout.svelte -->
 
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
-	import { Sound } from '$lib/audio/Sound';
-	import { isAudioLoading } from '$lib/state/audioLoadingStore';
+	import { onMount, onDestroy } from 'svelte';
+	import { settingsStore } from '$lib/state/settingsStore';
 	import { beatSequenceStore } from '$lib/state/beatSequenceStore';
 	import { beatSoundStore } from '$lib/state/beatSoundStore';
 	import { wakeLockManager } from '$lib/services/wakeLockManager';
-	import { settingsStore } from '$lib/state/settingsStore';
+	import { Sound } from '$lib/audio/Sound';
+	import { isAudioLoading } from '$lib/state/audioLoadingStore';
 	import '../styles/theme.scss';
 
 	import Header from '$lib/components/Header.svelte';
@@ -15,9 +15,10 @@
 
 	onMount(() => {
 		settingsStore.initialize();
-		wakeLockManager.initialize();
 		beatSequenceStore.initialize();
-		const unsubscribe = beatSoundStore.subscribe(() => {});
+		const unsubscribe = beatSoundStore.subscribe(() => {
+		});
+		wakeLockManager.initialize();
 		onDestroy(unsubscribe);
 	});
 
