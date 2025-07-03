@@ -11,9 +11,12 @@
 
 	const SNAP_THRESHOLD = 8;
 
-	const volume = $derived($settingsStore.volume);
+	let volume = $derived($settingsStore.volume);
+	const isMuted = $derived($volumeStore.isMuted);
+	const minVolume = $derived($volumeStore.minVolume);
+	const maxVolume = $derived($volumeStore.maxVolume);
 
-	const fillPercent = $derived((volume / $volumeStore.maxVolume) * 100);
+	const fillPercent = $derived((volume / maxVolume) * 100);
 
 	const dangerMixPercent = $derived(
 		volume <= 100 ? 0 : Math.min(1, (volume - 100) / (120 - 100)) * 100
@@ -31,7 +34,7 @@
 		const clickX = event.clientX - rect.left;
 		const clickRatio = Math.max(0, Math.min(1, clickX / rect.width));
 
-		const clickedVolume = Math.round(clickRatio * $volumeStore.maxVolume);
+		const clickedVolume = Math.round(clickRatio * maxVolume);
 
 		const closestTick = allTicks.reduce((prev, curr) => {
 			const prevDiff = Math.abs(prev - clickedVolume);
@@ -55,7 +58,7 @@
 		style="--danger-mix-percent: {dangerMixPercent}%; --fill-percent: {fillPercent}%"
 	>
 		<button onclick={volumeStore.toggleMute} class="mute-button" aria-label="Toggle Mute">
-			<FontAwesomeIcon icon={$volumeStore.isMuted ? faVolumeXmark : faVolumeHigh} />
+			<FontAwesomeIcon icon={isMuted ? faVolumeXmark : faVolumeHigh} />
 		</button>
 
 		<div class="slider-wrapper" onclick={handleWrapperClick}>
@@ -63,12 +66,12 @@
 			<input
 				type="range"
 				id="volume-slider"
-				min={$volumeStore.minVolume}
-				max={$volumeStore.maxVolume}
+				min={minVolume}
+				max={maxVolume}
 				step="1"
-				value={volume}
+				bind:value={volume}
 				oninput={(e) => volumeStore.setVolume(Number(e.currentTarget.value))}
-				disabled={$volumeStore.isMuted}
+				disabled={isMuted}
 				class="slider"
 			/>
 			<div class="ticks-container">
@@ -77,7 +80,7 @@
 						class="tick-mark"
 						class:special={specialTicks.has(tick)}
 						class:active={tick <= volume}
-						style="left: {(tick / $volumeStore.maxVolume) * 100}%"
+						style="left: {(tick / maxVolume) * 100}%"
 					></span>
 				{/each}
 			</div>
@@ -141,7 +144,6 @@
     top: 50%;
     transform: translateY(-50%);
     transition: all 0.2s ease;
-
     height: 8px;
     background: rgba(255, 255, 255, 0.3);
 
@@ -161,9 +163,16 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    pointer-events: none;
+    transition: background 0.1s ease-in-out;
+    --track-fill-color: color-mix(
+                    in srgb,
+				#{variables.$primary-color},
+				#{variables.$danger-color-3} var(--danger-mix-percent, 0%)
+    );
     background: linear-gradient(
                     to right,
-                    variables.$primary-color var(--fill-percent, 0%),
+                    var(--track-fill-color) var(--fill-percent, 0%),
                     rgba(255, 255, 255, 0.2) var(--fill-percent, 0%)
     );
     pointer-events: none;
@@ -216,10 +225,15 @@
     transform: scale(1.2);
   }
 
-  .slider:disabled .visual-track {
+  .slider:disabled + .ticks-container .tick-mark.active {
+    background: #888;
+  }
+
+  .slider:disabled ~ .visual-track {
+    --track-fill-color: #888;
     background: linear-gradient(
                     to right,
-                    #666 var(--fill-percent, 0%),
+                    var(--track-fill-color) var(--fill-percent, 0%),
                     rgba(128, 128, 128, 0.2) var(--fill-percent, 0%)
     );
   }
@@ -228,6 +242,7 @@
   .slider:disabled::-moz-range-thumb {
     background: #888;
     transform: scale(1);
+    cursor: not-allowed;
   }
 
   .volume-value {
@@ -238,8 +253,8 @@
     transition: color 0.1s ease-in-out;
     color: color-mix(
                     in srgb,
-                    variables.$primary-color,
-                    variables.$danger-color-3 var(--danger-mix-percent, 0%)
+				#{variables.$primary-color},
+				#{variables.$danger-color-3} var(--danger-mix-percent, 0%)
     );
   }
 </style>
