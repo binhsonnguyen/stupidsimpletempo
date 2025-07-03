@@ -244,15 +244,14 @@
     transform: scale(1.2);
   }
 
-  .slider:disabled ~ .ticks-container .tick-mark.active {
+  .volume-control.is-muted .ticks-container .tick-mark.active {
     background: #888;
   }
 
-  .slider:disabled ~ .visual-track {
-    --track-fill-color: #888;
+  .volume-control.is-muted .visual-track {
     background: linear-gradient(
                     to right,
-                    var(--track-fill-color) var(--fill-percent, 0%),
+                    #888 var(--fill-percent, 0%),
                     rgba(128, 128, 128, 0.2) var(--fill-percent, 0%)
     );
   }
