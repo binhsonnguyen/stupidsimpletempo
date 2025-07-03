@@ -6,13 +6,17 @@
 	import { faVolumeHigh, faVolumeXmark } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 
-	const allTicks = [0, 100, 150];
-	const specialTicks = new Set([0, 100, 150]);
+	const allTicks = [0, 100, 120];
+	const specialTicks = new Set([0, 100, 120]);
 
 	const SNAP_THRESHOLD = 8;
 
-	const fillPercent = $derived(
-		($settingsStore.volume / $volumeStore.maxVolume) * 100
+	const volume = $derived($settingsStore.volume);
+
+	const fillPercent = $derived((volume / $volumeStore.maxVolume) * 100);
+
+	const dangerMixPercent = $derived(
+		volume <= 100 ? 0 : Math.min(1, (volume - 100) / (120 - 100)) * 100
 	);
 
 	function handleWrapperClick(event: MouseEvent) {
@@ -46,21 +50,24 @@
 <div class="setting-item">
 	<div class="setting-label">Volume</div>
 
-	<div class="volume-control">
+	<div
+		class="volume-control"
+		style="--danger-mix-percent: {dangerMixPercent}%; --fill-percent: {fillPercent}%"
+	>
 		<button onclick={volumeStore.toggleMute} class="mute-button" aria-label="Toggle Mute">
 			<FontAwesomeIcon icon={$volumeStore.isMuted ? faVolumeXmark : faVolumeHigh} />
 		</button>
 
 		<div class="slider-wrapper" onclick={handleWrapperClick}>
-			<div class="visual-track" style="--fill-percent: {fillPercent}%"></div>
+			<div class="visual-track"></div>
 			<input
 				type="range"
 				id="volume-slider"
 				min={$volumeStore.minVolume}
 				max={$volumeStore.maxVolume}
 				step="1"
-				bind:value={$settingsStore.volume}
-				oninput={() => volumeStore.setVolume($settingsStore.volume)}
+				value={volume}
+				oninput={(e) => volumeStore.setVolume(Number(e.currentTarget.value))}
 				disabled={$volumeStore.isMuted}
 				class="slider"
 			/>
@@ -69,14 +76,14 @@
 					<span
 						class="tick-mark"
 						class:special={specialTicks.has(tick)}
-						class:active={tick <= $settingsStore.volume}
+						class:active={tick <= volume}
 						style="left: {(tick / $volumeStore.maxVolume) * 100}%"
 					></span>
 				{/each}
 			</div>
 		</div>
 
-		<span class="volume-value">{$settingsStore.volume}%</span>
+		<span class="volume-value">{volume}%</span>
 	</div>
 </div>
 
@@ -228,5 +235,11 @@
     font-variant-numeric: tabular-nums;
     text-align: right;
     opacity: 0.9;
+    transition: color 0.1s ease-in-out;
+    color: color-mix(
+                    in srgb,
+                    variables.$primary-color,
+                    variables.$danger-color-3 var(--danger-mix-percent, 0%)
+    );
   }
 </style>

@@ -10,7 +10,7 @@ export interface Settings {
 	volume: number;
 }
 
-export const MAX_VOLUME = 150;
+export const MAX_VOLUME = 120;
 
 const DEFAULT_SETTINGS: Settings = {
 	strongBeatSound: 'WOODBLOCK_HIGH',
