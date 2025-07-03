@@ -13,7 +13,7 @@
 	import { logger } from '$lib/services/logger';
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
-	import { rotatable } from '$lib/components/actions/rotatable';
+	import { rotatable } from '$lib/components/dial/rotatable';
 	import { doubleTappable } from '$lib/components/actions/doubleTappable';
 	import { DialMarkerResolver } from './utils/dialMarkerResolver';
 
