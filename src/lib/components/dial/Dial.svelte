@@ -13,8 +13,8 @@
 	import { logger } from '$lib/services/logger';
 	import { metronomeStore } from '$lib/state/metronomeStore';
 	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
-	import { rotatable } from '$lib/components/dial/rotatable';
-	import { doubleTappable } from '$lib/components/dial/doubleTappable';
+	import { rotatable } from '$lib/components/dial/actions/rotatable';
+	import { doubleTappable } from '$lib/components/dial/actions/doubleTappable';
 	import { DialMarkerResolver } from './utils/dialMarkerResolver';
 
 	const markerResolver = new DialMarkerResolver({
