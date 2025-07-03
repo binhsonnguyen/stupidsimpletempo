@@ -16,17 +16,19 @@
 	);
 
 	function handleWrapperClick(event: MouseEvent) {
+		const target = event.target as HTMLElement;
+		if (target.classList.contains('slider')) {
+			return;
+		}
+
 		const wrapper = event.currentTarget as HTMLElement;
 		const rect = wrapper.getBoundingClientRect();
 
-		// Tính toán vị trí click (từ 0.0 đến 1.0)
 		const clickX = event.clientX - rect.left;
 		const clickRatio = Math.max(0, Math.min(1, clickX / rect.width));
 
-		// Chuyển đổi vị trí click thành giá trị âm lượng
 		const clickedVolume = Math.round(clickRatio * $volumeStore.maxVolume);
 
-		// Tìm vạch chia gần nhất với vị trí click
 		const closestTick = allTicks.reduce((prev, curr) => {
 			const prevDiff = Math.abs(prev - clickedVolume);
 			const currDiff = Math.abs(curr - clickedVolume);
