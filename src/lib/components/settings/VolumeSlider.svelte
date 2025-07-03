@@ -6,7 +6,8 @@
 	import { faVolumeHigh, faVolumeXmark } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 
-	const ticks = [0, 100, 150];
+	const allTicks = new Set([0, 100, 150]);
+	const specialTicks = new Set([0, 100, 150]);
 
 	const fillPercent = $derived(
 		($settingsStore.volume / $volumeStore.maxVolume) * 100
@@ -35,9 +36,10 @@
 				style="--fill-percent: {fillPercent}%"
 			/>
 			<div class="ticks-container">
-				{#each ticks as tick}
+				{#each allTicks as tick}
 					<span
 						class="tick-mark"
+						class:special={specialTicks.has(tick)}
 						style="left: {(tick / $volumeStore.maxVolume) * 100}%"
 					></span>
 				{/each}
@@ -97,6 +99,12 @@
     background: rgba(255, 255, 255, 0.3);
     top: 50%;
     transform: translateY(-50%);
+    transition: all 0.2s ease;
+
+    &.special {
+      height: 12px;
+      background: rgba(255, 255, 255, 0.6);
+    }
   }
 
   .slider {
