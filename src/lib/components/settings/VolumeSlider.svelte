@@ -8,7 +8,8 @@
 </script>
 
 <div class="setting-item">
-	<label for="volume-slider" class="setting-label">Volume</label>
+	<div class="setting-label">Volume</div>
+
 	<div class="volume-control">
 		<button on:click={volumeStore.toggleMute} class="mute-button" aria-label="Toggle Mute">
 			<FontAwesomeIcon icon={$volumeStore.isMuted ? faVolumeXmark : faVolumeHigh} />
@@ -29,18 +30,6 @@
 </div>
 
 <style lang="scss">
-  .setting-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .setting-label {
-    font-size: 1.1rem;
-    font-weight: 500;
-    opacity: 0.9;
-  }
-
   .volume-control {
     display: flex;
     align-items: center;

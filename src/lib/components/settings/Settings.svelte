@@ -6,7 +6,7 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 	import SoundSelectorGroup from './SoundSelectorGroup.svelte';
-	import VolumeSlider from './VolumeSlider.svelte'; // 1. Import component mới
+	import VolumeSlider from './VolumeSlider.svelte';
 
 	const availableSounds = Sound.ALL_SOUNDS;
 </script>
@@ -44,6 +44,8 @@
 </div>
 
 <style lang="scss">
+  @use '$lib/styles/variables';
+
   .settings-container {
     width: 100%;
     max-width: 600px;
@@ -78,13 +80,26 @@
   .settings-list {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 2.5rem;
   }
 
   .divider {
     border: none;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    margin: 1rem 0;
+    margin: 0;
+  }
+
+  :global(.setting-item) {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  :global(.setting-item .setting-label) {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: variables.$base-forefront-muted;
+    text-transform: capitalize;
   }
 
   @keyframes fade-in {
