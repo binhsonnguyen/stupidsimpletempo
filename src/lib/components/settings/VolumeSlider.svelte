@@ -5,13 +5,17 @@
 	import { settingsStore } from '$lib/state/settingsStore';
 	import { faVolumeHigh, faVolumeXmark } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+
+	const fillPercent = $derived(
+		($settingsStore.volume / $volumeStore.maxVolume) * 100
+	);
 </script>
 
 <div class="setting-item">
 	<div class="setting-label">Volume</div>
 
 	<div class="volume-control">
-		<button on:click={volumeStore.toggleMute} class="mute-button" aria-label="Toggle Mute">
+		<button onclick={volumeStore.toggleMute} class="mute-button" aria-label="Toggle Mute">
 			<FontAwesomeIcon icon={$volumeStore.isMuted ? faVolumeXmark : faVolumeHigh} />
 		</button>
 		<input
@@ -21,15 +25,18 @@
 			max={$volumeStore.maxVolume}
 			step="1"
 			bind:value={$settingsStore.volume}
-			on:input={() => volumeStore.setVolume($settingsStore.volume)}
+			oninput={() => volumeStore.setVolume($settingsStore.volume)}
 			disabled={$volumeStore.isMuted}
 			class="slider"
+			style="--fill-percent: {fillPercent}%"
 		/>
 		<span class="volume-value">{$settingsStore.volume}%</span>
 	</div>
 </div>
 
 <style lang="scss">
+  @use '$lib/styles/variables';
+
   .volume-control {
     display: flex;
     align-items: center;
@@ -57,45 +64,62 @@
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 5px;
+    height: 1px;
+    border-radius: 3px;
     outline: none;
-    opacity: 0.8;
     transition: opacity 0.2s;
 
-    &:hover {
-      opacity: 1;
-    }
+    background: linear-gradient(
+                    to right,
+                    variables.$primary-color var(--fill-percent, 0%),
+                    rgba(255, 255, 255, 0.2) var(--fill-percent, 0%)
+    );
 
     &::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
       width: 20px;
       height: 20px;
-      background: #eee;
+      background: #fff;
       cursor: pointer;
       border-radius: 50%;
+      border: none;
+      transition: transform 0.2s ease;
     }
 
     &::-moz-range-thumb {
-      width: 20px;
-      height: 20px;
-      background: #eee;
+      width: 16px;
+      height: 16px;
+      background: #fff;
       cursor: pointer;
       border-radius: 50%;
       border: none;
     }
 
+    &:not(:disabled):hover::-webkit-slider-thumb,
+    &:not(:disabled):active::-webkit-slider-thumb {
+      transform: scale(1.2);
+    }
+    &:not(:disabled):hover::-moz-range-thumb,
+    &:not(:disabled):active::-moz-range-thumb {
+      transform: scale(1.2);
+    }
+
     &:disabled {
-      opacity: 0.4;
       cursor: not-allowed;
+      background: linear-gradient(
+                      to right,
+                      #666 var(--fill-percent, 0%),
+                      rgba(128, 128, 128, 0.2) var(--fill-percent, 0%)
+      );
 
       &::-webkit-slider-thumb {
         background: #888;
+        transform: scale(1);
       }
       &::-moz-range-thumb {
         background: #888;
+        transform: scale(1);
       }
     }
   }
