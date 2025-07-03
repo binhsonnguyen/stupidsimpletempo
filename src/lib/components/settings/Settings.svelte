@@ -1,4 +1,4 @@
-<!-- src/lib/components/settings/Settings.svelte (ĐÚNG & KHÔNG CẦN THAY ĐỔI) -->
+<!-- src/lib/components/settings/Settings.svelte -->
 
 <script lang="ts">
 	import { settingsStore } from '$lib/state/settingsStore';
