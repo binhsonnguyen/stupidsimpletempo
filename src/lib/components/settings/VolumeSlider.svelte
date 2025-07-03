@@ -64,6 +64,17 @@
 
 		<div class="slider-wrapper" onclick={handleWrapperClick}>
 			<div class="visual-track"></div>
+			<div class="ticks-container">
+				{#each allTicks as tick}
+					<span
+						class="tick-mark"
+						class:special={specialTicks.has(tick)}
+						class:active={tick <= volume}
+						style="left: {(tick / maxVolume) * 100}%"
+					></span>
+				{/each}
+			</div>
+
 			<input
 				type="range"
 				id="volume-slider"
@@ -75,16 +86,6 @@
 				disabled={isMuted}
 				class="slider"
 			/>
-			<div class="ticks-container">
-				{#each allTicks as tick}
-					<span
-						class="tick-mark"
-						class:special={specialTicks.has(tick)}
-						class:active={tick <= volume}
-						style="left: {(tick / maxVolume) * 100}%"
-					></span>
-				{/each}
-			</div>
 		</div>
 
 		<span class="volume-value">{volume}%</span>
@@ -204,6 +205,7 @@
     background: transparent;
     outline: none;
     margin: 0;
+    z-index: 2;
     pointer-events: none;
   }
 
@@ -240,7 +242,7 @@
     transform: scale(1.2);
   }
 
-  .slider:disabled + .ticks-container .tick-mark.active {
+  .slider:disabled ~ .ticks-container .tick-mark.active {
     background: #888;
   }
 
