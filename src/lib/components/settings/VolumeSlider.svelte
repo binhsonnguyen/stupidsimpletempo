@@ -6,6 +6,8 @@
 	import { faVolumeHigh, faVolumeXmark } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 
+	const ticks = [0, 50, 80, 90, 95, 110, 120, 130, 150];
+
 	const fillPercent = $derived(
 		($settingsStore.volume / $volumeStore.maxVolume) * 100
 	);
@@ -18,18 +20,30 @@
 		<button onclick={volumeStore.toggleMute} class="mute-button" aria-label="Toggle Mute">
 			<FontAwesomeIcon icon={$volumeStore.isMuted ? faVolumeXmark : faVolumeHigh} />
 		</button>
-		<input
-			type="range"
-			id="volume-slider"
-			min={$volumeStore.minVolume}
-			max={$volumeStore.maxVolume}
-			step="1"
-			bind:value={$settingsStore.volume}
-			oninput={() => volumeStore.setVolume($settingsStore.volume)}
-			disabled={$volumeStore.isMuted}
-			class="slider"
-			style="--fill-percent: {fillPercent}%"
-		/>
+
+		<div class="slider-wrapper">
+			<input
+				type="range"
+				id="volume-slider"
+				min={$volumeStore.minVolume}
+				max={$volumeStore.maxVolume}
+				step="1"
+				bind:value={$settingsStore.volume}
+				oninput={() => volumeStore.setVolume($settingsStore.volume)}
+				disabled={$volumeStore.isMuted}
+				class="slider"
+				style="--fill-percent: {fillPercent}%"
+			/>
+			<div class="ticks-container">
+				{#each ticks as tick}
+					<span
+						class="tick-mark"
+						style="left: {(tick / $volumeStore.maxVolume) * 100}%"
+					></span>
+				{/each}
+			</div>
+		</div>
+
 		<span class="volume-value">{$settingsStore.volume}%</span>
 	</div>
 </div>
@@ -59,13 +73,41 @@
     }
   }
 
+  .slider-wrapper {
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    height: 20px;
+  }
+
+  .ticks-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+  }
+
+  .tick-mark {
+    position: absolute;
+    width: 1px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
   .slider {
+    position: absolute;
+    width: 100%;
+
     flex-grow: 1;
     -webkit-appearance: none;
     appearance: none;
-    width: 100%;
     height: 1px;
-    border-radius: 3px;
+    border-radius: 4px;
     outline: none;
     transition: opacity 0.2s;
 
@@ -85,6 +127,7 @@
       border-radius: 50%;
       border: none;
       transition: transform 0.2s ease;
+      pointer-events: auto;
     }
 
     &::-moz-range-thumb {
@@ -94,6 +137,7 @@
       cursor: pointer;
       border-radius: 50%;
       border: none;
+      pointer-events: auto;
     }
 
     &:not(:disabled):hover::-webkit-slider-thumb,
