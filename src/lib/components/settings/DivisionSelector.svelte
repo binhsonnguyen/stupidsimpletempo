@@ -29,7 +29,7 @@
 </script>
 
 <div class="setting-item">
-	<div class="setting-label">Enabled Beat Divisions</div>
+	<div class="setting-label">Beats Per Measure</div>
 
 	<CheckboxPillGroup
 		name="enabled_divisions"
