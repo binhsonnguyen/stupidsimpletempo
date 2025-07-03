@@ -9,7 +9,7 @@
 	const allTicks = [0, 100, 150];
 	const specialTicks = new Set([0, 100, 150]);
 
-	const SNAP_THRESHOLD = 6;
+	const SNAP_THRESHOLD = 8;
 
 	const fillPercent = $derived(
 		($settingsStore.volume / $volumeStore.maxVolume) * 100
