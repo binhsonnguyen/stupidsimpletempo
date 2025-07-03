@@ -6,15 +6,17 @@
 	import { swipeable } from '$lib/components/actions/swipeable';
 	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
 	import { dialGlowStore } from '$lib/state/chromaStore';
-	import { VALID_BEAT_INTERVALS, type BeatInterval, type Division } from '$lib/constants';
+	import type { BeatInterval, Division } from '$lib/constants';
 	import type { TimeSignature } from '$lib/models/timeSignature';
 
 	let {
 		timeSignature,
-		enabledBeats
+		enabledBeats,
+		enabledIntervals
 	} = $props<{
 		timeSignature: TimeSignature;
 		enabledBeats: Division[];
+		enabledIntervals: BeatInterval[];
 	}>();
 
 	const TINT_INTENSITY_FACTOR = 0.8;
@@ -38,11 +40,15 @@
 	}
 
 	function handleIntervalChange(direction: 'left' | 'right') {
-		const currentIndex = VALID_BEAT_INTERVALS.indexOf(timeSignature.beatInterval);
+		if (enabledIntervals.length === 0) return;
+
+		const currentIndex = enabledIntervals.indexOf(timeSignature.beatInterval);
 		const delta = direction === 'right' ? 1 : -1;
-		const nextIndex =
-			(currentIndex + delta + VALID_BEAT_INTERVALS.length) % VALID_BEAT_INTERVALS.length;
-		dispatch('changeInterval', VALID_BEAT_INTERVALS[nextIndex]);
+
+		const safeCurrentIndex = currentIndex === -1 ? 0 : currentIndex;
+
+		const nextIndex = (safeCurrentIndex + delta + enabledIntervals.length) % enabledIntervals.length;
+		dispatch('changeInterval', enabledIntervals[nextIndex]);
 	}
 
 	function handleSwipeStart() {

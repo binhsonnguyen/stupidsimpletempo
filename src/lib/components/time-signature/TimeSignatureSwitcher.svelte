@@ -5,12 +5,14 @@
 	import { settingsStore } from '$lib/state/settingsStore';
 
 	const enabledBeats = $derived($settingsStore.enabledDivisions ?? []);
+	const enabledIntervals = $derived($settingsStore.enabledBeatIntervals ?? []);
 </script>
 
 <div class="notation-wrapper">
 	<InteractiveTimeSignature
 		timeSignature={$metronomeStore.timeSignature}
 		{enabledBeats}
+		{enabledIntervals}
 		on:changeBeats={(event) => metronomeStore.setBeatsPerMeasure(event.detail)}
 		on:changeInterval={(event) => metronomeStore.setBeatInterval(event.detail)}
 	/>
