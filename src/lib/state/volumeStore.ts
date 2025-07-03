@@ -1,93 +1,92 @@
 // src/lib/state/volumeStore.ts
 
-import { writable, type Writable } from 'svelte/store';
+import { writable, get, type Writable } from 'svelte/store';
 import { browser } from '$app/environment';
 import * as Tone from 'tone';
+import { settingsStore, type Settings, MAX_VOLUME } from './settingsStore';
 
 /**
- * Chuyển đổi giá trị âm lượng tuyến tính (0-100) sang decibel (dB).
- * Áp dụng một yếu tố khuếch đại (boostFactor) nếu có.
- * @param linearVolume - Giá trị từ 0 đến 100.
- * @param boostFactor - Yếu tố khuếch đại, 1.0 cho không khuếch đại, >1.0 cho khuếch đại.
+ * Chuyển đổi giá trị âm lượng tuyến tính (0-150) sang decibel (dB).
+ * Các giá trị trên 100 sẽ được chuyển thành dB dương (khuếch đại).
+ * @param linearVolume - Giá trị từ 0 đến MAX_VOLUME.
  * @returns Giá trị tương ứng bằng decibel.
  */
-function linearToDecibel(linearVolume: number, boostFactor: number): number {
+function linearToDecibel(linearVolume: number): number {
 	if (linearVolume <= 0) {
 		return -Infinity; // Hoàn toàn im lặng
 	}
 	const gain = linearVolume / 100;
-	const boostedGain = gain * boostFactor;
-	return 20 * Math.log10(boostedGain);
+	return 20 * Math.log10(gain);
 }
 
 export type VolumeState = {
-	volume: number;
 	isMuted: boolean;
 	minVolume: number;
 	maxVolume: number;
 	lastVolumeBeforeMute: number;
-	boostFactor: number;
 };
 
-const initialState: VolumeState = {
-	volume: 100,
+const store = writable<VolumeState>({
 	isMuted: false,
 	minVolume: 0,
-	maxVolume: 100,
-	lastVolumeBeforeMute: 100,
-	boostFactor: 1.0
-};
+	maxVolume: MAX_VOLUME,
+	lastVolumeBeforeMute: 100
+});
 
-export type VolumeStore = {
-	subscribe: Writable<VolumeState>['subscribe'];
-	setVolume: (newVolume: number) => void;
-	toggleMute: () => void;
-	setBoostFactor: (factor: number) => void;
-};
+if (browser) {
+	let currentSettings: Settings | null = get(settingsStore);
+	let currentVolumeState: VolumeState = get(store);
 
-function createVolumeStore(): VolumeStore {
-	const store = writable<VolumeState>(initialState);
-	const { subscribe, update } = store;
+	const updateToneVolume = () => {
+		if (!currentSettings) return;
 
-	// Kết nối store với "van tổng" của Tone.js
-	if (browser) {
-		subscribe((state) => {
-			if (state.isMuted) {
-				Tone.getDestination().volume.value = -Infinity;
-			} else {
-				Tone.getDestination().volume.value = linearToDecibel(state.volume, state.boostFactor);
-			}
-		});
-	}
-
-	return {
-		subscribe,
-
-		setVolume: (newVolume: number) => {
-			update((state) => {
-				const clampedVolume = Math.max(state.minVolume, Math.min(newVolume, state.maxVolume));
-				return { ...state, volume: clampedVolume, isMuted: false };
-			});
-		},
-
-		toggleMute: () => {
-			update((state) => {
-				if (state.isMuted) {
-					return { ...state, isMuted: false };
-				} else {
-					return {
-						...state,
-						isMuted: true,
-						lastVolumeBeforeMute: state.volume
-					};
-				}
-			});
-		},
-
-		setBoostFactor: (factor: number) => {
-			update((state) => ({ ...state, boostFactor: factor }));
+		if (currentVolumeState.isMuted) {
+			Tone.getDestination().volume.value = -Infinity;
+		} else {
+			Tone.getDestination().volume.value = linearToDecibel(currentSettings.volume);
 		}
 	};
+
+	settingsStore.subscribe((settings) => {
+		currentSettings = settings;
+		if (settings) {
+			store.update((state) => ({ ...state, lastVolumeBeforeMute: settings.volume }));
+		}
+		updateToneVolume();
+	});
+
+	store.subscribe((volumeState) => {
+		currentVolumeState = volumeState;
+		updateToneVolume();
+	});
 }
 
-export const volumeStore: VolumeStore = createVolumeStore();
+const setVolume = (newVolume: number) => {
+	const currentSettings = get(settingsStore);
+	if (!currentSettings) return;
+
+	const clampedVolume = Math.max(get(store).minVolume, Math.min(newVolume, get(store).maxVolume));
+
+	settingsStore.set({ ...currentSettings, volume: clampedVolume });
+
+	store.update((state) => ({ ...state, isMuted: false }));
+};
+
+const toggleMute = () => {
+	store.update((state) => {
+		const newMutedState = !state.isMuted;
+		if (!newMutedState) {
+			const currentSettings = get(settingsStore);
+			if (currentSettings) {
+				setVolume(state.lastVolumeBeforeMute || currentSettings.volume);
+			}
+		}
+		return { ...state, isMuted: newMutedState };
+	});
+};
+
+export const volumeStore = {
+	subscribe: store.subscribe,
+	setVolume,
+	toggleMute
+};

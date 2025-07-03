@@ -8,14 +8,14 @@ export interface Settings {
 	strongBeatSound: SoundIdentifier;
 	weakBeatSound: SoundIdentifier;
 	volume: number;
-	boostFactor: number;
 }
+
+export const MAX_VOLUME = 150;
 
 const DEFAULT_SETTINGS: Settings = {
 	strongBeatSound: 'WOODBLOCK_HIGH',
 	weakBeatSound: 'WOODBLOCK',
-	volume: 100,
-	boostFactor: 1.2
+	volume: 100
 };
 
 function getStoredSettings(): Settings | null {
@@ -35,6 +35,11 @@ export const settingsStore = {
 
 		const currentSettings = get(store);
 		const newSettings = { ...DEFAULT_SETTINGS, ...currentSettings };
+
+		if (newSettings.volume > MAX_VOLUME) {
+			newSettings.volume = MAX_VOLUME;
+		}
+
 		store.set(newSettings);
 
 		isInitialized = true;
