@@ -6,7 +6,7 @@
 	import { faVolumeHigh, faVolumeXmark } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 
-	const ticks = [0, 50, 80, 90, 95, 110, 120, 130, 150];
+	const ticks = [0, 100, 150];
 
 	const fillPercent = $derived(
 		($settingsStore.volume / $volumeStore.maxVolume) * 100
