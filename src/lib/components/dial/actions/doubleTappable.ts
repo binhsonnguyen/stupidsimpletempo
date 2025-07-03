@@ -1,4 +1,4 @@
-// src/lib/components/actions/doubleTappable.ts
+// src/lib/components/dial/actions/doubleTappable.ts
 
 import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
 
@@ -20,6 +20,10 @@ export function doubleTappable(node: HTMLElement, options?: DoubleTapOptions) {
 	let lastTapY = 0;
 
 	function handlePointerDown(event: PointerEvent) {
+		if ((event.target as Element).closest('.start-stop-button')) {
+			return;
+		}
+
 		if (event.button !== 0) return;
 
 		const now = Date.now();
