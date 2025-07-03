@@ -3,11 +3,13 @@
 import { writable, get } from 'svelte/store';
 import type { SoundIdentifier } from '$lib/audio/Sound';
 import { browser } from '$app/environment';
+import { VALID_DIVISIONS, type Division } from '$lib/constants';
 
 export interface Settings {
 	strongBeatSound: SoundIdentifier;
 	weakBeatSound: SoundIdentifier;
 	volume: number;
+	enabledDivisions: Division[];
 }
 
 export const MAX_VOLUME = 120;
@@ -15,44 +17,44 @@ export const MAX_VOLUME = 120;
 const DEFAULT_SETTINGS: Settings = {
 	strongBeatSound: 'WOODBLOCK_HIGH',
 	weakBeatSound: 'WOODBLOCK',
-	volume: 100
+	volume: 100,
+	enabledDivisions: [...VALID_DIVISIONS]
 };
 
-function getStoredSettings(): Settings | null {
-	if (!browser) return null;
-	const stored = localStorage.getItem('settings');
-	return stored ? JSON.parse(stored) : null;
-}
+function createSettingsStore() {
+	const initialSettings = (() => {
+		if (!browser) return DEFAULT_SETTINGS;
+		const stored = localStorage.getItem('settings');
+		const storedSettings = stored ? JSON.parse(stored) : {};
+		return { ...DEFAULT_SETTINGS, ...storedSettings };
+	})();
 
-const store = writable<Settings | null>(getStoredSettings());
+	const { subscribe, set, update } = writable<Settings>(initialSettings);
 
-let isInitialized = false;
-
-export const settingsStore = {
-	subscribe: store.subscribe,
-	initialize: () => {
-		if (!browser || isInitialized) return;
-
-		const currentSettings = get(store);
-		const newSettings = { ...DEFAULT_SETTINGS, ...currentSettings };
-
-		if (newSettings.volume > MAX_VOLUME) {
-			newSettings.volume = MAX_VOLUME;
-		}
-
-		store.set(newSettings);
-
-		isInitialized = true;
-	},
-	set: (newSettings: Settings) => {
-		store.set(newSettings);
+	if (browser) {
+		subscribe((value) => {
+			if (value) {
+				localStorage.setItem('settings', JSON.stringify(value));
+			}
+		});
 	}
-};
 
-if (browser) {
-	settingsStore.subscribe((value) => {
-		if (value) {
-			localStorage.setItem('settings', JSON.stringify(value));
+	return {
+		subscribe,
+		updateSetting: (newPartialSettings: Partial<Settings>) => {
+			update((currentSettings) => ({ ...currentSettings, ...newPartialSettings }));
+		},
+		setEnabledDivisions: (newDivisions: Division[]) => {
+			const sortedDivisions = [...newDivisions].sort((a, b) => a - b);
+			update((currentSettings) => ({ ...currentSettings, enabledDivisions: sortedDivisions }));
+		},
+		set: (newSettings: Settings) => {
+			set(newSettings);
+		},
+		reset: () => {
+			set(DEFAULT_SETTINGS);
 		}
-	});
+	};
 }
+
+export const settingsStore = createSettingsStore();
