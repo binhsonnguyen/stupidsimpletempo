@@ -10,8 +10,8 @@
 
 	$: ({ href, iconName, ariaLabel } =
 		$page.url.pathname === '/settings'
-			? { href: '/', iconName: 'sliders', ariaLabel: 'Back to Metronome' }
-			: { href: '/settings', iconName: 'home', ariaLabel: 'Application Settings' });
+			? { href: '/', iconName: 'home', ariaLabel: 'Back to Metronome' }
+			: { href: '/settings', iconName: 'sliders', ariaLabel: 'Application Settings' });
 </script>
 
 <footer class="mt-auto text-center bg-black bg-opacity-10 app-footer">
