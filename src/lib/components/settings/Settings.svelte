@@ -3,8 +3,8 @@
 <script lang="ts">
 	import { settingsStore } from '$lib/state/settingsStore';
 	import { Sound } from '$lib/audio/Sound';
-	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+	import Icon from '$lib/components/icons/Icon.svelte';
+
 	import SoundSelectorGroup from './SoundSelectorGroup.svelte';
 	import VolumeSlider from './VolumeSlider.svelte';
 
@@ -14,7 +14,7 @@
 <div class="settings-container">
 	<header class="settings-header">
 		<a href="/" class="back-button" aria-label="Back to Metronome">
-			<FontAwesomeIcon icon={faArrowLeft} />
+			<Icon name="arrow-left" />
 		</a>
 		<h1>Settings</h1>
 	</header>
@@ -57,7 +57,7 @@
   .settings-header {
     display: flex;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 
     .back-button {
       color: inherit;
@@ -66,13 +66,17 @@
       opacity: 0.8;
       transition: opacity 0.2s;
 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
       &:hover {
         opacity: 1;
       }
     }
 
     h1 {
-      font-size: 2.5rem;
+      font-size: 1.6rem;
       font-weight: 700;
     }
   }
