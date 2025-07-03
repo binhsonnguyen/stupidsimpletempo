@@ -79,6 +79,7 @@
       font-size: 1.6rem;
       font-weight: 700;
       line-height: 1;
+      margin-bottom: 0;
     }
   }
 
