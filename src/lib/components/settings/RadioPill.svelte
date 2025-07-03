@@ -1,23 +1,25 @@
 <!-- src/lib/components/settings/RadioPill.svelte -->
 
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+
 	export let id: string;
 	export let name: string;
 	export let value: string;
 	export let label: string;
-	export let group: string;
+	export let checked: boolean;
 
-	export let onPillClick: ((value: string) => void) | undefined = undefined;
+	const dispatch = createEventDispatcher<{ change: string }>();
 
-	function handleClick() {
-		if (onPillClick) {
-			onPillClick(value);
+	function handleChange() {
+		if (!checked) {
+			dispatch('change', value);
 		}
 	}
 </script>
 
-<div class="radio-option" on:click={handleClick}>
-	<input type="radio" {id} {name} {value} bind:group />
+<div class="radio-option">
+	<input type="radio" {id} {name} {value} {checked} on:change={handleChange} />
 	<label class="radio-label" for={id} data-text={label}>
 		<span>{label}</span>
 	</label>
