@@ -11,19 +11,11 @@
 
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
-	import { firstInteractionStore } from '$lib/state/firstInteractionStore';
 
 	onMount(() => {
 		beatSequenceStore.initialize();
-		const unsubscribe = beatSoundStore.subscribe(() => {
-		});
+		const unsubscribe = beatSoundStore.subscribe(() => {});
 		wakeLockManager.initialize();
-
-		const firstInteractiveOptions = { once: true, passive: true };
-		window.addEventListener('mousedown', firstInteractionStore.recordFirstInteraction, firstInteractiveOptions);
-		window.addEventListener('touchstart', firstInteractionStore.recordFirstInteraction, firstInteractiveOptions);
-		window.addEventListener('keydown', firstInteractionStore.recordFirstInteraction, firstInteractiveOptions);
-
 		onDestroy(unsubscribe);
 	});
 

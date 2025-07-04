@@ -4,6 +4,7 @@
 	import Icon from '$lib/components/icons/Icon.svelte';
 	import { page } from '$app/stores';
 	import { firstInteractionStore } from '$lib/state/firstInteractionStore';
+	import { fade } from 'svelte/transition';
 
 	const version = __APP_VERSION__;
 	const author = __APP_AUTHOR__;
@@ -27,17 +28,25 @@
 
 <footer class="mt-auto text-center bg-black bg-opacity-10 app-footer">
 	<div class="author-credit">
-		{#if $firstInteractionStore}
-			<span>v{version} &copy;{currentYear}</span>
-			<span>{author}</span>
-		{:else}
-			<span>from</span>
-			<picture>
-				<source srcset="/images/flg-vn-192.webp" type="image/webp" />
-				<img src="/images/flg-vn-192.png" alt="Vietnamese Flag" class="flag-image" />
-			</picture>
-			<span class="with-heart">with <Icon name="heart" /></span>
-		{/if}
+		{#key $firstInteractionStore}
+			<div
+				class="credit-content-wrapper"
+				in:fade={{ duration: 250, delay: 150 }}
+				out:fade={{ duration: 150 }}
+			>
+				{#if $firstInteractionStore}
+					<span>v{version} &copy;{currentYear}</span>
+					<span>{author}</span>
+				{:else}
+					<span class="has-icon"><Icon name="tool" /> from</span>
+					<picture>
+						<source srcset="/images/flg-vn-192.webp" type="image/webp" />
+						<img src="/images/flg-vn-192.png" alt="Vietnamese Flag" class="flag-image" />
+					</picture>
+					<span class="has-icon">with <Icon name="heart" /></span>
+				{/if}
+			</div>
+		{/key}
 	</div>
 
 	{#key $page.url.pathname}
@@ -86,9 +95,23 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5em;
+    position: relative;
+    min-height: 1.2em;
   }
 
-  .with-heart {
+  .credit-content-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    justify-content: center;
+    white-space: nowrap;
+  }
+
+  .has-icon {
     display: inline-flex;
     align-items: center;
     gap: 0.3em;
@@ -112,7 +135,6 @@
     right: 15px;
     top: 50%;
     transform: translateY(-50%);
-
     display: flex;
     align-items: center;
     justify-content: center;

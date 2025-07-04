@@ -21,6 +21,7 @@
 	import DrumDivisionControl from '$lib/components/drum/DrumDivisionControl.svelte';
 	import * as Svelte from 'svelte';
 	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
+	import { firstInteractionStore } from '$lib/state/firstInteractionStore';
 
 	let { children } = $props<{ children?: Svelte.Snippet }>();
 
@@ -55,6 +56,7 @@
 	});
 
 	function handleDrumClick() {
+		firstInteractionStore.recordFirstInteraction();
 		metronomeStore.toggle();
 	}
 
