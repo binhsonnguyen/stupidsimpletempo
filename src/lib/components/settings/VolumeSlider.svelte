@@ -81,6 +81,7 @@
 		<div class="slider-wrapper" onclick={handleWrapperClick}>
 			<div class="visual-track"></div>
 			<div class="ticks-container">
+				<!--eslint-disable-next-line svelte/require-each-key-->
 				{#each allTicks as tick}
 					<span
 						class="tick-mark"
