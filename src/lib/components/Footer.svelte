@@ -27,7 +27,10 @@
 <footer class="mt-auto text-center bg-black bg-opacity-10 app-footer">
 	<span class="author-credit">
 		v{version} &copy;{currentYear}
-		<img src="/images/flg-vn-192.png" alt="Vietnamese Flag" class="flag-image" />
+		<picture>
+			<source srcset="/images/flg-vn-192.webp" type="image/webp" />
+			<img src="/images/flg-vn-192.png" alt="Vietnamese Flag" class="flag-image" />
+		</picture>
 		{author}
 	</span>
 
