@@ -76,6 +76,8 @@
 			{/key}
 		</button>
 
+		<!--svelte-ignore a11y_no_static_element_interactions-->
+		<!--svelte-ignore a11y_click_events_have_key_events-->
 		<div class="slider-wrapper" onclick={handleWrapperClick}>
 			<div class="visual-track"></div>
 			<div class="ticks-container">
