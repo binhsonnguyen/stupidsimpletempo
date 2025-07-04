@@ -9,6 +9,7 @@
 	import VolumeSlider from './VolumeSlider.svelte';
 	import DivisionSelector from './DivisionSelector.svelte';
 	import BeatIntervalSelector from './BeatIntervalSelector.svelte';
+	import ResetSettings from './ResetSettings.svelte';
 
 	const availableSounds = Sound.ALL_SOUNDS;
 </script>
@@ -24,6 +25,7 @@
 	<div class="settings-list">
 		{#if $settingsStore}
 			<VolumeSlider />
+
 			<hr class="divider" />
 
 			<SoundSelectorGroup
@@ -39,10 +41,15 @@
 				group={$settingsStore.weakBeatSound}
 				{availableSounds}
 			/>
+
 			<hr class="divider" />
 
 			<DivisionSelector />
 			<BeatIntervalSelector />
+
+			<hr class="divider" />
+
+			<ResetSettings />
 		{:else}
 			<p>Loading settings...</p>
 		{/if}
