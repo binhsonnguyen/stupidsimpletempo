@@ -13,8 +13,8 @@
 		label: BEAT_INTERVAL_TO_FRACTION_DENOMINATOR[interval]
 	}));
 
-	function handleSelectionChange(event: CustomEvent<{ value: string; checked: boolean }>) {
-		const { value, checked } = event.detail;
+	function handleSelectionChange(detail: { value: string; checked: boolean }) {
+		const { value, checked } = detail;
 		const interval = value as BeatInterval;
 
 		let newEnabled: BeatInterval[];
@@ -36,6 +36,6 @@
 		name="enabled_intervals"
 		options={intervalOptions}
 		selectedValues={enabledIntervals}
-		on:change={handleSelectionChange}
+		onchange={handleSelectionChange}
 	/>
 </div>

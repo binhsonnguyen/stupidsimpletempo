@@ -12,8 +12,8 @@
 		label: d.toString()
 	}));
 
-	function handleSelectionChange(event: CustomEvent<{ value: string; checked: boolean }>) {
-		const { value, checked } = event.detail;
+	function handleSelectionChange(detail: { value: string; checked: boolean }) {
+		const { value, checked } = detail;
 		const division = Number(value) as Division;
 
 		let newEnabled: Division[];
@@ -35,6 +35,6 @@
 		name="enabled_divisions"
 		options={divisionOptions}
 		selectedValues={enabledDivisions.map(String)}
-		on:change={handleSelectionChange}
+		onchange={handleSelectionChange}
 	/>
 </div>
