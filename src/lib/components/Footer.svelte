@@ -72,11 +72,8 @@
     font-size: 0.75em;
     user-select: text;
     -webkit-user-select: text;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
     position: relative;
+    text-align: center;
   }
 
   .author-credit {
@@ -101,7 +98,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
     color: inherit;
     font-size: 1.3em;
     opacity: 0.6;
