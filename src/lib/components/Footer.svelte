@@ -8,17 +8,34 @@
 	const author = __APP_AUTHOR__;
 	const currentYear = new Date().getFullYear();
 
+	let isAnimating = false;
+
 	$: ({ href, iconName, ariaLabel } =
 		$page.url.pathname === '/settings'
 			? { href: '/', iconName: 'home', ariaLabel: 'Back to Metronome' }
 			: { href: '/settings', iconName: 'sliders', ariaLabel: 'Application Settings' });
+
+	function handleClick() {
+		isAnimating = true;
+	}
+
+	function handleAnimationEnd() {
+		isAnimating = false;
+	}
 </script>
 
 <footer class="mt-auto text-center bg-black bg-opacity-10 app-footer">
 	<span>v{version} &copy;{currentYear} {author}</span>
 
 	{#key $page.url.pathname}
-		<a {href} class="settings-link" aria-label={ariaLabel}>
+		<a
+			{href}
+			class="settings-link"
+			class:is-animating={isAnimating}
+			aria-label={ariaLabel}
+			on:click={handleClick}
+			on:animationend={handleAnimationEnd}
+		>
 			<Icon name={iconName} />
 		</a>
 	{/key}
@@ -26,6 +43,21 @@
 
 <style lang="scss">
   @use '$lib/styles/variables';
+
+  @keyframes icon-click-wobble {
+    0% {
+      transform: translateY(-50%) rotate(0deg);
+    }
+    30% {
+      transform: translateY(-50%) rotate(20deg);
+    }
+    60% {
+      transform: translateY(-50%) rotate(-10deg);
+    }
+    100% {
+      transform: translateY(-50%) rotate(0deg);
+    }
+  }
 
   .app-footer {
     padding: 10px 0;
@@ -53,13 +85,14 @@
     color: inherit;
     font-size: 1.3em;
     opacity: 0.6;
-    transition:
-            opacity 0.2s ease-in-out,
-            transform 0.2s ease-in-out;
+    transition: opacity 0.2s ease-in-out;
 
     &:hover {
       opacity: 1;
-      transform: translateY(-50%) rotate(15deg);
+    }
+
+    &.is-animating {
+      animation: icon-click-wobble 0.4s ease-in-out;
     }
   }
 </style>
