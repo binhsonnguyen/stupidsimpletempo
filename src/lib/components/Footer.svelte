@@ -25,14 +25,14 @@
 </script>
 
 <footer class="mt-auto text-center bg-black bg-opacity-10 app-footer">
-	<span class="author-credit">
-		v{version} &copy;{currentYear}
+	<div class="author-credit">
+		<span class="author-text-left">v{version} &copy;{currentYear}</span>
 		<picture>
-			<source srcset="/images/flg-vn-192.webp" type="image/webp" />
+<!--			<source srcset="/images/flg-vn-192.webp" type="image/webp" />-->
 			<img src="/images/flg-vn-192.png" alt="Vietnamese Flag" class="flag-image" />
 		</picture>
-		{author}
-	</span>
+		<span class="author-text-right">{author}</span>
+	</div>
 
 	{#key $page.url.pathname}
 		<a
@@ -73,13 +73,30 @@
     user-select: text;
     -webkit-user-select: text;
     position: relative;
-    text-align: center;
   }
 
   .author-credit {
-    display: inline-flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
     gap: 0.5em;
+    width: 100%;
+    padding: 0 45px;
+    box-sizing: border-box;
+  }
+
+  .author-text-left {
+    grid-column: 1 / 2;
+    justify-self: end;
+  }
+
+  .author-credit picture {
+    grid-column: 2 / 3;
+  }
+
+  .author-text-right {
+    grid-column: 3 / 4;
+    justify-self: start;
   }
 
   .flag-image {
