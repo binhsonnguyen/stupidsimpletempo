@@ -13,8 +13,8 @@
 		timeSignature={$metronomeStore.timeSignature}
 		{enabledBeats}
 		{enabledIntervals}
-		on:changeBeats={(event) => metronomeStore.setBeatsPerMeasure(event.detail)}
-		on:changeInterval={(event) => metronomeStore.setBeatInterval(event.detail)}
+		onchangeBeats={metronomeStore.setBeatsPerMeasure}
+		onchangeInterval={metronomeStore.setBeatInterval}
 	/>
 </div>
 

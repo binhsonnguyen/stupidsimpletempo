@@ -1,7 +1,6 @@
 <!-- src/lib/components/time-signature/InteractiveTimeSignature.svelte -->
 
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { swipeable } from '$lib/components/actions/swipeable';
 	import { userInteractionStore } from '$lib/state/userInteractionFeedbackStore';
@@ -12,43 +11,40 @@
 	let {
 		timeSignature,
 		enabledBeats,
-		enabledIntervals
+		enabledIntervals,
+		onchangeBeats,
+		onchangeInterval
 	} = $props<{
 		timeSignature: TimeSignature;
 		enabledBeats: Division[];
 		enabledIntervals: BeatInterval[];
+		onchangeBeats?: (newBeats: Division) => void;
+		onchangeInterval?: (newInterval: BeatInterval) => void;
 	}>();
 
 	const TINT_INTENSITY_FACTOR = 0.8;
 	const tintIntensity = $derived($dialGlowStore.baseIntensity * TINT_INTENSITY_FACTOR);
 
-	const dispatch = createEventDispatcher<{
-		changeBeats: Division;
-		changeInterval: BeatInterval;
-	}>();
-
 	function handleBeatsChange(direction: 'up' | 'down') {
-		if (enabledBeats.length === 0) return;
+		if (enabledBeats.length === 0 || !onchangeBeats) return;
 
 		const currentIndex = enabledBeats.indexOf(timeSignature.beatsPerMeasure);
 		const delta = direction === 'up' ? 1 : -1;
-
 		const safeCurrentIndex = currentIndex === -1 ? 0 : currentIndex;
-
 		const nextIndex = (safeCurrentIndex + delta + enabledBeats.length) % enabledBeats.length;
-		dispatch('changeBeats', enabledBeats[nextIndex]);
+
+		onchangeBeats(enabledBeats[nextIndex]);
 	}
 
 	function handleIntervalChange(direction: 'left' | 'right') {
-		if (enabledIntervals.length === 0) return;
+		if (enabledIntervals.length === 0 || !onchangeInterval) return;
 
 		const currentIndex = enabledIntervals.indexOf(timeSignature.beatInterval);
 		const delta = direction === 'right' ? 1 : -1;
-
 		const safeCurrentIndex = currentIndex === -1 ? 0 : currentIndex;
-
 		const nextIndex = (safeCurrentIndex + delta + enabledIntervals.length) % enabledIntervals.length;
-		dispatch('changeInterval', enabledIntervals[nextIndex]);
+
+		onchangeInterval(enabledIntervals[nextIndex]);
 	}
 
 	function handleSwipeStart() {
