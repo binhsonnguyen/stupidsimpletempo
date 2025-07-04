@@ -89,7 +89,7 @@
     height: 1em;
     width: auto;
     border-radius: 2px;
-    vertical-align: text-bottom;
+    display: block;
   }
 
   .settings-link {
