@@ -25,7 +25,11 @@
 </script>
 
 <footer class="mt-auto text-center bg-black bg-opacity-10 app-footer">
-	<span>v{version} &copy;{currentYear} {author}</span>
+	<span class="author-credit">
+		v{version} &copy;{currentYear}
+		<img src="/images/flg-vn-192.png" alt="Vietnamese Flag" class="flag-image" />
+		{author}
+	</span>
 
 	{#key $page.url.pathname}
 		<a
@@ -70,6 +74,19 @@
     justify-content: center;
     align-items: center;
     position: relative;
+  }
+
+  .author-credit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+
+  .flag-image {
+    height: 1em;
+    width: auto;
+    border-radius: 2px;
+    vertical-align: text-bottom;
   }
 
   .settings-link {
