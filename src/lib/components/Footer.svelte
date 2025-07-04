@@ -36,7 +36,7 @@
 				<source srcset="/images/flg-vn-192.webp" type="image/webp" />
 				<img src="/images/flg-vn-192.png" alt="Vietnamese Flag" class="flag-image" />
 			</picture>
-			<span>with <Icon name="heart" /></span>
+			<span class="with-heart">with <Icon name="heart" /></span>
 		{/if}
 	</div>
 
@@ -88,6 +88,12 @@
     gap: 0.5em;
   }
 
+  .with-heart {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+  }
+
   .flag-image {
     height: 1em;
     width: auto;
@@ -97,9 +103,6 @@
 
   .author-credit :global(svg[data-icon-name='heart']) {
     color: variables.$danger-color-3;
-    display: inline-block;
-    vertical-align: middle;
-    transform: translateY(-1px);
     height: 0.9em;
     width: 0.9em;
   }
