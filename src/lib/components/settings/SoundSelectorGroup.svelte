@@ -6,22 +6,29 @@
 	import { settingsStore } from '$lib/state/settingsStore';
 	import RadioPillGroup from './RadioPillGroup.svelte';
 
-	export let label: string;
-	export let group: SoundIdentifier;
-	export let name: string;
-	export let availableSounds: { identifier: SoundIdentifier }[];
+	let {
+		label,
+		group,
+		name,
+		availableSounds
+	} = $props<{
+		label: string;
+		group: SoundIdentifier;
+		name: string;
+		availableSounds: { identifier: SoundIdentifier }[];
+	}>();
 
 	const soundOptions = availableSounds.map((sound) => ({
 		value: sound.identifier,
 		label: sound.identifier.replace(/_/g, ' ').toLowerCase()
 	}));
 
-	function handleSoundChange(event: CustomEvent<string>) {
-		const newSound = event.detail as SoundIdentifier;
+	function handleSoundChange(newSound: string) {
+		const soundId = newSound as SoundIdentifier;
 
-		settingsStore.updateSetting({ [name]: newSound });
+		settingsStore.updateSetting({ [name]: soundId });
 
-		const soundToPlay = Sound.soundMap.get(newSound);
+		const soundToPlay = Sound.soundMap.get(soundId);
 		if (soundToPlay) {
 			soundToPlay.play();
 		}
@@ -35,6 +42,6 @@
 		{name}
 		options={soundOptions}
 		selectedValue={group}
-		on:change={handleSoundChange}
+		onchange={handleSoundChange}
 	/>
 </div>
