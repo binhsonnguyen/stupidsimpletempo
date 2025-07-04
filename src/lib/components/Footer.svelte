@@ -3,6 +3,7 @@
 <script lang="ts">
 	import Icon from '$lib/components/icons/Icon.svelte';
 	import { page } from '$app/stores';
+	import { firstInteractionStore } from '$lib/state/firstInteractionStore';
 
 	const version = __APP_VERSION__;
 	const author = __APP_AUTHOR__;
@@ -26,12 +27,17 @@
 
 <footer class="mt-auto text-center bg-black bg-opacity-10 app-footer">
 	<div class="author-credit">
-		<span class="author-text-left">v{version} &copy;{currentYear}</span>
-		<picture>
-<!--			<source srcset="/images/flg-vn-192.webp" type="image/webp" />-->
-			<img src="/images/flg-vn-192.png" alt="Vietnamese Flag" class="flag-image" />
-		</picture>
-		<span class="author-text-right">{author}</span>
+		{#if $firstInteractionStore}
+			<span>v{version} &copy;{currentYear}</span>
+			<span>{author}</span>
+		{:else}
+			<span>from</span>
+			<picture>
+				<source srcset="/images/flg-vn-192.webp" type="image/webp" />
+				<img src="/images/flg-vn-192.png" alt="Vietnamese Flag" class="flag-image" />
+			</picture>
+			<span>with <Icon name="heart" /></span>
+		{/if}
 	</div>
 
 	{#key $page.url.pathname}
@@ -73,30 +79,13 @@
     user-select: text;
     -webkit-user-select: text;
     position: relative;
+    text-align: center;
   }
 
   .author-credit {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    display: inline-flex;
     align-items: center;
     gap: 0.5em;
-    width: 100%;
-    padding: 0 45px;
-    box-sizing: border-box;
-  }
-
-  .author-text-left {
-    grid-column: 1 / 2;
-    justify-self: end;
-  }
-
-  .author-credit picture {
-    grid-column: 2 / 3;
-  }
-
-  .author-text-right {
-    grid-column: 3 / 4;
-    justify-self: start;
   }
 
   .flag-image {
@@ -104,6 +93,15 @@
     width: auto;
     border-radius: 2px;
     display: block;
+  }
+
+  .author-credit :global(svg[data-icon-name='heart']) {
+    color: variables.$danger-color-3;
+    display: inline-block;
+    vertical-align: middle;
+    transform: translateY(-1px);
+    height: 0.9em;
+    width: 0.9em;
   }
 
   .settings-link {
