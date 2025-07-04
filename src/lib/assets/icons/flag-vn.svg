@@ -1,0 +1,17 @@
+<!-- src/lib/assets/icons/flag-vn.svg -->
+<svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 4 32 24"
+        id="Vn-Vietnam--Streamline-Flagpack"
+        height="24"
+        width="24"
+>
+  <path fill="#e31d1c" d="M0 4h32v24H0z"></path>
+  <path
+          fill="#ffd221"
+          stroke="#ffd221"
+          stroke-width="0.5"
+          stroke-linejoin="round"
+          d="m16.062 19.98-5.151 3.275 1.727-5.733-3.674-3.746 5.066-.11 2.24-5.66 2.043 5.734 5.053.088-3.797 3.815 1.773 5.454-5.28-3.117Z"
+  ></path>
+</svg>
