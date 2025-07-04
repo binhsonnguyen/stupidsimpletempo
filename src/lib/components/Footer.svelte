@@ -88,7 +88,9 @@
     user-select: text;
     -webkit-user-select: text;
     position: relative;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .author-credit {
