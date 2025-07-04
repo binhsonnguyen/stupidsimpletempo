@@ -6,20 +6,29 @@
 		name,
 		value,
 		label,
-		checked = false
+		checked = false,
+		onchange
 	} = $props<{
 		id: string;
 		name: string;
 		value: string;
 		label: string;
 		checked?: boolean;
+		onchange?: (event: Event) => void;
 	}>();
 
 	const isCircle = $derived(label.length === 1);
 </script>
 
 <div class="pill-option">
-	<input type="checkbox" {id} {name} {value} {checked} on:change />
+	<input
+		type="checkbox"
+		{id}
+		{name}
+		{value}
+		{checked}
+		{onchange}
+	/>
 	<label class="pill-label" class:is-circle={isCircle} for={id} data-text={label}>
 		<span>{label}</span>
 	</label>
