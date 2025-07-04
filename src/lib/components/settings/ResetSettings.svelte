@@ -15,10 +15,10 @@
 	}
 </script>
 
-<div class="setting-item reset-container">
+<div class="reset-container">
 	<button class="reset-button" on:click={handleResetClick}>
-		<Icon name="rotate-ccw" />
-		<span>Reset All Settings</span>
+		<Icon name="refresh-ccw" />
+		<span>Reset all settings</span>
 	</button>
 </div>
 
@@ -27,29 +27,37 @@
 
   .reset-container {
     margin-top: 1rem;
+    display: flex;
+    justify-content: center;
   }
 
   .reset-button {
-    width: 100%;
-    padding: 12px 20px;
+    width: auto;
+    padding: 12px 16px;
     background-color: transparent;
-    border: 1px solid rgba(variables.$danger-color-3, 0.5);
-    color: rgba(variables.$danger-color-3, 0.9);
+    border: none;
+
+    color: variables.$base-forefront-muted;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
+    font-size: 0.9rem;
+    font-weight: 400;
     transition: all 0.2s ease-in-out;
 
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.75em;
+    gap: 0.5em;
 
     &:hover {
-      background-color: rgba(variables.$danger-color-3, 0.1);
       color: variables.$danger-color-3;
-      border-color: variables.$danger-color-3;
+      background-color: rgba(variables.$danger-color-3, 0.08);
     }
+  }
+
+  .reset-button :global(svg) {
+    width: 1.8rem;
+    height: 1.8rem;
   }
 </style>
