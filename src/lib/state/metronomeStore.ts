@@ -43,6 +43,10 @@ function createMetronomeStore(): MetronomeStore {
 	let scheduledEventId: number | null = null;
 
 	if (browser) {
+		beatSequenceStore.initialize(initialState.timeSignature);
+	}
+
+	if (browser) {
 		let lastKnownBpm = initialState.bpm;
 		Tone.getTransport().bpm.value = lastKnownBpm;
 
@@ -82,7 +86,6 @@ function createMetronomeStore(): MetronomeStore {
 	};
 
 	const startLoop = (interval: BeatInterval) => {
-		// mồi chu kỳ đầu tiên
 		beatScheduleStore.setBeatAppointment(0, Tone.now());
 		scheduledEventId = Tone.getTransport().scheduleRepeat(loop, interval);
 		Tone.getTransport().start();
@@ -125,6 +128,8 @@ function createMetronomeStore(): MetronomeStore {
 
 		update((state) => ({ ...state, timeSignature: newTimeSignature, currentBeatIndex: 0 }));
 
+		beatSequenceStore.initialize(newTimeSignature);
+
 		if (wasRunning) {
 			startLoop(newTimeSignature.beatInterval);
 		}
@@ -133,6 +138,7 @@ function createMetronomeStore(): MetronomeStore {
 	const reset = () => {
 		stopLoop();
 		set(initialState);
+		beatSequenceStore.initialize(initialState.timeSignature);
 	};
 
 	return {

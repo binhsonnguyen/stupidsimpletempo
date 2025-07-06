@@ -2,7 +2,7 @@
 
 import { writable, type Writable, get } from 'svelte/store';
 import { beatSoundStore } from './beatSoundStore';
-import { MAX_BEATS } from '$lib/constants';
+import type { TimeSignature } from '$lib/models/timeSignature';
 
 export interface IPlayable {
 	play(time: number): void;
@@ -41,16 +41,19 @@ const initialState: BeatSequenceState = {
 
 export type BeatSequenceStore = {
 	subscribe: Writable<BeatSequenceState>['subscribe'];
-	initialize: () => void; // Không cần async và không cần settings nữa
+	initialize: (timeSignature: TimeSignature) => void;
 };
 
 function createBeatSequenceStore(): BeatSequenceStore {
 	const { subscribe, set } = writable<BeatSequenceState>(initialState);
 
-	const initialize = () => {
+	const initialize = (timeSignature: TimeSignature) => {
 		const beats: BeatNode[] = [];
-		for (let i = 0; i < MAX_BEATS; i++) {
-			const player = i === 0 ? new AccentPlayer() : new NormalBeatPlayer();
+		const { beatsPerMeasure } = timeSignature;
+		const isAccentOff = beatsPerMeasure === 1;
+
+		for (let i = 0; i < beatsPerMeasure; i++) {
+			const player = isAccentOff || i !== 0 ? new NormalBeatPlayer() : new AccentPlayer();
 			beats.push({ player: player, index: i });
 		}
 		set({ allBeats: beats });
