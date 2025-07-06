@@ -2,7 +2,7 @@
     <g id="rotary-knob-group" transform="rotate(0 125 125)">
         <polygon
                 points="117.5,10 132.5,10 125,23"
-                fill="#FF0000"
+                fill="#fc1b36"
         />
     </g>
 </svg>
