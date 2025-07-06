@@ -3,7 +3,7 @@
             id="labels-layer-centered"
             font-family="system-ui, -apple-system, sans-serif"
             font-size="11"
-            fill="#dee2e6"
+            fill="#b8b8b8"
             text-anchor="middle"
     >
         <g transform="rotate(0 125 125)">

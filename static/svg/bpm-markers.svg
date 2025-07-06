@@ -1,8 +1,8 @@
 <svg width="250" height="250" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg">
     <defs>
-        <rect id="large-tick-shape" x="124.25" y="8" width="2" height="10" fill="#adb5bd"/>
-        <rect id="small-tick-shape" x="124.5" y="8" width="1" height="6" fill="#868e96"/>
-        <rect id="micro-tick-shape" x="124.625" y="8" width="0.5" height="2" fill="#6c757d"/>
+        <rect id="large-tick-shape" x="124.25" y="8" width="2" height="10" fill="#b8b8b8"/>
+        <rect id="small-tick-shape" x="124.5" y="8" width="1" height="6" fill="#acacac"/>
+        <rect id="micro-tick-shape" x="124.625" y="8" width="0.5" height="2" fill="#a0a0a0"/>
     </defs>
 
     <g id="tick-marks-layer-centered">
