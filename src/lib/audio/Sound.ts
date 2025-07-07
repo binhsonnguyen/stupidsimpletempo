@@ -32,15 +32,15 @@ export class Sound {
 		}
 	}
 
-	public static readonly CAJON_BASS = new Sound('cajon-bass.mp3', 'CAJON_BASS');
-	public static readonly CAJON_SNARE = new Sound('cajon-snare.mp3', 'CAJON_SNARE');
-	public static readonly CLAP = new Sound('clap.mp3', 'CLAP');
-	public static readonly CLAPS = new Sound('claps.mp3', 'CLAPS');
-	public static readonly SHAKER = new Sound('shaker.mp3', 'SHAKER');
-	public static readonly SLEIGH_BELLS = new Sound('sleigh-bells.mp3', 'SLEIGH_BELLS');
-	public static readonly STOMP = new Sound('stomp.mp3', 'STOMP');
-	public static readonly WOODBLOCK = new Sound('woodblock.mp3', 'WOODBLOCK');
-	public static readonly WOODBLOCK_HIGH = new Sound('woodblock-high.mp3', 'WOODBLOCK_HIGH');
+	public static readonly CAJON_BASS = new Sound('cajon-bass.opus', 'CAJON_BASS');
+	public static readonly CAJON_SNARE = new Sound('cajon-snare.opus', 'CAJON_SNARE');
+	public static readonly CLAP = new Sound('clap.opus', 'CLAP');
+	public static readonly CLAPS = new Sound('claps.opus', 'CLAPS');
+	public static readonly SHAKER = new Sound('shaker.opus', 'SHAKER');
+	public static readonly SLEIGH_BELLS = new Sound('sleigh-bells.opus', 'SLEIGH_BELLS');
+	public static readonly STOMP = new Sound('stomp.opus', 'STOMP');
+	public static readonly WOODBLOCK = new Sound('woodblock.opus', 'WOODBLOCK');
+	public static readonly WOODBLOCK_HIGH = new Sound('woodblock-high.opus', 'WOODBLOCK_HIGH');
 
 	public static readonly ALL_SOUNDS: Sound[] = [
 		this.CAJON_BASS,
