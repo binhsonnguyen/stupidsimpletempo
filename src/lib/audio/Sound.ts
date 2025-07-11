@@ -4,6 +4,35 @@ import * as Tone from 'tone';
 import { browser } from '$app/environment';
 import { logger } from '$lib/services/logger';
 
+type AudioExtension = 'webm' | 'mp3' | 'wav';
+
+/**
+ * Determines the best supported audio format by the browser and caches the result.
+ * The preference order is opus > mp3 > wav.
+ * This is an IIFE (Immediately Invoked Function Expression) that runs once
+ * when the module is first imported.
+ */
+const bestAudioFormat: AudioExtension = (() => {
+	// During Server-Side Rendering, there's no browser. Default to 'wav'.
+	// This value is mainly a placeholder as audio won't be loaded on the server.
+	if (!browser) {
+		return 'wav';
+	}
+
+	const audio = document.createElement('audio');
+
+	// Check for Opus support first (most modern and efficient).
+	if (audio.canPlayType('audio/webm; codecs="opus"').replace(/no/, '')) {
+		return 'webm';
+	}
+	// Then check for MP3 (widely supported, especially by Safari).
+	if (audio.canPlayType('audio/mpeg').replace(/no/, '')) {
+		return 'mp3';
+	}
+	// Fallback to WAV (universally supported but larger files).
+	return 'wav';
+})();
+
 export type SoundIdentifier =
 	| 'CAJON_BASS'
 	| 'CAJON_SNARE'
@@ -21,10 +50,11 @@ export class Sound {
 
 	public readonly identifier: SoundIdentifier;
 
-	private constructor(filename: string, identifier: SoundIdentifier) {
+	private constructor(baseFilename: string, identifier: SoundIdentifier) {
 		this.identifier = identifier;
 		if (browser) {
-			const soundUrl = `/sound/${filename}`;
+			const soundUrl = `/sound/${baseFilename}.${bestAudioFormat}`;
+
 			this.player = new Tone.Player(soundUrl).toDestination();
 			this.ready = this.player.load(soundUrl).then(() => {});
 		} else {
@@ -32,15 +62,15 @@ export class Sound {
 		}
 	}
 
-	public static readonly CAJON_BASS = new Sound('cajon-bass.wav', 'CAJON_BASS');
-	public static readonly CAJON_SNARE = new Sound('cajon-snare.wav', 'CAJON_SNARE');
-	public static readonly CLAP = new Sound('clap.wav', 'CLAP');
-	public static readonly CLAPS = new Sound('claps.wav', 'CLAPS');
-	public static readonly SHAKER = new Sound('shaker.wav', 'SHAKER');
-	public static readonly SLEIGH_BELLS = new Sound('sleigh-bells.wav', 'SLEIGH_BELLS');
-	public static readonly STOMP = new Sound('stomp.wav', 'STOMP');
-	public static readonly WOODBLOCK = new Sound('woodblock.wav', 'WOODBLOCK');
-	public static readonly WOODBLOCK_HIGH = new Sound('woodblock-high.wav', 'WOODBLOCK_HIGH');
+	public static readonly CAJON_BASS = new Sound('cajon-bass', 'CAJON_BASS');
+	public static readonly CAJON_SNARE = new Sound('cajon-snare', 'CAJON_SNARE');
+	public static readonly CLAP = new Sound('clap', 'CLAP');
+	public static readonly CLAPS = new Sound('claps', 'CLAPS');
+	public static readonly SHAKER = new Sound('shaker', 'SHAKER');
+	public static readonly SLEIGH_BELLS = new Sound('sleigh-bells', 'SLEIGH_BELLS');
+	public static readonly STOMP = new Sound('stomp', 'STOMP');
+	public static readonly WOODBLOCK = new Sound('woodblock', 'WOODBLOCK');
+	public static readonly WOODBLOCK_HIGH = new Sound('woodblock-high', 'WOODBLOCK_HIGH');
 
 	public static readonly ALL_SOUNDS: Sound[] = [
 		this.CAJON_BASS,
