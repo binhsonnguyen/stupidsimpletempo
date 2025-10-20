@@ -11,4 +11,4 @@ Nó chủ yếu phục vụ những người đang học về âm nhạc, cung c
 Thanks to
 
 * https://tonejs.github.io/
-* https://lights0123.com/fractions/
+* https://github.com/lights0123/fractions
